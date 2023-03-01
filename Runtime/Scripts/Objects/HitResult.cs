@@ -1,10 +1,11 @@
 
 /** CuberootTemplate.cs
 *
-*   Created by LIAM WOFFORD, USA-TX, for the Public Domain.
+*	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
-*   Repo: https://github.com/Brungleby/Cuberoot
-*   Kofi: https://ko-fi.com/brungleby
+*	Free to use or modify, with or without creditation,
+*	under the Creative Commons 0 License.
+
 */
 
 #region Includes
@@ -14,7 +15,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using Cuberoot.Physics;
+using Cuberoot;
 
 #endregion
 
@@ -312,7 +313,7 @@ namespace Cuberoot
 		/// The surface definition which was hit.
 		///</summary>
 
-		public readonly Physics.Surface surface;
+		public readonly Surface surface;
 
 		#endregion
 
@@ -789,7 +790,7 @@ namespace Cuberoot
 		/// The surface definition which was hit.
 		///</summary>
 
-		public readonly Physics.Surface Surface;
+		public readonly Surface Surface;
 
 		#endregion
 
