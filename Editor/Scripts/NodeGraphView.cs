@@ -9,6 +9,7 @@
 
 #region Includes
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -55,7 +56,7 @@ namespace Cuberoot.Editor
 
 		#region Static
 
-		private readonly Vector2 DEFAULT_NODE_SIZE = new Vector2(150f, 200f);
+		public readonly Vector2 DEFAULT_NODE_SIZE = new Vector2(150f, 200f);
 
 		#endregion
 
@@ -138,19 +139,60 @@ namespace Cuberoot.Editor
 			return __node;
 		}
 
-		private void CreateChoicePort(Node node)
+		public void CreateChoicePort(Node node, string name)
 		{
 			var __port = CreatePort(node, Direction.Output);
 
-			var __outptCount = node.outputContainer.Query("connector").ToList().Count;
-			var __outptName = $"Choice {__outptCount}";
+			var __oldLabel = __port.contentContainer.Q<Label>("type");
+			__port.contentContainer.Remove(__oldLabel);
 
-			__port.portName = __outptName;
+			var __textField = new TextField
+			{
+				name = string.Empty,
+				value = name,
+			};
+			__textField.RegisterValueChangedCallback(context => __port.portName = context.newValue);
+
+			var __deleteButton = new Button(() => RemovePort(node, __port))
+			{
+				text = "X",
+			};
+			__port.contentContainer.Add(__deleteButton);
+
+			// __port.contentContainer.Add(new Label("  "));
+			__port.contentContainer.Add(__textField);
+			__port.portName = name;
+
+
 
 			node.outputContainer.Add(__port);
 			node.RefreshExpandedState();
 			node.RefreshPorts();
 		}
+		public void CreateChoicePort(Node node)
+		{
+			var __outptCount = node.outputContainer.Query("connector").ToList().Count;
+			var __outptName = $"Choice {__outptCount}";
+
+			CreateChoicePort(node, __outptName);
+		}
+
+		private void RemovePort(Node node, Port port)
+		{
+			var __targetEdge = edges.ToList().Where(x => x.output.portName == port.portName && x.output.node == port.node);
+
+			if (!__targetEdge.Any())
+				return;
+
+			var __edge = __targetEdge.First();
+			__edge.input.Disconnect(__edge);
+			RemoveElement(__targetEdge.First());
+
+			node.outputContainer.Remove(port);
+			node.RefreshExpandedState();
+			node.RefreshPorts();
+		}
+
 
 		#endregion
 

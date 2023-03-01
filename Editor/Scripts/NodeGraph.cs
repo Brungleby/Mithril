@@ -33,6 +33,7 @@ namespace Cuberoot.Editor
 		#region
 
 		private NodeGraphView _graphView;
+		private string _fileName;
 
 		#endregion
 
@@ -75,6 +76,18 @@ namespace Cuberoot.Editor
 		{
 			var __toolbar = new Toolbar();
 
+			var __fileNameTextField = new TextField("File Name:");
+			__fileNameTextField.SetValueWithoutNotify("New Narrative");
+			__fileNameTextField.MarkDirtyRepaint();
+			__fileNameTextField.RegisterValueChangedCallback(context =>
+			{
+				_fileName = context.newValue;
+			});
+			__toolbar.Add(__fileNameTextField);
+
+			__toolbar.Add(new Button(() => SaveData()) { text = "Save" });
+			__toolbar.Add(new Button(() => LoadData()) { text = "Load" });
+
 			var __createNodeButton = new Button(() =>
 			{
 				_graphView.CreateNewNode("Dialogue Node");
@@ -85,6 +98,23 @@ namespace Cuberoot.Editor
 			__toolbar.Add(__createNodeButton);
 
 			rootVisualElement.Add(__toolbar);
+		}
+
+		private void SaveData() => RequestDataOperation(true);
+		private void LoadData() => RequestDataOperation(false);
+
+		private void RequestDataOperation(bool save)
+		{
+			if (string.IsNullOrEmpty(_fileName))
+			{
+				EditorUtility.DisplayDialog("Invalid file name!", "Please enter a valid file name.", "OK");
+			}
+
+			var __saveUtility = NodeGraphSaveUtility.GetInstance(_graphView);
+			if (save)
+				__saveUtility.SaveGraph(_fileName);
+			else
+				__saveUtility.LoadGraph(_fileName);
 		}
 
 		#endregion
