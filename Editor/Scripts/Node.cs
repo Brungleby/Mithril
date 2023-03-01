@@ -1,5 +1,5 @@
 
-/** NodeEditorWindow.cs
+/** Node.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -13,40 +13,38 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEditor.Experimental.GraphView;
 
 #endregion
 
-namespace Dinomo.Engine
+namespace Cuberoot.Editor
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class DinomoTemplate : object
+	public sealed class Node : UnityEditor.Experimental.GraphView.Node
 	{
-		#region Construction
+		#region Data
 
+		#region
 
+		public string GUID;
 
-		#endregion
-		#region Fields
+		public string DialogueText;
 
-
-
-		#endregion
-		#region Members
-
-
+		public bool EntryPoint = false;
 
 		#endregion
-		#region Properties
-
-
 
 		#endregion
 		#region Methods
 
+		#region
 
+
+
+		#endregion
 
 		#endregion
 	}
