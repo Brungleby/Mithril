@@ -27,9 +27,7 @@ namespace Cuberoot
 	{
 		public List<DialogueNodeData> Data = new List<DialogueNodeData>();
 		public List<NodeLinkData> Linkage = new List<NodeLinkData>();
-
 	}
-
 
 	[System.Serializable]
 

@@ -1,5 +1,5 @@
 
-/** Node.cs
+/** ScriptableObjectWithDedicatedEditorWindowPropertyDrawer.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -13,27 +13,24 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEditor.Experimental.GraphView;
+using UnityEditor;
 
 #endregion
 
-namespace Cuberoot.Editor
+namespace Cuberoot
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class Node : UnityEditor.Experimental.GraphView.Node
+	[CustomPropertyDrawer(typeof(EditableObject))]
+	public sealed class EditablePropertyDrawer : PropertyDrawer
 	{
 		#region Data
 
 		#region
 
-		public string GUID;
 
-		public string DialogueText;
-
-		public bool EntryPoint = false;
 
 		#endregion
 

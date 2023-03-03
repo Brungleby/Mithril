@@ -46,8 +46,6 @@ namespace Cuberoot.Editor
 			Insert(0, __background);
 			__background.StretchToParentSize();
 
-
-
 			AddElement(CreateEntryPointNode());
 		}
 
@@ -82,14 +80,14 @@ namespace Cuberoot.Editor
 
 		#region
 
-		private Port CreatePort(Node node, Direction portDirection, Port.Capacity capacity = Port.Capacity.Single)
+		private Port CreatePort(PoopyNode node, Direction portDirection, Port.Capacity capacity = Port.Capacity.Single)
 		{
 			return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float));
 		}
 
-		private Node CreateEntryPointNode()
+		private PoopyNode CreateEntryPointNode()
 		{
-			var __node = new Node
+			var __node = new PoopyNode
 			{
 				title = "START",
 				GUID = GUID.Generate().ToString(),
@@ -110,9 +108,9 @@ namespace Cuberoot.Editor
 			return __node;
 		}
 
-		public Node CreateNewNode(string nodeName)
+		public PoopyNode CreateNewNode(string nodeName)
 		{
-			var __node = new Node
+			var __node = new PoopyNode
 			{
 				title = nodeName,
 				DialogueText = nodeName,
@@ -139,7 +137,7 @@ namespace Cuberoot.Editor
 			return __node;
 		}
 
-		public void CreateChoicePort(Node node, string name)
+		public void CreateChoicePort(PoopyNode node, string name)
 		{
 			var __port = CreatePort(node, Direction.Output);
 
@@ -169,7 +167,7 @@ namespace Cuberoot.Editor
 			node.RefreshExpandedState();
 			node.RefreshPorts();
 		}
-		public void CreateChoicePort(Node node)
+		public void CreateChoicePort(PoopyNode node)
 		{
 			var __outptCount = node.outputContainer.Query("connector").ToList().Count;
 			var __outptName = $"Choice {__outptCount}";
@@ -177,7 +175,7 @@ namespace Cuberoot.Editor
 			CreateChoicePort(node, __outptName);
 		}
 
-		private void RemovePort(Node node, Port port)
+		private void RemovePort(PoopyNode node, Port port)
 		{
 			var __targetEdge = edges.ToList().Where(x => x.output.portName == port.portName && x.output.node == port.node);
 

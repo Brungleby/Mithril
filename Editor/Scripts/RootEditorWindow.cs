@@ -19,43 +19,28 @@ using UnityEditor;
 
 namespace Cuberoot.Editor
 {
-	/// <summary>
-	/// __TODO_ANNOTATE__
-	///</summary>
 
-	public abstract class RootEditorWindow : EditorWindow
+	#region ReplicableEditorWindow
+
+	public abstract class ReplicableEditorWindow : EditorWindow
 	{
-		#region Data
-
-		#region
-
-
-
-		#endregion
-
-		#endregion
-		#region Methods
-
-		#region
-
-		public static T GetShowWindow<T>(string title, string iconPath)
-		where T : EditorWindow
+		public static T Instantiate<T>(string title, string iconPath)
+		where T : ReplicableEditorWindow
 		{
-			var __icon = AssetDatabase.LoadAssetAtPath<Texture>(iconPath);
-			var __window = EditorWindow.GetWindow<T>();
-
-			__window.titleContent = new GUIContent(title, __icon);
+			var __window = EditorWindow.CreateInstance<T>();
+			Utils.InitializeWindow(__window, title, iconPath);
 
 			return __window;
 		}
-		public static T GetShowWindow<T>(string title)
-		where T : EditorWindow
+		public static T Instantiate<T>(string title)
+		where T : ReplicableEditorWindow
 		{
-			return EditorWindow.GetWindow<T>(title);
+			var __window = EditorWindow.CreateInstance<T>();
+			__window.titleContent = new GUIContent(title);
+
+			return __window;
 		}
-
-		#endregion
-
-		#endregion
 	}
+
+	#endregion
 }

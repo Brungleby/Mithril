@@ -36,7 +36,7 @@ namespace Cuberoot.Editor
 		private DialogueContainer _containerCache;
 
 		private List<Edge> Edges => _target.edges.ToList();
-		private List<Node> Nodes => _target.nodes.ToList().Cast<Node>().ToList();
+		private List<PoopyNode> Nodes => _target.nodes.ToList().Cast<PoopyNode>().ToList();
 
 		#endregion
 
@@ -62,8 +62,8 @@ namespace Cuberoot.Editor
 
 			foreach (var iPort in Edges.Where(x => x.input.node != null).ToArray())
 			{
-				var __outNode = (Node)iPort.output.node;
-				var __inNode = (Node)iPort.input.node;
+				var __outNode = (PoopyNode)iPort.output.node;
+				var __inNode = (PoopyNode)iPort.input.node;
 
 				__dialogueContainer.Linkage.Add(new NodeLinkData
 				{

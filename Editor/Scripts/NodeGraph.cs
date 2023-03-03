@@ -34,6 +34,7 @@ namespace Cuberoot.Editor
 
 		private NodeGraphView _graphView;
 		private string _fileName;
+		private string _directoryPath;
 
 		#endregion
 
