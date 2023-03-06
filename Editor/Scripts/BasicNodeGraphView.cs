@@ -52,7 +52,7 @@ namespace Cuberoot.Editor
 
 		#region
 
-
+		public UnityEngine.Events.UnityEvent OnModified;
 
 		#endregion
 

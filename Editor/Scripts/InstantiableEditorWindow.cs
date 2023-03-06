@@ -35,12 +35,33 @@ namespace Cuberoot.Editor
 		private string _filePath;
 		public string filePath => _filePath;
 
+		private string _rawTitle;
+		public string rawTitle => _rawTitle;
+
 		private bool _isModified;
-		public bool isModified => _isModified;
+		public bool isModified
+		{
+			get => _isModified;
+			set
+			{
+				_isModified = value;
+
+				titleContent.text = rawTitle + (value ? "*" : "");
+			}
+		}
 
 		#region Methods
 
 		#region Instantiation
+
+		public void Initialize(string filePath, string iconPath)
+		{
+			_rawTitle = GetTitleFromFilePath(filePath);
+			Utils.InitializeWindow(this, _rawTitle, iconPath);
+
+			_filePath = filePath;
+			LoadData();
+		}
 
 		public static T Instantiate<T>(T window, string filePath, string iconPath)
 		where T : InstantiableEditorWindow
@@ -48,11 +69,7 @@ namespace Cuberoot.Editor
 			if (window._filePath == filePath)
 				window = EditorWindow.CreateInstance<T>();
 
-			string __windowTitle = GetTitleFromFilePath(filePath);
-			Utils.InitializeWindow(window, __windowTitle, iconPath);
-
-			window._filePath = filePath;
-			window.LoadData();
+			window.Initialize(filePath, iconPath);
 
 			return window;
 		}
@@ -102,6 +119,10 @@ namespace Cuberoot.Editor
 			*/
 			_graph = new BasicNodeGraphView { name = "Basic Node Graph" };
 			_graph.StretchToParentSize();
+			_graph.OnModified.AddListener(() =>
+			{
+				isModified = true;
+			});
 			rootVisualElement.Add(_graph);
 
 			Toolbar __toolbar = new Toolbar();
@@ -121,6 +142,8 @@ namespace Cuberoot.Editor
 		{
 			var __saveUtility = BasicNodeGraphSaveUtility.GetInstance(_graph);
 			__saveUtility.SaveTargetToFile(_filePath);
+
+			isModified = false;
 		}
 
 		private void LoadData()

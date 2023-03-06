@@ -84,13 +84,13 @@ namespace Cuberoot.Editor
 			}
 		}
 
-		public static void CreateAssetAtFilePath(UnityEngine.Object o, string filePath)
+		public static void CreateAssetAtFilePath(UnityEngine.Object o, string filePath, bool warnIfExisting = true)
 		{
-			var __existing = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath);
-			if (__existing != null)
+			if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath) != null)
 			{
-				try { PromptConfirmation($"\"{filePath}\"\n\nThis path is already in use. Overwrite?"); }
-				catch { return; }
+				if (warnIfExisting)
+					try { PromptConfirmation($"\"{filePath}\"\n\nThis path is already in use. Overwrite?"); }
+					catch { return; }
 
 				AssetDatabase.DeleteAsset(filePath);
 			}

@@ -55,13 +55,13 @@ namespace Cuberoot.Editor
 
 		public void SaveTargetToFile(string filePath)
 		{
-			/**	Asserts no data if there are NOT any NON-predefined nodes.
-			*/
-			if (!Nodes.Where(i => !i.IsPredefined).Any())
-			{
-				try { Utils.PromptConfirmation($"\"{filePath}\"\n\nThis graph is empty. Proceed to save the file anyway?"); }
-				catch { return; }
-			}
+			// /**	Asserts no data if there are NOT any NON-predefined nodes.
+			// */
+			// if (!Nodes.Where(i => !i.IsPredefined).Any())
+			// {
+			// 	try { Utils.PromptConfirmation($"\"{filePath}\"\n\nThis graph is empty. Proceed to save the file anyway?"); }
+			// 	catch { return; }
+			// }
 
 			var __data = ScriptableObject.CreateInstance<GraphData>();
 
@@ -76,7 +76,7 @@ namespace Cuberoot.Editor
 				});
 			}
 
-			Utils.CreateAssetAtFilePath(__data, filePath);
+			Utils.CreateAssetAtFilePath(__data, filePath, false);
 		}
 
 		public void LoadFileToTarget(string filePath)

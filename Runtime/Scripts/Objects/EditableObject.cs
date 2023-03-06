@@ -32,6 +32,23 @@ namespace Cuberoot
 
 			__window.Show();
 		}
+
+		public void Open() =>
+			OpenWithEditorIndex(0);
+
+		[UnityEditor.Callbacks.OnOpenAsset]
+		public static bool OnOpenAsset(int instanceID, int line)
+		{
+			var __target = (EditableObject)EditorUtility.InstanceIDToObject(instanceID);
+
+			if (__target != null)
+			{
+				__target.Open();
+				return true;
+			}
+
+			return false;
+		}
 #endif
 	}
 
