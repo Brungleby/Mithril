@@ -32,11 +32,11 @@ namespace Cuberoot.Editor
 
 		#region
 
-		private BasicNodeGraphView _targetGraphView;
+		private BasicNodeGraphView _graph;
 		private GraphData _dataCache;
 
-		private List<Edge> Edges => _targetGraphView.edges.ToList();
-		private List<BasicNode> Nodes => _targetGraphView.nodes.ToList().Cast<BasicNode>().ToList();
+		private List<Edge> Edges => _graph.edges.ToList();
+		private List<BasicNode> Nodes => _graph.nodes.ToList().Cast<BasicNode>().ToList();
 
 		#endregion
 
@@ -49,7 +49,7 @@ namespace Cuberoot.Editor
 		{
 			return new BasicNodeGraphSaveUtility
 			{
-				_targetGraphView = target,
+				_graph = target,
 			};
 		}
 
@@ -79,22 +79,20 @@ namespace Cuberoot.Editor
 			Utils.CreateAssetAtFilePath(__data, filePath);
 		}
 
-		public void LoadFileToTarget(string fileName)
+		public void LoadFileToTarget(string filePath)
 		{
-			var __filePath = $"{Utils.CurrentProjectWindowFolderPath}/{fileName}.asset";
+			_dataCache = AssetDatabase.LoadAssetAtPath<GraphData>(filePath);
 
-			_dataCache = AssetDatabase.LoadAssetAtPath<GraphData>(__filePath);
-
-			try { Utils.AssertObject(_dataCache, $"No data was found at local path \"{__filePath}\"."); }
+			try { Utils.AssertObject(_dataCache, $"No data was found at local path \"{filePath}\"."); }
 			catch { return; }
 
-			_targetGraphView.ClearAllNodes_WithPrompt();
+			_graph.ClearAllNodes_WithPrompt();
 
 			#region Create Nodes
 
 			foreach (var iNodeData in _dataCache.Nodes)
 			{
-				var __node = _targetGraphView.CreateNewNode<BasicNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect);
+				var __node = _graph.CreateNewNode<BasicNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect);
 
 				// var __ports = 
 			}

@@ -26,18 +26,12 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class BasicNodeGraph : ReplicableEditorWindow
+	public class BasicNodeGraph : InstantiableEditorWindow
 	{
 		#region Data
 
-		#region
-
 		private BasicNodeGraphView _graphView;
 		private string _fileName;
-		private string _directoryPath;
-		private string _filePath;
-
-		#endregion
 
 		#endregion
 		#region Properties
@@ -51,20 +45,6 @@ namespace Cuberoot.Editor
 		public static void ShowWindow()
 		{
 			var window = Utils.GetShowWindow<BasicNodeGraph>("Window");
-		}
-
-		private void OnEnable()
-		{
-			/**	Create visual elements
-			*/
-			CreateElements();
-		}
-
-		private void OnDisable()
-		{
-			/**	Remove the graph view to clean up
-			*/
-			rootVisualElement.Remove(_graphView);
 		}
 
 		private void CreateElements()
@@ -102,19 +82,6 @@ namespace Cuberoot.Editor
 					});
 					__toolbar.Add(__fileNameField);
 				}
-				/**	Buttons
-				*/
-
-				__toolbar.Add(new Button(() =>
-					SaveData())
-				{
-					text = "Save"
-				});
-				__toolbar.Add(new Button(() =>
-					LoadData())
-				{
-					text = "Load"
-				});
 
 				__toolbar.Add(new Button(() =>
 					_graphView.CreateNewNode<BasicNode>("New Node"))
@@ -133,30 +100,6 @@ namespace Cuberoot.Editor
 				rootVisualElement.Add(__toolbar);
 			}
 			#endregion
-		}
-
-		private void SaveData()
-		{
-			try
-			{
-				Utils.AssertFileName(_fileName);
-
-				var __saveUtility = BasicNodeGraphSaveUtility.GetInstance(_graphView);
-				__saveUtility.SaveTargetToFile(_filePath);
-			}
-			catch { }
-		}
-
-		private void LoadData()
-		{
-			try
-			{
-				Utils.AssertFileName(_fileName);
-
-				var __saveUtility = BasicNodeGraphSaveUtility.GetInstance(_graphView);
-				__saveUtility.LoadFileToTarget(_filePath);
-			}
-			catch { }
 		}
 
 		#endregion

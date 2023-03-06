@@ -25,14 +25,14 @@ namespace Cuberoot
 	/// <summary>
 	/// Stores all Nodes and Links for a single NodeGraph into a file.
 	///</summary>
-	[Serializable]
 
-	public class GraphData : ScriptableObject, IEditable
+	public class GraphData : EditableObject
 	{
 		public List<NodeData> Nodes = new List<NodeData>();
 		public List<LinkData> Links = new List<LinkData>();
 
-		public ReplicableEditorWindow[] UsableEditorTypes => throw new NotImplementedException();
+		public override Type[] UsableEditorTypes =>
+			new Type[] { typeof(BasicNodeGraph) };
 	}
 
 	#endregion
