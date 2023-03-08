@@ -27,7 +27,7 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class BasicNode : Node
+	public class CustomNode : Node
 	{
 		#region Data
 

@@ -9,11 +9,12 @@
 
 #region Includes
 
+using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 using UnityEditor;
@@ -34,6 +35,8 @@ namespace Cuberoot.Editor
 
 		public BasicNodeGraphView()
 		{
+			OnModified = new UnityEvent();
+
 			styleSheets.Add(Resources.Load<StyleSheet>("Stylesheets/GraphBackgroundDefault"));
 
 			SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
@@ -41,10 +44,17 @@ namespace Cuberoot.Editor
 			this.AddManipulator(new ContentDragger());
 			this.AddManipulator(new SelectionDragger());
 			this.AddManipulator(new RectangleSelector());
+			this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
+
+			RegisterCallback<MouseMoveEvent>(OnMouseMove);
 
 			var __background = new GridBackground();
 			Insert(0, __background);
 			__background.StretchToParentSize();
+
+			this.StretchToParentSize();
+
+			AddSearchWindow();
 		}
 
 		#endregion
@@ -52,14 +62,33 @@ namespace Cuberoot.Editor
 
 		#region
 
-		public UnityEngine.Events.UnityEvent OnModified;
+
+		public UnityEvent OnModified;
+
+		private NodeSearchWindow _searchWindow;
+
+		private Vector2 _mousePosition;
+		public Vector2 mousePosition => _mousePosition;
 
 		#endregion
 
 		#endregion
 		#region Properties
 
-		public virtual Vector2 DefaultNodeSize => BasicNode.DEFAULT_NODE_SIZE;
+		public virtual Vector2 DefaultNodeSize => CustomNode.DEFAULT_NODE_SIZE;
+
+		public virtual List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
+		{
+			var __result = new List<SearchTreeEntry>
+			{
+				new SearchTreeGroupEntry(new GUIContent("Available Nodes"), 0),
+				new SearchTreeEntry(new GUIContent("Dialogue Node"))
+				{ level = 1, userData = typeof(CustomNode) },
+
+			};
+
+			return __result;
+		}
 
 		#endregion
 		#region Methods
@@ -80,13 +109,85 @@ namespace Cuberoot.Editor
 		}
 
 		#endregion
-		#region 
+		#region Context Menu
+
+		private void _CreateContextMenu(ContextualMenuPopulateEvent context)
+		{
+			// CreateContextMenu(context);
+			// context.menu.InsertSeparator("/", 1);
+		}
+		protected virtual void CreateContextMenu(ContextualMenuPopulateEvent context)
+		{
+			context.menu.InsertAction(0, "Create Node", (_) =>
+			{
+				CreateNewNode<CustomNode>("New Node");
+			});
+		}
+
+		private void AddSearchWindow()
+		{
+			_searchWindow = ScriptableObject.CreateInstance<NodeSearchWindow>();
+			nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
+			_searchWindow.InitializeFor(this);
+		}
+
+		#endregion
+		#region Node Handling
+
+
+		public CustomNode CreateNewNode(Type type, GUID guid, string title, Rect rect)
+		{
+			var __node = (CustomNode)Activator.CreateInstance(type);
+
+			__node.Guid = GUID.Generate();
+			__node.title = title;
+			__node.SetPosition(rect);
+			__node.InitializeFor(this);
+
+			AddElement(__node);
+
+			return __node;
+		}
+		public CustomNode CreateNewNode(Type type, string title, Rect rect) =>
+			CreateNewNode(type, GUID.Generate(), title, rect);
+		public CustomNode CreateNewNode(Type type, GUID guid, string title, Vector2 position) =>
+			CreateNewNode(type, guid, title, new Rect(position, DefaultNodeSize));
+		public CustomNode CreateNewNode(Type type, string title, Vector2 position) =>
+			CreateNewNode(type, GUID.Generate(), title, new Rect(position, DefaultNodeSize));
+		public CustomNode CreateNewNode(Type type, GUID guid, string title) =>
+			CreateNewNode(type, guid, title, new Rect(mousePosition, DefaultNodeSize));
+		public CustomNode CreateNewNode(Type type, string title) =>
+			CreateNewNode(type, GUID.Generate(), title, new Rect(mousePosition, DefaultNodeSize));
+		public CustomNode CreateNewNode(Type type) =>
+			CreateNewNode(type, "New Node");
+
+		public T CreateNewNode<T>(GUID guid, string title, Rect rect)
+		where T : CustomNode, new() =>
+			(T)CreateNewNode(typeof(T), guid, title, rect);
+		public T CreateNewNode<T>(string title, Rect rect)
+		where T : CustomNode, new() =>
+			CreateNewNode<T>(GUID.Generate(), title, rect);
+		public T CreateNewNode<T>(GUID guid, string title, Vector2 position)
+		where T : CustomNode, new() =>
+			CreateNewNode<T>(guid, title, new Rect(position, DefaultNodeSize));
+		public T CreateNewNode<T>(string title, Vector2 position)
+		where T : CustomNode, new() =>
+			CreateNewNode<T>(GUID.Generate(), title, new Rect(position, DefaultNodeSize));
+		public T CreateNewNode<T>(GUID guid, string title)
+		where T : CustomNode, new() =>
+			CreateNewNode<T>(guid, title, new Rect(mousePosition, DefaultNodeSize));
+		public T CreateNewNode<T>(string title)
+		where T : CustomNode, new() =>
+			CreateNewNode<T>(GUID.Generate(), title, new Rect(mousePosition, DefaultNodeSize));
+		public T CreateNewNode<T>()
+		where T : CustomNode, new() =>
+			CreateNewNode<T>("New Node");
 
 		public void ClearAllNodes()
 		{
 			foreach (var iNode in nodes)
 			{
-				var iBasicNode = (BasicNode)iNode;
+				var iBasicNode = (CustomNode)iNode;
 				if (iBasicNode != null)
 				{
 					if (iBasicNode.IsPredefined)
@@ -110,38 +211,12 @@ namespace Cuberoot.Editor
 		}
 
 		#endregion
-		#region Node Handling
+		#region 
 
-		public T CreateNewNode<T>(GUID guid, string title, Rect rect)
-		where T : BasicNode, new()
+		private void OnMouseMove(MouseMoveEvent context)
 		{
-			var __node = new T
-			{
-				Guid = GUID.Generate(),
-				title = title,
-			};
-			__node.SetPosition(rect);
-			__node.InitializeFor(this);
-
-			AddElement(__node);
-
-			return __node;
+			_mousePosition = viewTransform.matrix.inverse.MultiplyPoint(context.localMousePosition);
 		}
-		public T CreateNewNode<T>(string title, Rect rect)
-		where T : BasicNode, new() =>
-			CreateNewNode<T>(GUID.Generate(), title, rect);
-		public T CreateNewNode<T>(GUID guid, string title, Vector2 position)
-		where T : BasicNode, new() =>
-			CreateNewNode<T>(guid, title, new Rect(position, DefaultNodeSize));
-		public T CreateNewNode<T>(string title, Vector2 position)
-		where T : BasicNode, new() =>
-			CreateNewNode<T>(GUID.Generate(), title, new Rect(position, DefaultNodeSize));
-		public T CreateNewNode<T>(GUID guid, string title)
-		where T : BasicNode, new() =>
-			CreateNewNode<T>(guid, title, new Rect(Vector2.zero, DefaultNodeSize));
-		public T CreateNewNode<T>(string title)
-		where T : BasicNode, new() =>
-			CreateNewNode<T>(GUID.Generate(), title, new Rect(Vector2.zero, DefaultNodeSize));
 
 		#endregion
 

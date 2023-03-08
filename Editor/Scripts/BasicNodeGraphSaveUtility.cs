@@ -36,7 +36,7 @@ namespace Cuberoot.Editor
 		private GraphData _dataCache;
 
 		private List<Edge> Edges => _graph.edges.ToList();
-		private List<BasicNode> Nodes => _graph.nodes.ToList().Cast<BasicNode>().ToList();
+		private List<CustomNode> Nodes => _graph.nodes.ToList().Cast<CustomNode>().ToList();
 
 		#endregion
 
@@ -92,7 +92,7 @@ namespace Cuberoot.Editor
 
 			foreach (var iNodeData in _dataCache.Nodes)
 			{
-				var __node = _graph.CreateNewNode<BasicNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect);
+				var __node = _graph.CreateNewNode<CustomNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect);
 
 				// var __ports = 
 			}

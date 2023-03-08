@@ -63,26 +63,32 @@ namespace Cuberoot.Editor
 			LoadData();
 		}
 
-		public static T Instantiate<T>(T window, string filePath, string iconPath)
-		where T : InstantiableEditorWindow
-		{
-			if (window._filePath == filePath)
-				window = EditorWindow.CreateInstance<T>();
-
-			window.Initialize(filePath, iconPath);
-
-			return window;
-		}
 
 		public static T Instantiate<T>(string filePath, string iconPath)
-		where T : InstantiableEditorWindow =>
-			Instantiate(EditorWindow.GetWindow<T>(), filePath, iconPath);
+		where T : InstantiableEditorWindow
+		{
+			var __window = EditorWindow.GetWindow<T>();
+			if (__window._filePath == filePath)
+				__window = EditorWindow.CreateInstance<T>();
+
+			__window.Initialize(filePath, iconPath);
+
+			return __window;
+		}
 		public static T Instantiate<T>(string filePath)
 		where T : InstantiableEditorWindow =>
 			Instantiate<T>(filePath, DEFAULT_ICON_PATH);
 
-		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath, string iconPath) =>
-			Instantiate((InstantiableEditorWindow)EditorWindow.GetWindow(type), filePath, iconPath);
+		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath, string iconPath)
+		{
+			var __window = (InstantiableEditorWindow)EditorWindow.GetWindow(type);
+			if (__window._filePath == filePath)
+				__window = (InstantiableEditorWindow)EditorWindow.CreateInstance(type);
+
+			__window.Initialize(filePath, iconPath);
+
+			return __window;
+		}
 		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath) =>
 			Instantiate(type, filePath, DEFAULT_ICON_PATH);
 
@@ -108,26 +114,28 @@ namespace Cuberoot.Editor
 
 		protected virtual void OnDisable()
 		{
-			/**	Remove the graph view to clean up
-			*/
-			rootVisualElement.Remove(_graph);
+			if (_graph != null)
+				rootVisualElement.Remove(_graph);
 		}
 
 		protected virtual void CreateVisualElements()
 		{
-			/**	Initialize the graph view
-			*/
-			_graph = new BasicNodeGraphView { name = "Basic Node Graph" };
-			_graph.StretchToParentSize();
-			_graph.OnModified.AddListener(() =>
-			{
-				isModified = true;
-			});
+			_graph = new BasicNodeGraphView() { name = "Basic Node Graph View" };
+			InitializeGraphView(_graph);
 			rootVisualElement.Add(_graph);
 
 			Toolbar __toolbar = new Toolbar();
 			InitializeToolbar(__toolbar);
 			rootVisualElement.Add(__toolbar);
+		}
+
+		protected virtual void InitializeGraphView(BasicNodeGraphView graph)
+		{
+			graph.name = "Basic Node Graph View";
+			graph.OnModified.AddListener(() =>
+			{
+				isModified = true;
+			});
 		}
 
 		protected virtual void InitializeToolbar(Toolbar toolbar)
