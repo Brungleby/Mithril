@@ -9,6 +9,7 @@
 
 #region Includes
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -28,9 +29,6 @@ namespace Cuberoot.Editor
 	EditorWindow
 	{
 		public readonly static string DEFAULT_ICON_PATH = "Assets/Cuberoot/Cuberoot.Core/Editor/Resources/Textures/Icon_Diamond.png";
-
-		private BasicNodeGraphView _graph;
-		public BasicNodeGraphView graph => _graph;
 
 		private string _filePath;
 		public string filePath => _filePath;
@@ -63,34 +61,36 @@ namespace Cuberoot.Editor
 			LoadData();
 		}
 
-
-		public static T Instantiate<T>(string filePath, string iconPath)
-		where T : InstantiableEditorWindow
-		{
-			var __window = EditorWindow.GetWindow<T>();
-			if (__window._filePath == filePath)
-				__window = EditorWindow.CreateInstance<T>();
-
-			__window.Initialize(filePath, iconPath);
-
-			return __window;
-		}
-		public static T Instantiate<T>(string filePath)
-		where T : InstantiableEditorWindow =>
-			Instantiate<T>(filePath, DEFAULT_ICON_PATH);
-
 		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath, string iconPath)
 		{
-			var __window = (InstantiableEditorWindow)EditorWindow.GetWindow(type);
-			if (__window._filePath == filePath)
-				__window = (InstantiableEditorWindow)EditorWindow.CreateInstance(type);
+			var __allWindowsOfMatchingType = Resources.FindObjectsOfTypeAll(type).Cast<InstantiableEditorWindow>();
 
+			foreach (var iWindow in __allWindowsOfMatchingType)
+			{
+				if (iWindow._filePath == filePath)
+				{
+					iWindow.Focus();
+					return iWindow;
+				}
+			}
+
+			/**	else if no windows working with the filePath are found
+			*/
+
+			var __window = (InstantiableEditorWindow)EditorWindow.CreateInstance(type);
 			__window.Initialize(filePath, iconPath);
 
 			return __window;
 		}
 		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath) =>
 			Instantiate(type, filePath, DEFAULT_ICON_PATH);
+
+		public static T Instantiate<T>(string filePath, string iconPath)
+		where T : InstantiableEditorWindow =>
+			(T)Instantiate(typeof(T), filePath, iconPath);
+		public static T Instantiate<T>(string filePath)
+		where T : InstantiableEditorWindow =>
+			Instantiate<T>(filePath, DEFAULT_ICON_PATH);
 
 		private static string GetTitleFromFilePath(string filePath)
 		{
@@ -107,35 +107,17 @@ namespace Cuberoot.Editor
 		#endregion
 		#region 
 
-		protected virtual void OnEnable()
-		{
+		protected virtual void OnEnable() =>
 			CreateVisualElements();
-		}
 
-		protected virtual void OnDisable()
-		{
-			if (_graph != null)
-				rootVisualElement.Remove(_graph);
-		}
+		protected virtual void OnDisable() =>
+			CleanUpVisualElements();
 
 		protected virtual void CreateVisualElements()
 		{
-			_graph = new BasicNodeGraphView() { name = "Basic Node Graph View" };
-			InitializeGraphView(_graph);
-			rootVisualElement.Add(_graph);
-
 			Toolbar __toolbar = new Toolbar();
 			InitializeToolbar(__toolbar);
 			rootVisualElement.Add(__toolbar);
-		}
-
-		protected virtual void InitializeGraphView(BasicNodeGraphView graph)
-		{
-			graph.name = "Basic Node Graph View";
-			graph.OnModified.AddListener(() =>
-			{
-				isModified = true;
-			});
 		}
 
 		protected virtual void InitializeToolbar(Toolbar toolbar)
@@ -143,21 +125,19 @@ namespace Cuberoot.Editor
 			toolbar.Add(new Button(() => SaveData()) { text = "Save Asset" });
 		}
 
+		protected virtual void CleanUpVisualElements() { }
+
 		#endregion
 		#region Save/Load
 
-		private void SaveData()
+		protected virtual void SaveData()
 		{
-			var __saveUtility = BasicNodeGraphSaveUtility.GetInstance(_graph);
-			__saveUtility.SaveTargetToFile(_filePath);
-
 			isModified = false;
 		}
 
-		private void LoadData()
+		protected virtual void LoadData()
 		{
-			var __saveUtility = BasicNodeGraphSaveUtility.GetInstance(_graph);
-			__saveUtility.LoadFileToTarget(_filePath);
+			isModified = false;
 		}
 
 		#endregion

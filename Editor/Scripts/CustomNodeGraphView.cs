@@ -1,5 +1,5 @@
 
-/** BasicNodeGraphView.cs
+/** CustomNodeGraphView.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -20,7 +20,6 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-
 #endregion
 
 namespace Cuberoot.Editor
@@ -29,11 +28,11 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class BasicNodeGraphView : GraphView
+	public class CustomNodeGraphView : GraphView
 	{
 		#region Construction
 
-		public BasicNodeGraphView()
+		public CustomNodeGraphView()
 		{
 			OnModified = new UnityEvent();
 
@@ -54,6 +53,10 @@ namespace Cuberoot.Editor
 
 			this.StretchToParentSize();
 
+			/**	Didn't work when I tried it
+			*/
+			// FrameAll();
+
 			AddSearchWindow();
 		}
 
@@ -61,7 +64,6 @@ namespace Cuberoot.Editor
 		#region Data
 
 		#region
-
 
 		public UnityEvent OnModified;
 
@@ -76,14 +78,14 @@ namespace Cuberoot.Editor
 		#region Properties
 
 		public virtual Vector2 DefaultNodeSize => CustomNode.DEFAULT_NODE_SIZE;
+		public virtual string DefaultNodeName => "New Custom Node";
 
 		public virtual List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
 		{
 			var __result = new List<SearchTreeEntry>
 			{
 				new SearchTreeGroupEntry(new GUIContent("Available Nodes"), 0),
-				new SearchTreeEntry(new GUIContent("Dialogue Node"))
-				{ level = 1, userData = typeof(CustomNode) },
+					new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(CustomNode) },
 
 			};
 
@@ -135,7 +137,7 @@ namespace Cuberoot.Editor
 		#region Node Handling
 
 
-		public CustomNode CreateNewNode(Type type, GUID guid, string title, Rect rect)
+		public CustomNode CreateNewNode(Type type, GUID guid, string title, Rect rect, bool invokeOnModified = true)
 		{
 			var __node = (CustomNode)Activator.CreateInstance(type);
 
@@ -145,6 +147,9 @@ namespace Cuberoot.Editor
 			__node.InitializeFor(this);
 
 			AddElement(__node);
+
+			if (invokeOnModified)
+				OnModified.Invoke();
 
 			return __node;
 		}
@@ -159,11 +164,11 @@ namespace Cuberoot.Editor
 		public CustomNode CreateNewNode(Type type, string title) =>
 			CreateNewNode(type, GUID.Generate(), title, new Rect(mousePosition, DefaultNodeSize));
 		public CustomNode CreateNewNode(Type type) =>
-			CreateNewNode(type, "New Node");
+			CreateNewNode(type, DefaultNodeName);
 
-		public T CreateNewNode<T>(GUID guid, string title, Rect rect)
+		public T CreateNewNode<T>(GUID guid, string title, Rect rect, bool invokeOnModified = true)
 		where T : CustomNode, new() =>
-			(T)CreateNewNode(typeof(T), guid, title, rect);
+			(T)CreateNewNode(typeof(T), guid, title, rect, invokeOnModified);
 		public T CreateNewNode<T>(string title, Rect rect)
 		where T : CustomNode, new() =>
 			CreateNewNode<T>(GUID.Generate(), title, rect);
@@ -181,7 +186,7 @@ namespace Cuberoot.Editor
 			CreateNewNode<T>(GUID.Generate(), title, new Rect(mousePosition, DefaultNodeSize));
 		public T CreateNewNode<T>()
 		where T : CustomNode, new() =>
-			CreateNewNode<T>("New Node");
+			CreateNewNode<T>(DefaultNodeName);
 
 		public void ClearAllNodes()
 		{
@@ -211,7 +216,10 @@ namespace Cuberoot.Editor
 		}
 
 		#endregion
-		#region 
+		#region Utils
+
+		public void SetViewPosition(Vector2 position) =>
+			UpdateViewTransform(position, this.viewTransform.scale);
 
 		private void OnMouseMove(MouseMoveEvent context)
 		{

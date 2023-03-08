@@ -20,7 +20,7 @@ using UnityEditor;
 namespace Cuberoot.Editor
 {
 	/// <summary>
-	/// __TODO_ANNOTATE__
+	/// Simple script that adds buttons to edit this object in compatible editors.
 	///</summary>
 
 	[CustomEditor(typeof(EditableObject), true)]
@@ -39,43 +39,4 @@ namespace Cuberoot.Editor
 			base.OnInspectorGUI();
 		}
 	}
-
-	// [CustomPropertyDrawer(typeof(EditorOpener))]
-	// public sealed class EditableObjectPropertyDrawer : PropertyDrawer
-	// {
-	// 	#region Data
-
-	// 	#region
-
-
-
-	// 	#endregion
-
-	// 	#endregion
-	// 	#region Methods
-
-	// 	#region
-
-	// 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-	// 	{
-	// 		if (property.propertyType == SerializedPropertyType.ObjectReference)
-	// 		{
-	// 			var editorOpener = (EditorOpener)(property.objectReferenceValue);
-
-	// 			if (editorOpener)
-	// 			{
-	// 				if (GUI.Button(position, $"Open"))
-	// 					Debug.Log(editorOpener.EditorName);
-	// 			}
-	// 			else
-	// 			{
-	// 				GUI.Label(position, new GUIContent("This EditorOpener needs a valid editor!"));
-	// 			}
-	// 		}
-	// 	}
-
-	// 	#endregion
-
-	// 	#endregion
-	// }
 }

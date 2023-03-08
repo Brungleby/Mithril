@@ -32,7 +32,7 @@ namespace Cuberoot.Editor
 
 		#region
 
-		private BasicNodeGraphView _graph;
+		private CustomNodeGraphView _graph;
 
 		#endregion
 
@@ -41,7 +41,7 @@ namespace Cuberoot.Editor
 
 		#region
 
-		public void InitializeFor(BasicNodeGraphView graph)
+		public void InitializeFor(CustomNodeGraphView graph)
 		{
 			_graph = graph;
 		}
@@ -60,15 +60,6 @@ namespace Cuberoot.Editor
 			}
 
 			return false;
-
-			// switch (searchTreeEntry.userData)
-			// {
-			// 	case BasicNode _:
-			// 		_graph.CreateNewNode<BasicNode>();
-			// 		return true;
-			// 	default:
-			// 		return false;
-			// }
 		}
 
 		#endregion

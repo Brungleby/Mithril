@@ -1,5 +1,5 @@
 
-/** BasicNodeGraphSaveUtility.cs
+/** CustomNodeGraphSaveUtility.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -26,14 +26,14 @@ namespace Cuberoot.Editor
 	/// Assists with saving and loading of Node Graphs.
 	///</summary>
 
-	public sealed class BasicNodeGraphSaveUtility : object
+	public sealed class CustomNodeGraphSaveUtility : object
 	{
 		#region Data
 
 		#region
 
-		private BasicNodeGraphView _graph;
-		private GraphData _dataCache;
+		private CustomNodeGraphView _graph;
+		private CustomNodeGraphData _dataCache;
 
 		private List<Edge> Edges => _graph.edges.ToList();
 		private List<CustomNode> Nodes => _graph.nodes.ToList().Cast<CustomNode>().ToList();
@@ -45,9 +45,9 @@ namespace Cuberoot.Editor
 
 		#region
 
-		public static BasicNodeGraphSaveUtility GetInstance(BasicNodeGraphView target)
+		public static CustomNodeGraphSaveUtility GetInstance(CustomNodeGraphView target)
 		{
-			return new BasicNodeGraphSaveUtility
+			return new CustomNodeGraphSaveUtility
 			{
 				_graph = target,
 			};
@@ -63,7 +63,7 @@ namespace Cuberoot.Editor
 			// 	catch { return; }
 			// }
 
-			var __data = ScriptableObject.CreateInstance<GraphData>();
+			var __data = ScriptableObject.CreateInstance<CustomNodeGraphData>();
 
 			foreach (var iNode in Nodes)
 			{
@@ -81,18 +81,18 @@ namespace Cuberoot.Editor
 
 		public void LoadFileToTarget(string filePath)
 		{
-			_dataCache = AssetDatabase.LoadAssetAtPath<GraphData>(filePath);
+			_dataCache = AssetDatabase.LoadAssetAtPath<CustomNodeGraphData>(filePath);
 
-			try { Utils.AssertObject(_dataCache, $"No data was found at local path \"{filePath}\"."); }
-			catch { return; }
+			// try { Utils.AssertObject(_dataCache, $"No data was found at local path \"{filePath}\"."); }
+			// catch { return; }
 
-			_graph.ClearAllNodes_WithPrompt();
+			_graph.ClearAllNodes();
 
 			#region Create Nodes
 
 			foreach (var iNodeData in _dataCache.Nodes)
 			{
-				var __node = _graph.CreateNewNode<CustomNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect);
+				var __node = _graph.CreateNewNode<CustomNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect, false);
 
 				// var __ports = 
 			}

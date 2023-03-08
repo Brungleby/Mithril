@@ -63,6 +63,10 @@ namespace Cuberoot.Editor
 
 		#region Overrides
 
+		/// <summary>
+		/// Returns the list of compatible ports. By default, this will allow any connections as long as they are not on the same node and facing opposite directions.
+		///</summary>
+
 		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
 		{
 			var __result = new List<Port>();

@@ -1,5 +1,5 @@
 
-/** BasicNode.cs
+/** CustomNode.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 using UnityEditor;
@@ -41,6 +42,8 @@ namespace Cuberoot.Editor
 		public GUID Guid;
 		public bool IsPredefined = false;
 
+		public UnityEvent OnModified;
+
 		#endregion
 
 		#endregion
@@ -48,13 +51,20 @@ namespace Cuberoot.Editor
 
 		#region
 
-		private void RefreshAll()
+		public void RefreshAll()
 		{
 			RefreshExpandedState();
 			RefreshPorts();
 		}
 
-		public virtual void InitializeFor(BasicNodeGraphView view) { }
+		public virtual void InitializeFor(CustomNodeGraphView view)
+		{
+			OnModified = new UnityEvent();
+			OnModified.AddListener(() =>
+			{
+				view.OnModified.Invoke();
+			});
+		}
 
 		#endregion
 
@@ -73,11 +83,11 @@ namespace Cuberoot.Editor
 			}
 		}
 
-		public Port CreatePort<T>(string portName, Direction direction, Orientation orientation, Port.Capacity capacity)
+		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity, System.Type type = null)
 		{
 			/**	Create and initialize the port.
 			*/
-			var __port = InstantiatePort(orientation, direction, capacity, typeof(T));
+			var __port = InstantiatePort(orientation, direction, capacity, type);
 
 			__port.portName = portName;
 
@@ -85,6 +95,9 @@ namespace Cuberoot.Editor
 
 			return __port;
 		}
+		public Port CreatePort<T>(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
+			CreatePort(portName, direction, orientation, capacity, typeof(T));
+
 
 		public void AttachPort(Port port)
 		{
