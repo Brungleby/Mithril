@@ -26,24 +26,23 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class CustomNodeGraph : InstantiableEditorWindow
+	public class CustomNodeGraph<TGraphView> : InstantiableEditorWindow
+	where TGraphView : CustomNodeGraphView
 	{
 		#region Data
 
-		private CustomNodeGraphView _graph;
-		public CustomNodeGraphView graph => _graph;
+		private TGraphView _graph;
+		public TGraphView graph => _graph;
 
 		#endregion
 		#region Properties
-
-		public virtual System.Type GraphViewType => typeof(CustomNodeGraphView);
 
 		#endregion
 		#region Methods
 
 		protected override void CreateVisualElements()
 		{
-			_graph = (CustomNodeGraphView)System.Activator.CreateInstance(GraphViewType);
+			_graph = System.Activator.CreateInstance<TGraphView>();
 			_graph.name = "New Custom Node Graph View";
 			InitializeGraphView(_graph);
 			rootVisualElement.Add(_graph);
@@ -51,7 +50,7 @@ namespace Cuberoot.Editor
 			base.CreateVisualElements();
 		}
 
-		protected virtual void InitializeGraphView(CustomNodeGraphView graph)
+		protected virtual void InitializeGraphView(TGraphView graph)
 		{
 			graph.name = "Basic Node Graph View";
 			graph.OnModified.AddListener(() =>

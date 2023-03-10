@@ -51,27 +51,13 @@ namespace Cuberoot.Editor
 			Insert(0, __background);
 			__background.StretchToParentSize();
 
+			AddSearchWindow();
+
 			this.StretchToParentSize();
 
 			/**	Didn't work when I tried it
 			*/
 			// FrameAll();
-
-			AddSearchWindow();
-
-			CreateEntryPointNode();
-		}
-
-		private CustomNode CreateEntryPointNode()
-		{
-			var __resultNode = CreateNewNode<CustomNode>("START", Vector2.zero);
-
-			var __port_out = __resultNode.CreatePort("Out", Direction.Output, Orientation.Horizontal, Port.Capacity.Single);
-
-			__resultNode.outputContainer.Add(__port_out);
-			__resultNode.RefreshAll();
-
-			return __resultNode;
 		}
 
 		#endregion
@@ -204,12 +190,12 @@ namespace Cuberoot.Editor
 
 		public void ClearAllNodes()
 		{
-			foreach (var iNode in nodes)
+			var __nodes = nodes.Cast<CustomNode>();
+			foreach (var iNode in __nodes)
 			{
-				var iBasicNode = (CustomNode)iNode;
-				if (iBasicNode != null)
+				if (iNode != null)
 				{
-					if (iBasicNode.IsPredefined)
+					if (iNode.IsPredefined)
 						continue;
 				}
 
