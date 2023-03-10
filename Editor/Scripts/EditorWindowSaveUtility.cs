@@ -1,5 +1,5 @@
 
-/** CustomNodeGraphSaveUtility.cs
+/** EditorWindowSaveUtility.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -26,7 +26,7 @@ namespace Cuberoot.Editor
 	/// Assists with saving and loading of Node Graphs.
 	///</summary>
 
-	public sealed class CustomNodeGraphSaveUtility : object
+	public sealed class EditorWindowSaveUtility : object
 	{
 		#region Data
 
@@ -45,9 +45,9 @@ namespace Cuberoot.Editor
 
 		#region
 
-		public static CustomNodeGraphSaveUtility GetInstance(CustomNodeGraphView target)
+		public static EditorWindowSaveUtility GetInstance(CustomNodeGraphView target)
 		{
-			return new CustomNodeGraphSaveUtility
+			return new EditorWindowSaveUtility
 			{
 				_graph = target,
 			};

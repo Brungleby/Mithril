@@ -68,7 +68,7 @@ namespace Cuberoot.Editor
 
 		protected override void SaveData()
 		{
-			var __saveUtility = CustomNodeGraphSaveUtility.GetInstance(_graph);
+			var __saveUtility = EditorWindowSaveUtility.GetInstance(_graph);
 			__saveUtility.SaveTargetToFile(filePath);
 
 			base.SaveData();
@@ -76,7 +76,7 @@ namespace Cuberoot.Editor
 
 		protected override void LoadData()
 		{
-			var __saveUtility = CustomNodeGraphSaveUtility.GetInstance(_graph);
+			var __saveUtility = EditorWindowSaveUtility.GetInstance(_graph);
 			__saveUtility.LoadFileToTarget(filePath);
 
 			base.LoadData();
