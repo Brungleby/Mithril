@@ -27,6 +27,9 @@ namespace Cuberoot
 
 		public void OpenWithEditorIndex(int i)
 		{
+			if (i >= UsableEditorTypes.Length)
+				throw new System.IndexOutOfRangeException();
+
 			var __filePath = AssetDatabase.GetAssetPath(this);
 			var __window = Editor.InstantiableEditorWindow.Instantiate(UsableEditorTypes[i], __filePath);
 
@@ -39,13 +42,17 @@ namespace Cuberoot
 		[UnityEditor.Callbacks.OnOpenAsset]
 		public static bool OnOpenAsset(int instanceID, int line)
 		{
-			var __target = (EditableObject)EditorUtility.InstanceIDToObject(instanceID);
-
-			if (__target != null)
+			try
 			{
-				__target.Open();
-				return true;
+				var __target = (EditableObject)EditorUtility.InstanceIDToObject(instanceID);
+
+				if (__target != null)
+				{
+					__target.Open();
+					return true;
+				}
 			}
+			catch { }
 
 			return false;
 		}

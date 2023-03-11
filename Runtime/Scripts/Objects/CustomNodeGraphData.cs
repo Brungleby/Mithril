@@ -32,7 +32,7 @@ namespace Cuberoot
 		public List<LinkData> Links = new List<LinkData>();
 
 		public override Type[] UsableEditorTypes =>
-			new Type[] { typeof(CustomNodeGraph<>) };
+			new Type[] { typeof(CustomNodeGraph) };
 	}
 
 	#endregion

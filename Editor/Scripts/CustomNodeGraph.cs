@@ -26,7 +26,7 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class CustomNodeGraph<TGraphView> : InstantiableEditorWindow
+	public abstract class CustomNodeGraph<TGraphView> : InstantiableEditorWindow
 	where TGraphView : CustomNodeGraphView
 	{
 		#region Data
@@ -87,4 +87,5 @@ namespace Cuberoot.Editor
 
 		#endregion
 	}
+	public class CustomNodeGraph : CustomNodeGraph<CustomNodeGraphView> { }
 }

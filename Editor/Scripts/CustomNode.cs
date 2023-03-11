@@ -57,13 +57,15 @@ namespace Cuberoot.Editor
 			RefreshPorts();
 		}
 
-		public virtual void InitializeFor(CustomNodeGraphView view)
+		public virtual void InitializeFor(CustomNodeGraphView graph)
 		{
 			OnModified = new UnityEvent();
 			OnModified.AddListener(() =>
 			{
-				view.OnModified.Invoke();
+				graph.OnModified.Invoke();
 			});
+
+			// this.
 		}
 
 		#endregion

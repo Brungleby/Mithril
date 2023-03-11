@@ -30,37 +30,6 @@ namespace Cuberoot.Editor
 
 	public class CustomNodeGraphView : GraphView
 	{
-		#region Construction
-
-		public CustomNodeGraphView()
-		{
-			OnModified = new UnityEvent();
-
-			styleSheets.Add(Resources.Load<StyleSheet>("Stylesheets/GraphBackgroundDefault"));
-
-			SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
-
-			this.AddManipulator(new ContentDragger());
-			this.AddManipulator(new SelectionDragger());
-			this.AddManipulator(new RectangleSelector());
-			this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
-
-			RegisterCallback<MouseMoveEvent>(OnMouseMove);
-
-			var __background = new GridBackground();
-			Insert(0, __background);
-			__background.StretchToParentSize();
-
-			AddSearchWindow();
-
-			this.StretchToParentSize();
-
-			/**	Didn't work when I tried it
-			*/
-			// FrameAll();
-		}
-
-		#endregion
 		#region Data
 
 		#region
@@ -95,7 +64,54 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Methods
 
+		#region Construction
+
+		public CustomNodeGraphView()
+		{
+			OnModified = new UnityEvent();
+
+			styleSheets.Add(Resources.Load<StyleSheet>("Stylesheets/GraphBackgroundDefault"));
+
+			SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
+
+			this.AddManipulator(new ContentDragger());
+			this.AddManipulator(new SelectionDragger());
+			this.AddManipulator(new RectangleSelector());
+			this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
+
+			RegisterCallback<MouseMoveEvent>(OnMouseMove);
+
+			var __background = new GridBackground();
+			Insert(0, __background);
+			__background.StretchToParentSize();
+
+			AddSearchWindow();
+
+			this.StretchToParentSize();
+
+			/**	Didn't work when I tried it
+			*/
+			// FrameAll();
+		}
+
+		#endregion
+
 		#region Overrides
+
+		protected override bool canDeleteSelection
+		{
+			get
+			{
+				foreach (var iNode in selection.Cast<CustomNode>())
+				{
+					if (iNode != null)
+						if (iNode.IsPredefined)
+							return false;
+				}
+
+				return base.canDeleteSelection;
+			}
+		}
 
 		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
 		{
