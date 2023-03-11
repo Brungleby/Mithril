@@ -25,8 +25,10 @@ namespace Cuberoot.Editor
 {
 	#region InstantiableEditorWindow
 
-	public abstract class InstantiableEditorWindow :
+	public abstract class InstantiableEditorWindow<TSaveData> :
 	EditorWindow
+
+	where TSaveData : ScriptableObject
 	{
 		public readonly static string DEFAULT_ICON_PATH = "Assets/Cuberoot/Cuberoot.Core/Editor/Resources/Textures/Icon_Diamond.png";
 
@@ -58,12 +60,12 @@ namespace Cuberoot.Editor
 			Utils.InitializeWindow(this, _rawTitle, iconPath);
 
 			_filePath = filePath;
-			LoadData();
+			LoadFile();
 		}
 
-		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath, string iconPath)
+		public static InstantiableEditorWindow<TSaveData> Instantiate(System.Type type, string filePath, string iconPath)
 		{
-			var __allWindowsOfMatchingType = Resources.FindObjectsOfTypeAll(type).Cast<InstantiableEditorWindow>();
+			var __allWindowsOfMatchingType = Resources.FindObjectsOfTypeAll(type).Cast<InstantiableEditorWindow<TSaveData>>();
 
 			foreach (var iWindow in __allWindowsOfMatchingType)
 			{
@@ -77,19 +79,19 @@ namespace Cuberoot.Editor
 			/**	else if no windows working with the filePath are found
 			*/
 
-			var __window = (InstantiableEditorWindow)EditorWindow.CreateInstance(type);
+			var __window = (InstantiableEditorWindow<TSaveData>)EditorWindow.CreateInstance(type);
 			__window.Initialize(filePath, iconPath);
 
 			return __window;
 		}
-		public static InstantiableEditorWindow Instantiate(System.Type type, string filePath) =>
+		public static InstantiableEditorWindow<TSaveData> Instantiate(System.Type type, string filePath) =>
 			Instantiate(type, filePath, DEFAULT_ICON_PATH);
 
 		public static T Instantiate<T>(string filePath, string iconPath)
-		where T : InstantiableEditorWindow =>
+		where T : InstantiableEditorWindow<TSaveData> =>
 			(T)Instantiate(typeof(T), filePath, iconPath);
 		public static T Instantiate<T>(string filePath)
-		where T : InstantiableEditorWindow =>
+		where T : InstantiableEditorWindow<TSaveData> =>
 			Instantiate<T>(filePath, DEFAULT_ICON_PATH);
 
 		private static string GetTitleFromFilePath(string filePath)
@@ -122,7 +124,7 @@ namespace Cuberoot.Editor
 
 		protected virtual void InitializeToolbar(Toolbar toolbar)
 		{
-			toolbar.Add(new Button(() => SaveData()) { text = "Save Asset" });
+			toolbar.Add(new Button(() => SaveFile()) { text = "Save Asset" });
 		}
 
 		protected virtual void CleanUpVisualElements() { }
@@ -130,19 +132,31 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Save/Load
 
-		protected virtual void SaveData()
+		protected abstract void SaveData(out TSaveData data);
+		public void SaveFile()
 		{
+			TSaveData __data;
+			SaveData(out __data);
+
+			Utils.CreateAssetAtFilePath(__data, filePath, false);
+
 			isModified = false;
 		}
 
-		protected virtual void LoadData()
+		protected abstract void LoadData(in TSaveData data);
+		public void LoadFile()
 		{
+			TSaveData __cache = AssetDatabase.LoadAssetAtPath<TSaveData>(filePath);
+
+			LoadData(__cache);
+
 			isModified = false;
 		}
 
 		#endregion
 		#endregion
 	}
+	public abstract class InstantiableEditorWindow : InstantiableEditorWindow<EditableObject> { }
 
 	#endregion
 }

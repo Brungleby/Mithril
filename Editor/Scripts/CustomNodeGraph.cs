@@ -26,8 +26,11 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class CustomNodeGraph<TGraphView> : InstantiableEditorWindow
+	public abstract class CustomNodeGraph<TGraphView, TSaveData> :
+	InstantiableEditorWindow<TSaveData>
+
 	where TGraphView : CustomNodeGraphView
+	where TSaveData : ScriptableObject
 	{
 		#region Data
 
@@ -65,20 +68,14 @@ namespace Cuberoot.Editor
 				rootVisualElement.Remove(_graph);
 		}
 
-		protected override void SaveData()
+		protected override void SaveData(out TSaveData data)
 		{
-			var __saveUtility = EditorWindowSaveUtility.GetInstance(_graph);
-			__saveUtility.SaveTargetToFile(filePath);
-
-			base.SaveData();
+			data = null;
 		}
 
-		protected override void LoadData()
+		protected override void LoadData(in TSaveData data)
 		{
-			var __saveUtility = EditorWindowSaveUtility.GetInstance(_graph);
-			__saveUtility.LoadFileToTarget(filePath);
 
-			base.LoadData();
 		}
 
 		#region
@@ -87,5 +84,5 @@ namespace Cuberoot.Editor
 
 		#endregion
 	}
-	public class CustomNodeGraph : CustomNodeGraph<CustomNodeGraphView> { }
+	public class CustomNodeGraph : CustomNodeGraph<CustomNodeGraphView, ScriptableObject> { }
 }
