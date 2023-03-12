@@ -31,7 +31,7 @@ namespace Cuberoot.Editor
 		where T : EditorWindow
 		{
 			var __window = EditorWindow.GetWindow<T>();
-			InitializeWindow(__window, title, iconPath);
+			InitializeWindowHeader(__window, title, iconPath);
 
 			return __window;
 		}
@@ -39,7 +39,7 @@ namespace Cuberoot.Editor
 		where T : EditorWindow =>
 			EditorWindow.GetWindow<T>(title);
 
-		public static void InitializeWindow(EditorWindow window, string title, string iconPath)
+		public static void InitializeWindowHeader(EditorWindow window, string title, string iconPath)
 		{
 			var __icon = AssetDatabase.LoadAssetAtPath<Texture>(iconPath);
 

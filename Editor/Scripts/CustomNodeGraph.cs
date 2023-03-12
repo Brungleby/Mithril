@@ -9,7 +9,7 @@
 
 #region Includes
 
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -17,6 +17,7 @@ using UnityEngine.UIElements;
 
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEditor.Experimental.GraphView;
 
 #endregion
 
@@ -26,11 +27,11 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class CustomNodeGraph<TGraphView, TSaveData> :
-	InstantiableEditorWindow<TSaveData>
+	public abstract class CustomNodeGraph<TGraphView, TGraphData> :
+	InstantiableEditorWindow<TGraphData>
 
 	where TGraphView : CustomNodeGraphView
-	where TSaveData : ScriptableObject
+	where TGraphData : CustomNodeGraphData
 	{
 		#region Data
 
@@ -39,6 +40,9 @@ namespace Cuberoot.Editor
 
 		#endregion
 		#region Properties
+
+		private List<Edge> Edges => _graph.edges.ToList();
+		private List<CustomNode> Nodes => _graph.nodes.ToList().Cast<CustomNode>().ToList();
 
 		#endregion
 		#region Methods
@@ -68,14 +72,31 @@ namespace Cuberoot.Editor
 				rootVisualElement.Remove(_graph);
 		}
 
-		protected override void SaveData(out TSaveData data)
+		protected override void SaveData(in TGraphData data)
 		{
-			data = null;
+			foreach (var iNode in Nodes)
+			{
+				data.Nodes.Add(new NodeData
+				{
+					Guid = iNode.Guid,
+					Subtype = iNode.GetType(),
+					Title = iNode.title,
+					Rect = iNode.GetPosition(),
+				});
+			}
 		}
 
-		protected override void LoadData(in TSaveData data)
+		protected override void LoadData(in TGraphData data)
 		{
+			if (!data.Nodes.Any())
+				_graph.CreatePredefinedNodes();
 
+			foreach (var iNodeData in data.Nodes)
+			{
+				var __node = _graph.CreateNewNode<CustomNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect, false);
+
+				// var __ports = 
+			}
 		}
 
 		#region
@@ -84,5 +105,5 @@ namespace Cuberoot.Editor
 
 		#endregion
 	}
-	public class CustomNodeGraph : CustomNodeGraph<CustomNodeGraphView, ScriptableObject> { }
+	public class CustomNodeGraph : CustomNodeGraph<CustomNodeGraphView, CustomNodeGraphData> { }
 }

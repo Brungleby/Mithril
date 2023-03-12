@@ -231,6 +231,8 @@ namespace Cuberoot.Editor
 			ClearAllNodes();
 		}
 
+		public virtual void CreatePredefinedNodes() { }
+
 		#endregion
 		#region Utils
 

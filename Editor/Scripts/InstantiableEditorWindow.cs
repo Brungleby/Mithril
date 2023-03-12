@@ -28,7 +28,7 @@ namespace Cuberoot.Editor
 	public abstract class InstantiableEditorWindow<TSaveData> :
 	EditorWindow
 
-	where TSaveData : ScriptableObject
+	where TSaveData : EditableObject
 	{
 		public readonly static string DEFAULT_ICON_PATH = "Assets/Cuberoot/Cuberoot.Core/Editor/Resources/Textures/Icon_Diamond.png";
 
@@ -57,7 +57,7 @@ namespace Cuberoot.Editor
 		public void Initialize(string filePath, string iconPath)
 		{
 			_rawTitle = GetTitleFromFilePath(filePath);
-			Utils.InitializeWindow(this, _rawTitle, iconPath);
+			Utils.InitializeWindowHeader(this, _rawTitle, iconPath);
 
 			_filePath = filePath;
 			LoadFile();
@@ -65,7 +65,17 @@ namespace Cuberoot.Editor
 
 		public static InstantiableEditorWindow<TSaveData> Instantiate(System.Type type, string filePath, string iconPath)
 		{
-			var __allWindowsOfMatchingType = Resources.FindObjectsOfTypeAll(type).Cast<InstantiableEditorWindow<TSaveData>>();
+			/** <<============================================================>> **/
+
+			var __allWindowsOfMatchingType = Resources.FindObjectsOfTypeAll(type)
+			.Where(i => i != null)
+			.Cast<InstantiableEditorWindow<TSaveData>>()
+			// .ToList()
+			;
+
+			Debug.Log(__allWindowsOfMatchingType.Count());
+
+			/** <<============================================================>> **/
 
 			foreach (var iWindow in __allWindowsOfMatchingType)
 			{
@@ -76,14 +86,16 @@ namespace Cuberoot.Editor
 				}
 			}
 
-			/**	else if no windows working with the filePath are found
-			*/
+			/** <<============================================================>> **/
 
 			var __window = (InstantiableEditorWindow<TSaveData>)EditorWindow.CreateInstance(type);
 			__window.Initialize(filePath, iconPath);
 
+			/** <<============================================================>> **/
+
 			return __window;
 		}
+
 		public static InstantiableEditorWindow<TSaveData> Instantiate(System.Type type, string filePath) =>
 			Instantiate(type, filePath, DEFAULT_ICON_PATH);
 
@@ -132,18 +144,36 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Save/Load
 
-		protected abstract void SaveData(out TSaveData data);
+		/// <summary>
+		/// Initializes the <paramref name="data"/> of the generic type before it is saved to the file.
+		///</summary>
+
+		protected abstract void SaveData(in TSaveData data);
+
+		/// <summary>
+		/// Saves the current <see cref="filePath"/> as a ScriptableObject.
+		///</summary>
+
 		public void SaveFile()
 		{
-			TSaveData __data;
-			SaveData(out __data);
+			var __data = ScriptableObject.CreateInstance<TSaveData>();
+			SaveData(__data);
 
 			Utils.CreateAssetAtFilePath(__data, filePath, false);
 
 			isModified = false;
 		}
 
+		/// <summary>
+		/// Loads and initializes the given <paramref name="data"/> into the view(s) of this <see cref="EditorWindow"/>.
+		///</summary>
+
 		protected abstract void LoadData(in TSaveData data);
+
+		/// <summary>
+		/// Loads the current <see cref="filePath"/> into the view(s) of this <see cref="EditorWindow"/>.
+		///</summary>
+
 		public void LoadFile()
 		{
 			TSaveData __cache = AssetDatabase.LoadAssetAtPath<TSaveData>(filePath);

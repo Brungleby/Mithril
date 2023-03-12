@@ -25,6 +25,7 @@ namespace Cuberoot
 	/// <summary>
 	/// Stores all Nodes and Links for a single NodeGraph into a file.
 	///</summary>
+	[Serializable]
 
 	public class CustomNodeGraphData : EditableObject
 	{
