@@ -77,7 +77,7 @@ namespace Cuberoot.Editor
 			this.AddManipulator(new ContentDragger());
 			this.AddManipulator(new SelectionDragger());
 			this.AddManipulator(new RectangleSelector());
-			this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
+			// this.AddManipulator(new ContextualMenuManipula	tor(_CreateContextMenu));
 
 			RegisterCallback<MouseMoveEvent>(OnMouseMove);
 

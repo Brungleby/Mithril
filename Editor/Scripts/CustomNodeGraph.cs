@@ -91,6 +91,7 @@ namespace Cuberoot.Editor
 				{
 					Guid = iNode.Guid,
 					Subtype = iNode.GetType(),
+					SubtypeName = iNode.GetType().ToString(),
 					Title = iNode.title,
 					Rect = iNode.GetPosition(),
 
@@ -129,7 +130,7 @@ namespace Cuberoot.Editor
 			{
 				foreach (var iNodeData in data.Nodes)
 				{
-					var __node = _graph.CreateNewNode(iNodeData.Subtype, iNodeData.Guid, iNodeData.Title, iNodeData.Rect, false);
+					var __node = _graph.CreateNewNode(System.Type.GetType(iNodeData.SubtypeName), iNodeData.Guid, iNodeData.Title, iNodeData.Rect, false);
 
 					iNodeData.Ports.ToList().ForEach(i => __node.CreatePort(i));
 				}

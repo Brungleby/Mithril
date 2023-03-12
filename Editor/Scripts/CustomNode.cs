@@ -96,7 +96,7 @@ namespace Cuberoot.Editor
 		public List<Port> GetOutputPorts() =>
 			outputContainer.Query<Port>().ToList();
 
-		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity, System.Type type = null)
+		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity, System.Type type)
 		{
 			/**	Create and initialize the port.
 			*/
@@ -108,6 +108,9 @@ namespace Cuberoot.Editor
 
 			return __port;
 		}
+		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
+			CreatePort(portName, direction, orientation, capacity, typeof(bool));
+
 		public Port CreatePort<T>(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
 			CreatePort(portName, direction, orientation, capacity, typeof(T));
 		public Port CreatePort(PortData data) =>

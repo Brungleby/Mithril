@@ -51,6 +51,7 @@ namespace Cuberoot
 	{
 		public GUID Guid;
 		public Type Subtype;
+		public string SubtypeName;
 		public string Title;
 		public Rect Rect;
 
