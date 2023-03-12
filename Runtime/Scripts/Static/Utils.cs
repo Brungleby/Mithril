@@ -28,7 +28,7 @@ namespace Cuberoot
 
 		#region AddAll
 
-		public static void AddAll<T>(this System.Collections.Generic.ICollection<T> collection, System.Collections.Generic.ICollection<T> toAdd)
+		public static void AddAll<T>(this ICollection<T> collection, ICollection<T> toAdd)
 		{
 			foreach (var i in toAdd)
 				collection.Add(i);
@@ -37,7 +37,7 @@ namespace Cuberoot
 		#endregion
 		#region RemoveAll
 
-		public static bool[] RemoveAll<T>(this System.Collections.Generic.ICollection<T> collection, System.Collections.Generic.ICollection<T> toRemove)
+		public static bool[] RemoveAll<T>(this ICollection<T> collection, ICollection<T> toRemove)
 		{
 			var __passed = new List<bool>();
 

@@ -180,7 +180,7 @@ namespace Cuberoot.Editor
 	public abstract class InstantiableEditorWindow<TData> :
 	InstantiableEditorWindowBase
 
-	where TData : ScriptableObject
+	where TData : EditableObject
 	{
 		#region Methods
 

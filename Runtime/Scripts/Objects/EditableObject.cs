@@ -23,6 +23,14 @@ namespace Cuberoot
 	{
 		public abstract Type[] UsableEditorTypes { get; }
 
+		private bool _isInitialized = false;
+		public bool isInitialized => _isInitialized;
+
+		public virtual void Initialize()
+		{
+			_isInitialized = true;
+		}
+
 		public void OpenWithEditorIndex(int i)
 		{
 			if (i >= UsableEditorTypes.Length)

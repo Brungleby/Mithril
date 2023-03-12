@@ -85,6 +85,17 @@ namespace Cuberoot.Editor
 			}
 		}
 
+		public List<Port> GetAllPorts()
+		{
+			var __result = GetInputPorts();
+			__result.AddRange(GetOutputPorts());
+			return __result;
+		}
+		public List<Port> GetInputPorts() =>
+			inputContainer.Query<Port>().ToList();
+		public List<Port> GetOutputPorts() =>
+			outputContainer.Query<Port>().ToList();
+
 		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity, System.Type type = null)
 		{
 			/**	Create and initialize the port.
@@ -99,6 +110,8 @@ namespace Cuberoot.Editor
 		}
 		public Port CreatePort<T>(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
 			CreatePort(portName, direction, orientation, capacity, typeof(T));
+		public Port CreatePort(PortData data) =>
+			CreatePort(data.Name, data.Direction, data.Orientation, data.Capacity, data.Type);
 
 
 		public void AttachPort(Port port)

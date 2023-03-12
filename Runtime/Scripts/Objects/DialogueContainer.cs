@@ -55,8 +55,8 @@ namespace Cuberoot
 		#endregion
 	}
 
-	[System.Serializable
-	]
+	[System.Serializable]
+
 	public sealed class NodeLinkData : object
 	{
 		public string NodeGuid;

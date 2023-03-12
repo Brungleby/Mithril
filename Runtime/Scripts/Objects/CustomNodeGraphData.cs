@@ -13,7 +13,10 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
+
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
+
 using Cuberoot.Editor;
 
 #endregion
@@ -50,6 +53,8 @@ namespace Cuberoot
 		public Type Subtype;
 		public string Title;
 		public Rect Rect;
+
+		public PortData[] Ports;
 	}
 
 	#endregion
@@ -62,10 +67,42 @@ namespace Cuberoot
 
 	public sealed class LinkData : object
 	{
-		public GUID OutGuid;
-		public string OutPortName;
-		public GUID InGuid;
-		public string InPortName;
+		public PortData NPort;
+		public PortData OPort;
+
+		public LinkData(Edge edge, CustomNode nNode, CustomNode oNode)
+		{
+			NPort = new PortData
+			{
+				NodeGuid = nNode.Guid,
+				Name = edge.input.portName,
+				Direction = edge.input.direction,
+				Orientation = edge.input.orientation,
+				Capacity = edge.input.capacity,
+				Type = edge.input.portType,
+			};
+			OPort = new PortData
+			{
+				NodeGuid = oNode.Guid,
+				Name = edge.output.portName,
+				Direction = edge.output.direction,
+				Orientation = edge.output.orientation,
+				Capacity = edge.output.capacity,
+				Type = edge.output.portType,
+			};
+		}
+	}
+
+	[Serializable]
+
+	public sealed class PortData : object
+	{
+		public GUID NodeGuid;
+		public string Name;
+		public Direction Direction;
+		public Orientation Orientation;
+		public Port.Capacity Capacity;
+		public Type Type;
 	}
 
 	#endregion
