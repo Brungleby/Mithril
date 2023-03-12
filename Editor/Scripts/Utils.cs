@@ -13,7 +13,10 @@ using System;
 using System.Reflection;
 
 using UnityEngine;
+using UnityEngine.UIElements;
+
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 
 #endregion
 
@@ -25,6 +28,15 @@ namespace Cuberoot.Editor
 
 	public static class Utils
 	{
+		#region GraphView
+
+		public static void SetPositionOnly(this GraphElement element, Vector2 position) =>
+			element.SetPosition(new Rect(position, element.GetPosition().size));
+
+		public static void SetSizeOnly(this GraphElement element, Vector2 size) =>
+			element.SetPosition(new Rect(element.GetPosition().position, size));
+
+		#endregion
 		#region EditorWindow
 
 		public static T GetShowWindow<T>(string title, string iconPath)

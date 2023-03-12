@@ -92,7 +92,7 @@ namespace Cuberoot.Editor
 
 			foreach (var iNodeData in _dataCache.Nodes)
 			{
-				var __node = _graph.CreateNewNode<CustomNode>(iNodeData.Guid, iNodeData.Title, iNodeData.Rect, false);
+				var __node = _graph.CreateNewNode(iNodeData);
 
 				// var __ports = 
 			}

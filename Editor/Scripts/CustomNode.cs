@@ -49,6 +49,20 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Methods
 
+		#region Construction
+
+		public CustomNode()
+		{
+			Guid = GUID.Generate();
+			this.title = DefaultName;
+			SetPosition(new Rect(Vector2.zero, DefaultSize));
+		}
+
+		public virtual string DefaultName => "New Custom Node";
+		public virtual Vector2 DefaultSize => DEFAULT_NODE_SIZE;
+
+		#endregion
+
 		#region
 
 		public void RefreshAll()
@@ -98,8 +112,6 @@ namespace Cuberoot.Editor
 
 		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity, System.Type type)
 		{
-			/**	Create and initialize the port.
-			*/
 			var __port = InstantiatePort(orientation, direction, capacity, type);
 
 			__port.portName = portName;
@@ -119,14 +131,9 @@ namespace Cuberoot.Editor
 
 		public void AttachPort(Port port)
 		{
-			/**	Add the port to the appropriate container oon this node.
-			*/
 			var __portContainer = GetPortContainerFor(port);
-
 			__portContainer.Add(port);
 
-			/**	Refresh this node.
-			*/
 			RefreshAll();
 		}
 

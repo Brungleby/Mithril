@@ -46,9 +46,6 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Properties
 
-		public virtual Vector2 DefaultNodeSize => CustomNode.DEFAULT_NODE_SIZE;
-		public virtual string DefaultNodeName => "New Custom Node";
-
 		public virtual List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
 		{
 			var __result = new List<SearchTreeEntry>
@@ -77,7 +74,7 @@ namespace Cuberoot.Editor
 			this.AddManipulator(new ContentDragger());
 			this.AddManipulator(new SelectionDragger());
 			this.AddManipulator(new RectangleSelector());
-			// this.AddManipulator(new ContextualMenuManipula	tor(_CreateContextMenu));
+			// this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
 
 			RegisterCallback<MouseMoveEvent>(OnMouseMove);
 
@@ -102,11 +99,10 @@ namespace Cuberoot.Editor
 		{
 			get
 			{
-				foreach (var iNode in selection.Cast<CustomNode>())
+				foreach (var i in selection)
 				{
-					if (iNode != null)
-						if (iNode.IsPredefined)
-							return false;
+					if (i is CustomNode iNode && iNode.IsPredefined)
+						return false;
 				}
 
 				return base.canDeleteSelection;
@@ -138,7 +134,7 @@ namespace Cuberoot.Editor
 		{
 			context.menu.InsertAction(0, "Create Node", (_) =>
 			{
-				CreateNewNode<CustomNode>("New Node");
+				// CreateNewNode<CustomNode>("New Node");
 			});
 		}
 
@@ -152,13 +148,12 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Node Handling
 
-
-		public CustomNode CreateNewNode(Type type, GUID guid, string title, Rect rect, bool invokeOnModified = true)
+		public CustomNode CreateNewNode(Type type, GUID guid, Rect rect, bool invokeOnModified = true)
 		{
 			var __node = (CustomNode)Activator.CreateInstance(type);
 
-			__node.Guid = GUID.Generate();
-			__node.title = title;
+			__node.Guid = guid;
+			__node.title = __node.DefaultName;
 			__node.SetPosition(rect);
 			__node.InitializeFor(this);
 
@@ -169,40 +164,46 @@ namespace Cuberoot.Editor
 
 			return __node;
 		}
-		public CustomNode CreateNewNode(Type type, string title, Rect rect) =>
-			CreateNewNode(type, GUID.Generate(), title, rect);
-		public CustomNode CreateNewNode(Type type, GUID guid, string title, Vector2 position) =>
-			CreateNewNode(type, guid, title, new Rect(position, DefaultNodeSize));
-		public CustomNode CreateNewNode(Type type, string title, Vector2 position) =>
-			CreateNewNode(type, GUID.Generate(), title, new Rect(position, DefaultNodeSize));
-		public CustomNode CreateNewNode(Type type, GUID guid, string title) =>
-			CreateNewNode(type, guid, title, new Rect(mousePosition, DefaultNodeSize));
-		public CustomNode CreateNewNode(Type type, string title) =>
-			CreateNewNode(type, GUID.Generate(), title, new Rect(mousePosition, DefaultNodeSize));
-		public CustomNode CreateNewNode(Type type) =>
-			CreateNewNode(type, DefaultNodeName);
+		public CustomNode CreateNewNode(Type type, GUID? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
+		{
+			var __node = (CustomNode)Activator.CreateInstance(type);
 
-		public T CreateNewNode<T>(GUID guid, string title, Rect rect, bool invokeOnModified = true)
+			if (guid != null)
+				__node.Guid = guid.Value;
+			if (rect != null)
+				__node.SetPosition(rect.Value);
+			if (title != null)
+				__node.title = title;
+
+			__node.InitializeFor(this);
+
+			AddElement(__node);
+
+			if (invokeOnModified)
+				OnModified.Invoke();
+
+			return __node;
+		}
+		public CustomNode CreateNewNodeAtCursor(Type type, GUID? guid = null, Vector2? size = null, string title = null, bool invokeOnModified = true)
+		{
+			var __node = CreateNewNode(type, guid, null, title, invokeOnModified);
+
+			__node.SetPosition(new Rect(
+				mousePosition,
+				(size != null) ?
+					size.Value :
+					__node.GetPosition().size
+			));
+
+			return __node;
+		}
+
+		public CustomNode CreateNewNode(NodeData data) =>
+			CreateNewNode(data.Subtype, data.Guid, data.Rect, data.Title, false);
+
+		public T CreateNewNode<T>(GUID? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
 		where T : CustomNode, new() =>
-			(T)CreateNewNode(typeof(T), guid, title, rect, invokeOnModified);
-		public T CreateNewNode<T>(string title, Rect rect)
-		where T : CustomNode, new() =>
-			CreateNewNode<T>(GUID.Generate(), title, rect);
-		public T CreateNewNode<T>(GUID guid, string title, Vector2 position)
-		where T : CustomNode, new() =>
-			CreateNewNode<T>(guid, title, new Rect(position, DefaultNodeSize));
-		public T CreateNewNode<T>(string title, Vector2 position)
-		where T : CustomNode, new() =>
-			CreateNewNode<T>(GUID.Generate(), title, new Rect(position, DefaultNodeSize));
-		public T CreateNewNode<T>(GUID guid, string title)
-		where T : CustomNode, new() =>
-			CreateNewNode<T>(guid, title, new Rect(mousePosition, DefaultNodeSize));
-		public T CreateNewNode<T>(string title)
-		where T : CustomNode, new() =>
-			CreateNewNode<T>(GUID.Generate(), title, new Rect(mousePosition, DefaultNodeSize));
-		public T CreateNewNode<T>()
-		where T : CustomNode, new() =>
-			CreateNewNode<T>(DefaultNodeName);
+			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
 
 		public void ClearAllNodes()
 		{

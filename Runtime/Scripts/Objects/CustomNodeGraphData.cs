@@ -32,6 +32,7 @@ namespace Cuberoot
 
 	public class CustomNodeGraphData : EditableObject
 	{
+		public List<Vector2> PredefinedNodePositions = new List<Vector2>();
 		public List<NodeData> Nodes = new List<NodeData>();
 		public List<LinkData> Links = new List<LinkData>();
 

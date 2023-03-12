@@ -53,13 +53,8 @@ namespace Cuberoot.Editor
 		{
 			Type type = (Type)searchTreeEntry.userData;
 
-			if (type == typeof(CustomNode))
-			{
-				_graph.CreateNewNode(type);
-				return true;
-			}
-
-			return false;
+			_graph.CreateNewNodeAtCursor(type);
+			return true;
 		}
 
 		#endregion

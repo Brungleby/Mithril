@@ -42,7 +42,14 @@ namespace Cuberoot.Editor
 		#region Methods
 
 		private List<Edge> GetEdges() => _graph.edges.ToList();
-		private List<CustomNode> GetNodes() => _graph.nodes.ToList().Cast<CustomNode>().ToList();
+		private List<CustomNode> GetPredefinedNodes() => _graph.nodes
+			.Cast<CustomNode>()
+			.Where(i => i.IsPredefined)
+			.ToList();
+		private List<CustomNode> GetNodes() => _graph.nodes
+			.Cast<CustomNode>()
+			.Where(i => !i.IsPredefined)
+			.ToList();
 
 		protected override void CreateVisualElements()
 		{
@@ -73,6 +80,13 @@ namespace Cuberoot.Editor
 		{
 			/** <<============================================================>> **/
 
+			foreach (var iNode in GetPredefinedNodes())
+			{
+				data.PredefinedNodePositions.Add(iNode.GetPosition().position);
+			}
+
+			/** <<============================================================>> **/
+
 			foreach (var iNode in GetNodes())
 			{
 				var __nPorts = iNode.GetAllPorts();
@@ -95,7 +109,7 @@ namespace Cuberoot.Editor
 					Title = iNode.title,
 					Rect = iNode.GetPosition(),
 
-					Ports = __nPortData.ToArray(),
+					// Ports = __nPortData.ToArray(),
 				});
 			}
 
@@ -111,30 +125,36 @@ namespace Cuberoot.Editor
 
 			/** <<============================================================>> **/
 
-			data.Initialize();
+			// data.Initialize();
 		}
 
 		protected override void LoadData(in TGraphData data)
 		{
 			/** <<============================================================>> **/
 
-			if (!data.isInitialized)
+			// if (!data.isInitialized)
+			// {
+			_graph.CreatePredefinedNodes();
+			// 	SaveData(data);
+			// }
+
+			var __predefinedNodes = GetPredefinedNodes();
+			for (var i = 0; i < data.PredefinedNodePositions.Count; i++)
 			{
-				_graph.CreatePredefinedNodes();
-				SaveData(data);
+				__predefinedNodes[i].SetPositionOnly(data.PredefinedNodePositions[i]);
 			}
 
 			/** <<============================================================>> **/
 
-			else
+			// else
+			// {
+			foreach (var iNodeData in data.Nodes)
 			{
-				foreach (var iNodeData in data.Nodes)
-				{
-					var __node = _graph.CreateNewNode(System.Type.GetType(iNodeData.SubtypeName), iNodeData.Guid, iNodeData.Title, iNodeData.Rect, false);
+				var __node = _graph.CreateNewNode(iNodeData);
 
-					iNodeData.Ports.ToList().ForEach(i => __node.CreatePort(i));
-				}
+				// iNodeData.Ports.ToList().ForEach(i => __node.CreatePort(i));
 			}
+			// }
 		}
 
 		#region
