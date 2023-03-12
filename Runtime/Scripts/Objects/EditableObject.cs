@@ -21,9 +21,7 @@ namespace Cuberoot
 	[Serializable]
 	public abstract class EditableObject : ScriptableObject
 	{
-#if UNITY_EDITOR
 		public abstract Type[] UsableEditorTypes { get; }
-
 
 		public void OpenWithEditorIndex(int i)
 		{
@@ -52,7 +50,6 @@ namespace Cuberoot
 
 			return false;
 		}
-#endif
 	}
 
 	/// <summary>
