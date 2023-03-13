@@ -234,6 +234,17 @@ namespace Cuberoot.Editor
 
 		public virtual void CreatePredefinedNodes() { }
 
+		public CustomNode FindNode(GUID guid)
+		{
+			foreach (var i in nodes)
+			{
+				if (i is CustomNode iNode && iNode.Guid == guid)
+					return iNode;
+			}
+
+			throw new KeyNotFoundException();
+		}
+
 		#endregion
 		#region Utils
 

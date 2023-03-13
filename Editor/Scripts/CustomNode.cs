@@ -126,7 +126,7 @@ namespace Cuberoot.Editor
 		public Port CreatePort<T>(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
 			CreatePort(portName, direction, orientation, capacity, typeof(T));
 		public Port CreatePort(PortData data) =>
-			CreatePort(data.Name, data.Direction, data.Orientation, data.Capacity, data.Type);
+			CreatePort(data.PortName, data.Direction, data.Orientation, data.Capacity, data.Type);
 
 
 		public void AttachPort(Port port)
@@ -144,6 +144,17 @@ namespace Cuberoot.Editor
 			__portContainer.Remove(port);
 
 			RefreshAll();
+		}
+
+		public Port FindPort(string portName)
+		{
+			foreach (var iPort in GetAllPorts())
+			{
+				if (portName == iPort.portName)
+					return iPort;
+			}
+
+			throw new KeyNotFoundException();
 		}
 
 		#endregion

@@ -34,7 +34,7 @@ namespace Cuberoot
 	{
 		public List<Vector2> PredefinedNodePositions = new List<Vector2>();
 		public List<NodeData> Nodes = new List<NodeData>();
-		public List<LinkData> Links = new List<LinkData>();
+		public List<EdgeData> Edges = new List<EdgeData>();
 
 		public override Type[] UsableEditorTypes =>
 			new Type[] { typeof(CustomNodeGraph) };
@@ -67,26 +67,40 @@ namespace Cuberoot
 	///</summary>
 	[Serializable]
 
-	public sealed class LinkData : object
+	public sealed class EdgeData : object
 	{
-		public PortData NPort;
-		public PortData OPort;
+		// public GUID nNodeGuid;
+		// public string nPortName;
+		// public GUID oNodeGuid;
+		// public string oPortName;
 
-		public LinkData(Edge edge, CustomNode nNode, CustomNode oNode)
+		public PortData nPort;
+		public PortData oPort;
+
+		// public EdgeData(Edge edge, CustomNode nNode, CustomNode oNode)
+		// {
+		// 	nNodeGuid = nNode.Guid;
+		// 	nPortName = edge.input.portName;
+
+		// 	oNodeGuid = oNode.Guid;
+		// 	oPortName = edge.output.portName;
+		// }
+
+		public EdgeData(Edge edge, CustomNode nNode, CustomNode oNode)
 		{
-			NPort = new PortData
+			nPort = new PortData
 			{
 				NodeGuid = nNode.Guid,
-				Name = edge.input.portName,
+				PortName = edge.input.portName,
 				Direction = edge.input.direction,
 				Orientation = edge.input.orientation,
 				Capacity = edge.input.capacity,
 				Type = edge.input.portType,
 			};
-			OPort = new PortData
+			oPort = new PortData
 			{
 				NodeGuid = oNode.Guid,
-				Name = edge.output.portName,
+				PortName = edge.output.portName,
 				Direction = edge.output.direction,
 				Orientation = edge.output.orientation,
 				Capacity = edge.output.capacity,
@@ -100,7 +114,7 @@ namespace Cuberoot
 	public sealed class PortData : object
 	{
 		public GUID NodeGuid;
-		public string Name;
+		public string PortName;
 		public Direction Direction;
 		public Orientation Orientation;
 		public Port.Capacity Capacity;
