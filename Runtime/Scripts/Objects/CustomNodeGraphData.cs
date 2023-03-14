@@ -32,7 +32,7 @@ namespace Cuberoot
 
 	public class CustomNodeGraphData : EditableObject
 	{
-		public List<Vector2> PredefinedNodePositions = new List<Vector2>();
+		public List<NodeData> PredefinedNodes = new List<NodeData>();
 		public List<NodeData> Nodes = new List<NodeData>();
 		public List<EdgeData> Edges = new List<EdgeData>();
 
@@ -57,6 +57,15 @@ namespace Cuberoot
 		public Rect Rect;
 
 		public PortData[] Ports;
+
+		public NodeData(CustomNode node)
+		{
+			Guid = node.Guid;
+			Subtype = node.GetType();
+			SubtypeName = node.GetType().ToString();
+			Title = node.title;
+			Rect = node.GetPosition();
+		}
 	}
 
 	#endregion

@@ -45,11 +45,17 @@ namespace Cuberoot.Editor
 		private List<CustomNode> GetPredefinedNodes() => _graph.nodes
 			.Cast<CustomNode>()
 			.Where(i => i.IsPredefined)
-			.ToList();
+			.ToList()
+		;
 		private List<CustomNode> GetNodes() => _graph.nodes
 			.Cast<CustomNode>()
 			.Where(i => !i.IsPredefined)
-			.ToList();
+			.ToList()
+		;
+		private List<CustomNode> GetAllNodes() => _graph.nodes
+			.Cast<CustomNode>()
+			.ToList()
+		;
 
 		protected override void CreateVisualElements()
 		{
@@ -76,18 +82,11 @@ namespace Cuberoot.Editor
 				rootVisualElement.Remove(_graph);
 		}
 
-		protected override void SaveData(in TGraphData data)
+		protected override void SaveData(ref TGraphData data)
 		{
 			/** <<============================================================>> **/
 
-			foreach (var iNode in GetPredefinedNodes())
-			{
-				data.PredefinedNodePositions.Add(iNode.GetPosition().position);
-			}
-
-			/** <<============================================================>> **/
-
-			foreach (var iNode in GetNodes())
+			foreach (var iNode in GetAllNodes())
 			{
 				var __nPorts = iNode.GetAllPorts();
 				var __nPortData = new List<PortData>();
@@ -101,14 +100,7 @@ namespace Cuberoot.Editor
 					Type = i.portType,
 				}));
 
-				data.Nodes.Add(new NodeData
-				{
-					Guid = iNode.Guid,
-					Subtype = iNode.GetType(),
-					SubtypeName = iNode.GetType().ToString(),
-					Title = iNode.title,
-					Rect = iNode.GetPosition(),
-				});
+				data.Nodes.Add(new NodeData(iNode));
 			}
 
 			/** <<============================================================>> **/
@@ -122,27 +114,33 @@ namespace Cuberoot.Editor
 			}
 
 			/** <<============================================================>> **/
+
+			data.Initialize();
 		}
 
-		protected override void LoadData(in TGraphData data)
+		protected override void LoadData(TGraphData data)
 		{
 			/** <<============================================================>> **/
 
-			_graph.CreatePredefinedNodes();
-
-			var __predefinedNodes = GetPredefinedNodes();
-			for (var i = 0; i < data.PredefinedNodePositions.Count; i++)
+			if (!data.isInitialized)
 			{
-				__predefinedNodes[i].SetPositionOnly(data.PredefinedNodePositions[i]);
+				_graph.CreatePredefinedNodes();
+				SaveToFilePath(ref data);
 			}
+
+			// var __predefinedNodes = GetPredefinedNodes();
+			// for (var i = 0; i < __predefinedNodes.Count; i++)
+			// {
+
+			// 	__predefinedNodes[i].Guid = data.PredefinedNodes[i].Guid;
+			// 	__predefinedNodes[i].SetPosition(data.PredefinedNodes[i].Rect);
+			// }
 
 			/** <<============================================================>> **/
 
 			foreach (var iNode in data.Nodes)
 			{
 				var __node = _graph.CreateNewNode(iNode);
-
-
 			}
 
 			/** <<============================================================>> **/

@@ -187,19 +187,23 @@ namespace Cuberoot.Editor
 		public override void SaveFile()
 		{
 			var __data = ScriptableObject.CreateInstance<TData>();
-			SaveData(__data);
-
-			Utils.CreateAssetAtFilePath(__data, filePath, false);
-
+			SaveToFilePath(ref __data);
+		}
+		public void SaveToFilePath(ref TData data)
+		{
+			SaveData(ref data);
+			Utils.CreateAssetAtFilePath(data, filePath, false);
 			base.SaveFile();
 		}
 
 		public override void LoadFile()
 		{
 			TData __data = AssetDatabase.LoadAssetAtPath<TData>(filePath);
-
 			LoadData(__data);
-
+		}
+		public void LoadAtFilePath(TData data)
+		{
+			LoadData(data);
 			base.LoadFile();
 		}
 
@@ -207,13 +211,13 @@ namespace Cuberoot.Editor
 		/// Initializes the <paramref name="data"/> of the generic type before it is saved to the file.
 		///</summary>
 
-		protected abstract void SaveData(in TData data);
+		protected abstract void SaveData(ref TData data);
 
 		/// <summary>
 		/// Loads and initializes the given <paramref name="data"/> into the view(s) of this <see cref="EditorWindow"/>.
 		///</summary>
 
-		protected abstract void LoadData(in TData data);
+		protected abstract void LoadData(TData data);
 
 		#endregion
 	}
