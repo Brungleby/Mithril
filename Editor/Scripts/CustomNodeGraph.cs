@@ -100,7 +100,8 @@ namespace Cuberoot.Editor
 					Type = i.portType,
 				}));
 
-				data.Nodes.Add(new NodeData(iNode));
+				(iNode.IsPredefined ? data.PredefinedNodes : data.Nodes)
+					.Add(iNode);
 			}
 
 			/** <<============================================================>> **/
@@ -112,29 +113,31 @@ namespace Cuberoot.Editor
 
 				data.Edges.Add(new EdgeData(iEdge, __nNode, __oNode));
 			}
-
-			/** <<============================================================>> **/
-
-			data.Initialize();
 		}
 
 		protected override void LoadData(TGraphData data)
 		{
 			/** <<============================================================>> **/
 
-			if (!data.isInitialized)
-			{
-				_graph.CreatePredefinedNodes();
-				SaveToFilePath(ref data);
-			}
-
-			// var __predefinedNodes = GetPredefinedNodes();
-			// for (var i = 0; i < __predefinedNodes.Count; i++)
+			// if (!data.isInitialized)
 			// {
-
-			// 	__predefinedNodes[i].Guid = data.PredefinedNodes[i].Guid;
-			// 	__predefinedNodes[i].SetPosition(data.PredefinedNodes[i].Rect);
+			// _graph.CreatePredefinedNodes();
+			// 	SaveToFilePath(ref data);
 			// }
+
+			_graph.CreatePredefinedNodes();
+
+			var __predefinedNodes = GetPredefinedNodes();
+			foreach (var iNode in data.PredefinedNodes)
+			{
+				var iMatchingPredefinedNode = __predefinedNodes
+					.Where(i => i.title == iNode.Title)
+					.First()
+				;
+
+				iMatchingPredefinedNode.Guid = iNode.Guid;
+				iMatchingPredefinedNode.SetPosition(iNode.Rect);
+			}
 
 			/** <<============================================================>> **/
 

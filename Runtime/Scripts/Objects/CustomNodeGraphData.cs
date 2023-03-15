@@ -66,6 +66,9 @@ namespace Cuberoot
 			Title = node.title;
 			Rect = node.GetPosition();
 		}
+
+		public static implicit operator NodeData(CustomNode node) =>
+			new NodeData(node);
 	}
 
 	#endregion
