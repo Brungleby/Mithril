@@ -199,7 +199,7 @@ namespace Cuberoot.Editor
 		}
 
 		public CustomNode CreateNewNode(NodeData data) =>
-			CreateNewNode(data.Subtype, data.Guid, data.Rect, data.Title, false);
+			CreateNewNode(data.SubtypeNameAsType, data.Guid, data.Rect, data.Title, false);
 
 		public T CreateNewNode<T>(GUID? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
 		where T : CustomNode, new() =>

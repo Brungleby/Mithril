@@ -60,6 +60,7 @@ namespace Cuberoot.Editor
 
 		public virtual string DefaultName => "New Custom Node";
 		public virtual Vector2 DefaultSize => DEFAULT_NODE_SIZE;
+		public virtual Orientation DefaultOrientation => Orientation.Horizontal;
 
 		#endregion
 
@@ -110,9 +111,14 @@ namespace Cuberoot.Editor
 		public List<Port> GetOutputPorts() =>
 			outputContainer.Query<Port>().ToList();
 
-		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity, System.Type type)
+		public Port CreatePort(System.Type type, string portName, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null)
 		{
-			var __port = InstantiatePort(orientation, direction, capacity, type);
+			var __port = InstantiatePort(
+				orientation ?? DefaultOrientation,
+				direction,
+				capacity ?? (direction == Direction.Input ? Port.Capacity.Single : Port.Capacity.Multi),
+				type
+			);
 
 			__port.portName = portName;
 
@@ -120,13 +126,12 @@ namespace Cuberoot.Editor
 
 			return __port;
 		}
-		public Port CreatePort(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
-			CreatePort(portName, direction, orientation, capacity, typeof(bool));
-
-		public Port CreatePort<T>(string portName, Direction direction, Orientation orientation, Port.Capacity capacity) =>
-			CreatePort(portName, direction, orientation, capacity, typeof(T));
+		public Port CreatePort(string portName, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
+			CreatePort(typeof(bool), portName, direction, capacity, orientation);
+		public Port CreatePort<T>(string name, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
+			CreatePort(typeof(T), name, direction, capacity, orientation);
 		public Port CreatePort(PortData data) =>
-			CreatePort(data.PortName, data.Direction, data.Orientation, data.Capacity, data.Type);
+			CreatePort(data.Type, data.PortName, data.Direction, data.Capacity, data.Orientation);
 
 
 		public void AttachPort(Port port)
@@ -156,6 +161,11 @@ namespace Cuberoot.Editor
 
 			throw new KeyNotFoundException();
 		}
+
+		public Port CreateExecutiveInputPort(string name = null) =>
+			CreatePort<bool>(name ?? "In", Direction.Input, Port.Capacity.Multi);
+		public Port CreateExecutiveOutputPort(string name = null) =>
+			CreatePort<bool>(name ?? "Out", Direction.Output, Port.Capacity.Single);
 
 		#endregion
 

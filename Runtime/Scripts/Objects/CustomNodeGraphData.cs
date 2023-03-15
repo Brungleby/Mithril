@@ -32,8 +32,11 @@ namespace Cuberoot
 
 	public class CustomNodeGraphData : EditableObject
 	{
+		[SerializeField]
 		public List<NodeData> PredefinedNodes = new List<NodeData>();
+		[SerializeField]
 		public List<NodeData> Nodes = new List<NodeData>();
+		[SerializeField]
 		public List<EdgeData> Edges = new List<EdgeData>();
 
 		public override Type[] UsableEditorTypes =>
@@ -50,22 +53,36 @@ namespace Cuberoot
 
 	public sealed class NodeData : object
 	{
+
+		[SerializeField]
 		public GUID Guid;
+
+		[SerializeField]
 		public Type Subtype;
+
+		[SerializeField]
 		public string SubtypeName;
+
+		[SerializeField]
 		public string Title;
+
+		[SerializeField]
 		public Rect Rect;
 
+		[SerializeField]
 		public PortData[] Ports;
 
 		public NodeData(CustomNode node)
 		{
 			Guid = node.Guid;
 			Subtype = node.GetType();
-			SubtypeName = node.GetType().ToString();
+			SubtypeName = node.GetType().AssemblyQualifiedName;
 			Title = node.title;
 			Rect = node.GetPosition();
 		}
+
+		public Type SubtypeNameAsType =>
+			Type.GetType(SubtypeName);
 
 		public static implicit operator NodeData(CustomNode node) =>
 			new NodeData(node);
@@ -86,7 +103,11 @@ namespace Cuberoot
 		// public GUID oNodeGuid;
 		// public string oPortName;
 
+
+		[SerializeField]
 		public PortData nPort;
+
+		[SerializeField]
 		public PortData oPort;
 
 		// public EdgeData(Edge edge, CustomNode nNode, CustomNode oNode)
@@ -125,11 +146,23 @@ namespace Cuberoot
 
 	public sealed class PortData : object
 	{
+
+		[SerializeField]
 		public GUID NodeGuid;
+
+		[SerializeField]
 		public string PortName;
+
+		[SerializeField]
 		public Direction Direction;
+
+		[SerializeField]
 		public Orientation Orientation;
+
+		[SerializeField]
 		public Port.Capacity Capacity;
+
+		[SerializeField]
 		public Type Type;
 	}
 

@@ -135,6 +135,7 @@ namespace Cuberoot.Editor
 					.First()
 				;
 
+
 				iMatchingPredefinedNode.Guid = iNode.Guid;
 				iMatchingPredefinedNode.SetPosition(iNode.Rect);
 			}
