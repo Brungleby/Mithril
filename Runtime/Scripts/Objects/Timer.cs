@@ -53,7 +53,7 @@ namespace Cuberoot
 		[Tooltip("The overall duration of this Timeline. OnCease is invoked once this amount of time has elapsed.")]
 		[SerializeField]
 
-		public float Duration = 0f;
+		public float duration = 0f;
 
 		#endregion
 
@@ -121,11 +121,11 @@ namespace Cuberoot
 		#region CurrentTime
 
 		/// <returns>
-		/// The current time relative to when this Timeline was last <see cref="Start"/>ed. It cannot exceed the <see cref="Duration"/>.
+		/// The current time relative to when this Timeline was last <see cref="Start"/>ed. It cannot exceed the <see cref="duration"/>.
 		///</returns>
 
 		public float currentTime =>
-			(Time.time - _whenStarted).Min(Duration);
+			(Time.time - _whenStarted).Min(duration);
 
 		#endregion
 
@@ -195,7 +195,7 @@ namespace Cuberoot
 			{
 				_OnUpdate.Invoke(currentTime);
 
-				if (Time.time > _whenStarted + Duration)
+				if (Time.time > _whenStarted + duration)
 					Cease();
 			}
 		}
