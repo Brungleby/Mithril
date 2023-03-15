@@ -66,7 +66,7 @@ namespace Cuberoot
 		[SerializeField]
 
 		private AnimationCurve[] _Curves = new AnimationCurve[0];
-		public AnimationCurve[] Curves => _Curves;
+		public AnimationCurve[] curves => _Curves;
 
 		#endregion
 
