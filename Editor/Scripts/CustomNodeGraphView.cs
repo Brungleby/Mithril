@@ -198,7 +198,7 @@ namespace Cuberoot.Editor
 			return __node;
 		}
 
-		public CustomNode CreateNewNode(NodeData data) =>
+		public CustomNode CreateNewNode(NodeGraphEditableObject.NodeData data) =>
 			CreateNewNode(data.SubtypeNameAsType, data.Guid, data.Rect, data.Title, false);
 
 		public T CreateNewNode<T>(GUID? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)

@@ -27,11 +27,10 @@ namespace Cuberoot.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class CustomNodeGraph<TGraphView, TGraphData> :
-	InstantiableEditorWindow<TGraphData>
+	public abstract class CustomNodeGraph<TGraphView> :
+	InstantiableEditorWindow
 
 	where TGraphView : CustomNodeGraphView
-	where TGraphData : CustomNodeGraphData
 	{
 		#region Data
 
@@ -82,15 +81,17 @@ namespace Cuberoot.Editor
 				rootVisualElement.Remove(_graph);
 		}
 
-		protected override void SaveData(ref TGraphData data)
+		protected override void PushChangesToObject(ref EditableObject data)
 		{
+			var __data = (NodeGraphEditableObject)data;
+
 			/** <<============================================================>> **/
 
 			foreach (var iNode in GetAllNodes())
 			{
 				var __nPorts = iNode.GetAllPorts();
-				var __nPortData = new List<PortData>();
-				__nPorts.ForEach(i => __nPortData.Add(new PortData
+				var __nPortData = new List<NodeGraphEditableObject.PortData>();
+				__nPorts.ForEach(i => __nPortData.Add(new NodeGraphEditableObject.PortData
 				{
 					NodeGuid = iNode.Guid,
 					PortName = i.portName,
@@ -100,7 +101,7 @@ namespace Cuberoot.Editor
 					Type = i.portType,
 				}));
 
-				(iNode.IsPredefined ? data.PredefinedNodes : data.Nodes)
+				(iNode.IsPredefined ? __data.PredefinedNodes : __data.Nodes)
 					.Add(iNode);
 			}
 
@@ -111,30 +112,27 @@ namespace Cuberoot.Editor
 				var __nNode = (CustomNode)iEdge.input.node;
 				var __oNode = (CustomNode)iEdge.output.node;
 
-				data.Edges.Add(new EdgeData(iEdge, __nNode, __oNode));
+				__data.Edges.Add(new NodeGraphEditableObject.EdgeData(iEdge, __nNode, __oNode));
 			}
+
+			data = __data;
 		}
 
-		protected override void LoadData(TGraphData data)
+		protected override void PullObjectToWindow(EditableObject data)
 		{
-			/** <<============================================================>> **/
+			var __data = (NodeGraphEditableObject)data;
 
-			// if (!data.isInitialized)
-			// {
-			// _graph.CreatePredefinedNodes();
-			// 	SaveToFilePath(ref data);
-			// }
+			/** <<============================================================>> **/
 
 			_graph.CreatePredefinedNodes();
 
 			var __predefinedNodes = GetPredefinedNodes();
-			foreach (var iNode in data.PredefinedNodes)
+			foreach (var iNode in __data.PredefinedNodes)
 			{
 				var iMatchingPredefinedNode = __predefinedNodes
 					.Where(i => i.title == iNode.Title)
 					.First()
 				;
-
 
 				iMatchingPredefinedNode.Guid = iNode.Guid;
 				iMatchingPredefinedNode.SetPosition(iNode.Rect);
@@ -142,14 +140,14 @@ namespace Cuberoot.Editor
 
 			/** <<============================================================>> **/
 
-			foreach (var iNode in data.Nodes)
+			foreach (var iNode in __data.Nodes)
 			{
 				var __node = _graph.CreateNewNode(iNode);
 			}
 
 			/** <<============================================================>> **/
 
-			foreach (var iEdge in data.Edges)
+			foreach (var iEdge in __data.Edges)
 			{
 				var nNode = _graph.FindNode(iEdge.nPort.NodeGuid);
 				var oNode = _graph.FindNode(iEdge.oPort.NodeGuid);
@@ -201,5 +199,4 @@ namespace Cuberoot.Editor
 
 		#endregion
 	}
-	public class CustomNodeGraph : CustomNodeGraph<CustomNodeGraphView, CustomNodeGraphData> { }
 }

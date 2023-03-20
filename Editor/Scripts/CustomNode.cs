@@ -130,7 +130,7 @@ namespace Cuberoot.Editor
 			CreatePort(typeof(bool), portName, direction, capacity, orientation);
 		public Port CreatePort<T>(string name, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
 			CreatePort(typeof(T), name, direction, capacity, orientation);
-		public Port CreatePort(PortData data) =>
+		public Port CreatePort(NodeGraphEditableObject.PortData data) =>
 			CreatePort(data.Type, data.PortName, data.Direction, data.Capacity, data.Orientation);
 
 

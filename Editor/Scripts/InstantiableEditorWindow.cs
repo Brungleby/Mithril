@@ -23,22 +23,22 @@ using UnityEditor.UIElements;
 
 namespace Cuberoot.Editor
 {
-	#region InstantiableEditorWindowBase
+	#region InstantiableEditorWindow
 
-	public abstract class InstantiableEditorWindowBase : EditorWindow
+	public abstract class InstantiableEditorWindow : EditorWindow
 	{
 		#region Data
 
 		#region Constants
 
 		public readonly static string DEFAULT_ICON_PATH =
-		"Assets/Cuberoot/Cuberoot.Core/Editor/Resources/Textures/Icon_Diamond.png";
+			"Assets/Cuberoot/Cuberoot.Core/Editor/Resources/Textures/Icon_Diamond.png";
 
 		#endregion
 		#region Members
 
-		private string _filePath;
-		public string filePath => _filePath;
+		private EditableObject _editObject;
+		public EditableObject editObject => _editObject;
 
 		private string _rawTitle;
 		public string rawTitle => _rawTitle;
@@ -59,6 +59,16 @@ namespace Cuberoot.Editor
 
 		#endregion
 		#region Methods
+
+		public string filePath =>
+			_editObject.filePath;
+
+		public virtual void InitializeHeader(string filePath, string iconPath)
+		{
+			_rawTitle = GetTitleFromFilePath(filePath);
+			Utils.InitializeWindowHeader(this, _rawTitle, iconPath);
+		}
+
 		#region Static
 
 		private static string GetTitleFromFilePath(string filePath)
@@ -74,31 +84,24 @@ namespace Cuberoot.Editor
 		}
 
 		#endregion
-
 		#region Instantiation
 
-		public void Initialize(string filePath, string iconPath)
-		{
-			_rawTitle = GetTitleFromFilePath(filePath);
-			Utils.InitializeWindowHeader(this, _rawTitle, iconPath);
-
-			_filePath = filePath;
-			LoadFile();
-		}
-
-		public static InstantiableEditorWindowBase Instantiate(System.Type type, string filePath, string iconPath)
+		public static InstantiableEditorWindow Instantiate(System.Type type, EditableObject data)
 		{
 			/** <<============================================================>> **/
 
+			var __filePath = AssetDatabase.GetAssetPath(data);
+			var __iconPath = DEFAULT_ICON_PATH;
+
 			var __allWindowsOfMatchingType = Resources.FindObjectsOfTypeAll(type)
-				.Cast<InstantiableEditorWindowBase>()
+				.Cast<InstantiableEditorWindow>()
 			;
 
 			/** <<============================================================>> **/
 
 			foreach (var iWindow in __allWindowsOfMatchingType)
 			{
-				if (iWindow._filePath == filePath)
+				if (iWindow.filePath == __filePath)
 				{
 					iWindow.Focus();
 					return iWindow;
@@ -107,23 +110,19 @@ namespace Cuberoot.Editor
 
 			/** <<============================================================>> **/
 
-			var __window = (InstantiableEditorWindowBase)EditorWindow.CreateInstance(type);
-			__window.Initialize(filePath, iconPath);
+			var __window = (InstantiableEditorWindow)EditorWindow.CreateInstance(type);
+			__window.Open(data);
+
+			__window.InitializeHeader(__filePath, __iconPath);
 
 			/** <<============================================================>> **/
 
 			return __window;
 		}
 
-		public static InstantiableEditorWindowBase Instantiate(System.Type type, string filePath) =>
-			Instantiate(type, filePath, DEFAULT_ICON_PATH);
-
-		public static T Instantiate<T>(string filePath, string iconPath)
-		where T : InstantiableEditorWindowBase =>
-			(T)Instantiate(typeof(T), filePath, iconPath);
-		public static T Instantiate<T>(string filePath)
-		where T : InstantiableEditorWindowBase =>
-			Instantiate<T>(filePath, DEFAULT_ICON_PATH);
+		public static T Instantiate<T>(EditableObject obj)
+		where T : InstantiableEditorWindow =>
+			(T)Instantiate(typeof(T), obj);
 
 		#endregion
 		#region Setup
@@ -143,7 +142,7 @@ namespace Cuberoot.Editor
 
 		protected virtual void InitializeToolbar(Toolbar toolbar)
 		{
-			toolbar.Add(new Button(() => SaveFile()) { text = "Save Asset" });
+			toolbar.Add(new Button(() => Save()) { text = "Save Asset" });
 		}
 
 		protected virtual void CleanUpVisualElements() { }
@@ -152,76 +151,56 @@ namespace Cuberoot.Editor
 		#region Save/Load
 
 		/// <summary>
-		/// Saves the current <see cref="filePath"/> as a ScriptableObject.
+		/// Saves the current <see cref="filePath"/> as an asset.
 		///</summary>
 
-		public virtual void SaveFile()
+		public virtual void Save()
 		{
+			PushChangesToObject();
+			_editObject.Save();
+
 			isModified = false;
 		}
 
 		/// <summary>
-		/// Loads the current <see cref="filePath"/> into the view(s) of this <see cref="EditorWindow"/>.
+		/// Updates the given <paramref name="data"/> using the "hot" data inside this window.
 		///</summary>
 
-		public virtual void LoadFile()
+		protected abstract void PushChangesToObject(ref EditableObject data);
+		private void PushChangesToObject() =>
+			PushChangesToObject(ref _editObject);
+
+		/// <summary>
+		/// Pulls the given <paramref name="data"/> and initializes this window using its "cold" data.
+		///</summary>
+
+		protected abstract void PullObjectToWindow(EditableObject data);
+		private void PullObjectToWindow() =>
+			PullObjectToWindow(_editObject);
+
+		/// <summary>
+		/// Loads the given <paramref name="data"/> into the view(s) of this <see cref="EditorWindow"/>.
+		///</summary>
+
+		public void Open(EditableObject data)
 		{
+			data.AssertEditorType(GetType());
+
+			_editObject = data;
+			PullObjectToWindow();
+
 			isModified = false;
+		}
+		public void Open(string filePath)
+		{
+			var __loadedObject = AssetDatabase.LoadAssetAtPath<EditableObject>(filePath);
+			Open(__loadedObject);
 		}
 
 		#endregion
 
 		#endregion
 	}
-
-	#endregion
-	#region InstantiableEditorWindow
-
-	public abstract class InstantiableEditorWindow<TData> :
-	InstantiableEditorWindowBase
-
-	where TData : EditableObject
-	{
-		#region Methods
-
-		public override void SaveFile()
-		{
-			var __data = ScriptableObject.CreateInstance<TData>();
-			SaveToFilePath(ref __data);
-		}
-		public void SaveToFilePath(ref TData data)
-		{
-			SaveData(ref data);
-			Utils.CreateAssetAtFilePath(data, filePath, false);
-			base.SaveFile();
-		}
-
-		public override void LoadFile()
-		{
-			TData __data = AssetDatabase.LoadAssetAtPath<TData>(filePath);
-			LoadData(__data);
-		}
-		public void LoadAtFilePath(TData data)
-		{
-			LoadData(data);
-			base.LoadFile();
-		}
-
-		/// <summary>
-		/// Initializes the <paramref name="data"/> of the generic type before it is saved to the file.
-		///</summary>
-
-		protected abstract void SaveData(ref TData data);
-
-		/// <summary>
-		/// Loads and initializes the given <paramref name="data"/> into the view(s) of this <see cref="EditorWindow"/>.
-		///</summary>
-
-		protected abstract void LoadData(TData data);
-
-		#endregion
-	}
-	public abstract class InstantiableEditorWindow : InstantiableEditorWindow<EditableObject> { }
 
 	#endregion
 }

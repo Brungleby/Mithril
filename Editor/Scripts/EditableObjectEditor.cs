@@ -9,6 +9,7 @@
 
 #region Includes
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -29,12 +30,18 @@ namespace Cuberoot.Editor
 		public override void OnInspectorGUI()
 		{
 			var __target = (EditableObject)target;
+			var __types = __target.UsableEditorTypes;
 
-			for (var i = 0; i < __target.UsableEditorTypes.Length; i++)
+			if (__types.Length > 0)
 			{
-				if (GUILayout.Button($"Open with {__target.UsableEditorTypes[i].Name}"))
-					__target.OpenWithEditorIndex(i);
+				for (var i = 0; i < __types.Length; i++)
+				{
+					if (GUILayout.Button($"Open with {__types[i].Name}"))
+						__target.Open(__types[i]);
+				}
 			}
+			else
+				GUILayout.Label("This EditableObject does not support any editors.");
 
 			base.OnInspectorGUI();
 		}

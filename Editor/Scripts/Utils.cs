@@ -96,28 +96,22 @@ namespace Cuberoot.Editor
 			}
 		}
 
-		public static void CreateAssetAtFilePath(UnityEngine.Object o, string filePath, bool warnIfExisting = true)
+		public static void SaveAssetAtFilePath(UnityEngine.Object o, string filePath, bool warnIfExisting = true)
 		{
-			if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath) != null)
+			if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath) == null)
+			{
+				AssetDatabase.CreateAsset(o, filePath);
+			}
+			else
 			{
 				if (warnIfExisting)
 					try { PromptConfirmation($"\"{filePath}\"\n\nThis path is already in use. Overwrite?"); }
 					catch { return; }
-
-				AssetDatabase.DeleteAsset(filePath);
 			}
 
-			try
-			{
-				AssetDatabase.CreateAsset(o, filePath);
-				AssetDatabase.SaveAssets();
-			}
-			catch
-			{
-				UnityEngine.Debug.LogError(filePath);
-			}
+			AssetDatabase.SaveAssets();
 		}
-		public static void CreateAssetInCurrentFolder(UnityEngine.Object o, string localPath) =>
-			CreateAssetAtFilePath(o, $"{CurrentProjectWindowFolderPath}/{localPath}");
+		public static void SaveAssetInCurrentFolder(UnityEngine.Object o, string localPath) =>
+			SaveAssetAtFilePath(o, $"{CurrentProjectWindowFolderPath}/{localPath}");
 	}
 }

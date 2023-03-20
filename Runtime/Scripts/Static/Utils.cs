@@ -26,7 +26,21 @@ namespace Cuberoot
 		public static T Safe<T>(this T obj) where T : new() =>
 			obj ?? new T();
 
-		#region AddAll
+		#region IEnumerable.Contains
+
+		public static bool Contains(this IEnumerable enumerable, object query)
+		{
+			foreach (var i in enumerable)
+			{
+				if (i.Equals(query))
+					return true;
+			}
+
+			return false;
+		}
+
+		#endregion
+		#region ICollection.AddAll
 
 		public static void AddAll<T>(this ICollection<T> collection, ICollection<T> toAdd)
 		{
@@ -35,7 +49,7 @@ namespace Cuberoot
 		}
 
 		#endregion
-		#region RemoveAll
+		#region ICollection.RemoveAll
 
 		public static bool[] RemoveAll<T>(this ICollection<T> collection, ICollection<T> toRemove)
 		{
