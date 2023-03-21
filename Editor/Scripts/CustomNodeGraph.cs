@@ -85,69 +85,48 @@ namespace Cuberoot.Editor
 		{
 			var __data = (NodeGraphEditableObject)data;
 
-			/** <<============================================================>> **/
-
-			foreach (var iNode in GetAllNodes())
-			{
-				var __nPorts = iNode.GetAllPorts();
-				var __nPortData = new List<NodeGraphEditableObject.PortData>();
-				__nPorts.ForEach(i => __nPortData.Add(new NodeGraphEditableObject.PortData
-				{
-					NodeGuid = iNode.Guid,
-					PortName = i.portName,
-					Direction = i.direction,
-					Orientation = i.orientation,
-					Capacity = i.capacity,
-					Type = i.portType,
-				}));
-
-				(iNode.IsPredefined ? __data.PredefinedNodes : __data.Nodes)
-					.Add(iNode);
-			}
-
-			/** <<============================================================>> **/
-
-			foreach (var iEdge in GetEdges().ToArray())
-			{
-				var __nNode = (CustomNode)iEdge.input.node;
-				var __oNode = (CustomNode)iEdge.output.node;
-
-				__data.Edges.Add(new NodeGraphEditableObject.EdgeData(iEdge, __nNode, __oNode));
-			}
+			__data.CompileNodes(GetAllNodes());
+			__data.CompileEdges(GetEdges());
 
 			data = __data;
 		}
 
 		protected override void PullObjectToWindow(EditableObject data)
 		{
+			_graph.CreatePredefinedNodes();
+
 			var __data = (NodeGraphEditableObject)data;
+			var __nodes = __data.nodes.ToList();
+			var __predefinedNodes = GetPredefinedNodes();
+
+			if (__nodes.Count == 0)
+				return;
 
 			/** <<============================================================>> **/
 
-			_graph.CreatePredefinedNodes();
-
-			var __predefinedNodes = GetPredefinedNodes();
-			foreach (var iNode in __data.PredefinedNodes)
+			foreach (var iPredefinedNode in __predefinedNodes)
 			{
-				var iMatchingPredefinedNode = __predefinedNodes
-					.Where(i => i.title == iNode.Title)
+				var iMatchingPredefinedNodeData = __nodes
+					.Where(i => i.IsPredefined && i.Title == iPredefinedNode.title)
 					.First()
 				;
 
-				iMatchingPredefinedNode.Guid = iNode.Guid;
-				iMatchingPredefinedNode.SetPosition(iNode.Rect);
+				// if (iMatchingPredefinedNodeData == null)
+				// 	continue;
+
+				iPredefinedNode.Guid = iMatchingPredefinedNodeData.Guid;
+				iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.Rect);
 			}
 
-			/** <<============================================================>> **/
-
-			foreach (var iNode in __data.Nodes)
+			foreach (var iNode in __nodes.Where(i => !i.IsPredefined))
 			{
 				var __node = _graph.CreateNewNode(iNode);
 			}
 
 			/** <<============================================================>> **/
 
-			foreach (var iEdge in __data.Edges)
+			var __edges = __data.edges;
+			foreach (var iEdge in __edges)
 			{
 				var nNode = _graph.FindNode(iEdge.nPort.NodeGuid);
 				var oNode = _graph.FindNode(iEdge.oPort.NodeGuid);
@@ -157,26 +136,6 @@ namespace Cuberoot.Editor
 
 				ConnectPorts(nPort, oPort);
 			}
-
-			// var __nodes = GetNodes();
-			// for (var i = 0; i < __nodes.Count; i++)
-			// {
-			// 	var iNode = __nodes[i];
-
-			// 	var __edges = data.Edges
-			// 		.Where(i => i.nPort.NodeGuid == iNode.Guid)
-			// 		.ToList()
-			// 	;
-			// 	for (var j = 0; j < __edges.Count; j++)
-			// 	{
-			// 		var jEdge = __edges[j];
-
-			// 		var __targetPort = jEdge.oPort;
-			// 		var __targetNode = __nodes.First(i => i.Guid == __targetPort.NodeGuid);
-
-			// 		ConnectPorts((Port)__targetNode.inputContainer[0], iNode.outputContainer.Q<Port>());
-			// 	}
-			// }
 		}
 
 		#region

@@ -131,7 +131,7 @@ namespace Cuberoot.Editor
 		public Port CreatePort<T>(string name, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
 			CreatePort(typeof(T), name, direction, capacity, orientation);
 		public Port CreatePort(NodeGraphEditableObject.PortData data) =>
-			CreatePort(data.Type, data.PortName, data.Direction, data.Capacity, data.Orientation);
+			CreatePort(System.Type.GetType(data.Type), data.PortName, data.Direction, data.Capacity, data.Orientation);
 
 
 		public void AttachPort(Port port)

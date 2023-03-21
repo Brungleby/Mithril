@@ -35,137 +35,175 @@ namespace Cuberoot
 		///</summary>
 		[Serializable]
 
-		public sealed class NodeData : object
+		public readonly struct NodeData
 		{
-			public GUID Guid;
-			public Type Subtype;
-			public string SubtypeName;
-			public string Title;
-			public Rect Rect;
-			public PortData[] Ports;
+#if UNITY_EDITOR
+			[SerializeField]
+			public readonly Rect Rect;
+#endif
+			[SerializeField]
+			public readonly GUID Guid;
+			// public Type Subtype;
+			[SerializeField]
+			public readonly string SubtypeName;
+			[SerializeField]
+			public readonly string Title;
+			[SerializeField]
+			public readonly bool IsPredefined;
 
+			[SerializeField]
+			public readonly PortData[] Ports;
+
+#if UNITY_EDITOR
 			public NodeData(CustomNode node)
 			{
+				Rect = node.GetPosition();
+
 				Guid = node.Guid;
-				Subtype = node.GetType();
+				// Subtype = node.GetType();
 				SubtypeName = node.GetType().AssemblyQualifiedName;
 				Title = node.title;
-				Rect = node.GetPosition();
+				IsPredefined = node.IsPredefined;
+
+				Ports = GetPortsFrom(node);
 			}
 
-			public Type SubtypeNameAsType =>
-				Type.GetType(SubtypeName);
+			public static implicit operator NodeData(CustomNode _) =>
+				new NodeData(_);
 
-			public static implicit operator NodeData(CustomNode node) =>
-				new NodeData(node);
+			public static PortData[] GetPortsFrom(CustomNode node)
+			{
+				var __nPorts = node.GetInputPorts();
+				var __oPorts = node.GetOutputPorts();
+
+				var __ports = new PortData[__nPorts.Count + __oPorts.Count];
+
+				for (int i = 0; i < __nPorts.Count; i++)
+					__ports[i] = __nPorts[i];
+				for (int i = 0; i < __oPorts.Count; i++)
+					__ports[i + __nPorts.Count] = __oPorts[i];
+
+				return __ports;
+			}
+#endif
 		}
 
 		#endregion
-		#region LinkData
+		#region PortData
 
 		/// <summary>
 		/// Stores data for a single link between two Nodes.
 		///</summary>
 		[Serializable]
 
-		public sealed class EdgeData : object
+		public readonly struct EdgeData
 		{
-			// public GUID nNodeGuid;
-			// public string nPortName;
-			// public GUID oNodeGuid;
-			// public string oPortName;
-
-
 			[SerializeField]
-			public PortData nPort;
-
+			public readonly PortData nPort;
 			[SerializeField]
-			public PortData oPort;
+			public readonly PortData oPort;
 
-			// public EdgeData(Edge edge, CustomNode nNode, CustomNode oNode)
-			// {
-			// 	nNodeGuid = nNode.Guid;
-			// 	nPortName = edge.input.portName;
-
-			// 	oNodeGuid = oNode.Guid;
-			// 	oPortName = edge.output.portName;
-			// }
-
-			public EdgeData(Edge edge, CustomNode nNode, CustomNode oNode)
+#if UNITY_EDITOR
+			public EdgeData(Edge edge)
 			{
-				nPort = new PortData
-				{
-					NodeGuid = nNode.Guid,
-					PortName = edge.input.portName,
-					Direction = edge.input.direction,
-					Orientation = edge.input.orientation,
-					Capacity = edge.input.capacity,
-					Type = edge.input.portType,
-				};
-				oPort = new PortData
-				{
-					NodeGuid = oNode.Guid,
-					PortName = edge.output.portName,
-					Direction = edge.output.direction,
-					Orientation = edge.output.orientation,
-					Capacity = edge.output.capacity,
-					Type = edge.output.portType,
-				};
+				nPort = new PortData(edge.input);
+				oPort = new PortData(edge.output);
 			}
+
+			public static implicit operator EdgeData(Edge _) =>
+				new EdgeData(_);
+#endif
 		}
 
 		[Serializable]
 
-		public sealed class PortData : object
+		public readonly struct PortData
 		{
-
 			[SerializeField]
-			public GUID NodeGuid;
-
+			public readonly GUID NodeGuid;
 			[SerializeField]
-			public string PortName;
-
+			public readonly string PortName;
 			[SerializeField]
-			public Direction Direction;
-
+			public readonly Direction Direction;
 			[SerializeField]
-			public Orientation Orientation;
-
+			public readonly Orientation Orientation;
 			[SerializeField]
-			public Port.Capacity Capacity;
-
+			public readonly Port.Capacity Capacity;
 			[SerializeField]
-			public Type Type;
+			public readonly string Type;
+
+#if UNITY_EDITOR
+			// public PortData(GUID guid, string portName, Direction direction, Orientation orientation, Port.Capacity capacity, Type type)
+			// {
+			// 	NodeGuid = guid;
+			// 	PortName = portName;
+			// 	Direction = direction;
+			// 	Orientation = orientation;
+			// 	Capacity = capacity;
+			// 	Type = type;
+			// }
+			public PortData(Port port)
+			{
+				NodeGuid = ((CustomNode)port.node).Guid;
+				PortName = port.portName;
+				Direction = port.direction;
+				Orientation = port.orientation;
+				Capacity = port.capacity;
+				Type = port.portType.AssemblyQualifiedName;
+			}
+
+			public static implicit operator PortData(Port _) =>
+				new PortData(_);
+#endif
 		}
 
 		#endregion
+		#region Bake Data
 
-		#region Edit Data
-#if UNITY_EDITOR
-		public List<NodeData> PredefinedNodes = new List<NodeData>();
-		public List<NodeData> Nodes = new List<NodeData>();
-		public List<EdgeData> Edges = new List<EdgeData>();
-#endif
-
-		#endregion
-		#region Built Data
+		[SerializeField]
 
 		public NodeData[] nodes;
+
+		[SerializeField]
+
+		public EdgeData[] edges;
 
 		#endregion
 		#region Methods
 
 #if UNITY_EDITOR
+		// protected override void OnEnable()
+		// {
+		// 	base.OnEnable();
+
+		// 	nodes = 
+		// }
+
 		protected override void Compile()
 		{
-			// var __data = GetEditData<Editor.NodeGraphEditableData>();
 
-			// nodes = new NodeData[__data.PredefinedNodes.Count + __data.Nodes.Count];
+		}
 
-			// for (var i = 0; i < __data.PredefinedNodes.Count; i++)
-			// 	nodes[i] = __data.PredefinedNodes[i];
-			// for (var i = 0; i < __data.Nodes.Count; i++)
-			// 	nodes[i + __data.PredefinedNodes.Count] = __data.Nodes[i];
+		public void CompileNodes(List<CustomNode> nodes)
+		{
+			this.nodes = new NodeData[nodes.Count];
+
+			for (int i = 0; i < this.nodes.Length; i++)
+			{
+				var iNode = nodes[i];
+				this.nodes[i] = iNode;
+			}
+		}
+
+		public void CompileEdges(List<Edge> edges)
+		{
+			this.edges = new EdgeData[edges.Count];
+
+			for (int i = 0; i < this.edges.Length; i++)
+			{
+				var iEdge = edges[i];
+				this.edges[i] = iEdge;
+			}
 		}
 #endif
 
