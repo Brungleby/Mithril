@@ -111,9 +111,6 @@ namespace Cuberoot.Editor
 					.First()
 				;
 
-				// if (iMatchingPredefinedNodeData == null)
-				// 	continue;
-
 				iPredefinedNode.Guid = iMatchingPredefinedNodeData.Guid;
 				iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.Rect);
 			}

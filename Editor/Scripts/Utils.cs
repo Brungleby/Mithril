@@ -10,7 +10,10 @@
 #region Includes
 
 using System;
+using System.IO;
 using System.Reflection;
+
+using System.Text;
 
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -96,22 +99,85 @@ namespace Cuberoot.Editor
 			}
 		}
 
-		public static void SaveAssetAtFilePath(UnityEngine.Object o, string filePath, bool warnIfExisting = true)
-		{
-			if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath) == null)
-			{
-				AssetDatabase.CreateAsset(o, filePath);
-			}
-			else
-			{
-				if (warnIfExisting)
-					try { PromptConfirmation($"\"{filePath}\"\n\nThis path is already in use. Overwrite?"); }
-					catch { return; }
-			}
+		// public static void SaveAsset(EditableObject obj)
+		// {
+		// 	var __path = AssetDatabase.GetAssetPath(obj);
+		// 	var __clone = (UnityEngine.Object)obj.Clone();
 
-			AssetDatabase.SaveAssets();
+		// 	AssetDatabase.DeleteAsset(__path);
+		// 	AssetDatabase.CreateAsset(__clone, __path);
+		// 	AssetDatabase.SaveAssets();
+		// }
+
+		public static void SaveAsset(UnityEngine.Object obj)
+		{
+			var __path = AssetDatabase.GetAssetPath(obj);
+
+			if (__path == null)
+				AssetDatabase.CreateAsset(obj, __path);
+			else
+				EditorUtility.SetDirty(obj);
+
+			AssetDatabase.SaveAssetIfDirty(obj);
+			// AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 		}
-		public static void SaveAssetInCurrentFolder(UnityEngine.Object o, string localPath) =>
-			SaveAssetAtFilePath(o, $"{CurrentProjectWindowFolderPath}/{localPath}");
+		// public static void SaveAsset(EditableObject obj)
+		// {
+
+		// }
+
+		// public static void SerializeAsset<T>(T obj)
+		// where T : ScriptableObject
+		// {
+		// 	var __pathObj = AssetDatabase.GetAssetPath(obj);
+		// 	var __pathBin = __pathObj.ReplaceFileExtension("json");
+
+		// 	string __data = JsonUtility.ToJson(obj, true);
+		// 	File.WriteAllText(__pathBin, __data);
+
+		// 	AssetDatabase.Refresh();
+		// }
+
+		// public static void DeserializeAsset<T>(ref T obj)
+		// where T : ScriptableObject
+		// {
+		// 	var __pathObj = AssetDatabase.GetAssetPath(obj);
+		// 	var __pathBin = __pathObj.ReplaceFileExtension("json");
+
+		// 	if (File.Exists(__pathBin))
+		// 	{
+		// 		string __data = File.ReadAllText(__pathBin);
+		// 		obj = (T)JsonUtility.FromJson(__data, typeof(T));
+		// 	}
+		// }
+
+		// public static string ReplaceFileExtension(this string path, string ext)
+		// {
+		// 	var __substring = path.Substring(0, path.LastIndexOf('.'));
+		// 	return $"{__substring}.{ext}";
+		// }
+
+		// public static void SaveAssetAtFilePath(UnityEngine.Object obj, string path, bool warnIfExisting = true)
+		// {
+		// 	var __path = AssetDatabase.GetAssetPath(obj);
+
+		// 	if (__path != null && __path == path)
+		// 	{
+		// 		if (warnIfExisting)
+		// 			try { PromptConfirmation($"\"{path}\"\n\nThis path is already in use. Overwrite?"); }
+		// 			catch { return; }
+
+		// 		AssetDatabase.DeleteAsset(path);
+		// 	}
+
+		// 	AssetDatabase.CreateAsset(obj, path);
+		// 	AssetDatabase.SaveAssets();
+		// }
+		// public static void SaveAssetAtFilePath(EditableObject obj, string path, bool warnIfExisting = true) =>
+		// 	SaveAssetAtFilePath((UnityEngine.Object)obj.Clone(), path, warnIfExisting);
+
+		// public static void SaveAssetInCurrentFolder(UnityEngine.Object o, string localPath) =>
+		// 	SaveAssetAtFilePath(o, $"{CurrentProjectWindowFolderPath}/{localPath}");
 	}
 }

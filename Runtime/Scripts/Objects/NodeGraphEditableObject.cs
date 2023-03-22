@@ -35,35 +35,28 @@ namespace Cuberoot
 		///</summary>
 		[Serializable]
 
-		public readonly struct NodeData
+		public struct NodeData
 		{
+			public Guid Guid;
+			public string SubtypeName;
+			public string Title;
+			public bool IsPredefined;
+
 #if UNITY_EDITOR
-			[SerializeField]
-			public readonly Rect Rect;
+			public Rect Rect;
 #endif
-			[SerializeField]
-			public readonly GUID Guid;
-			// public Type Subtype;
-			[SerializeField]
-			public readonly string SubtypeName;
-			[SerializeField]
-			public readonly string Title;
-			[SerializeField]
-			public readonly bool IsPredefined;
 
-			[SerializeField]
-			public readonly PortData[] Ports;
-
+			public PortData[] Ports;
 #if UNITY_EDITOR
 			public NodeData(CustomNode node)
 			{
-				Rect = node.GetPosition();
-
 				Guid = node.Guid;
-				// Subtype = node.GetType();
+
 				SubtypeName = node.GetType().AssemblyQualifiedName;
 				Title = node.title;
 				IsPredefined = node.IsPredefined;
+
+				Rect = node.GetPosition();
 
 				Ports = GetPortsFrom(node);
 			}
@@ -86,51 +79,23 @@ namespace Cuberoot
 				return __ports;
 			}
 #endif
+			public override string ToString() =>
+				Guid.ToString();
 		}
 
 		#endregion
 		#region PortData
 
-		/// <summary>
-		/// Stores data for a single link between two Nodes.
-		///</summary>
 		[Serializable]
 
-		public readonly struct EdgeData
+		public struct PortData
 		{
-			[SerializeField]
-			public readonly PortData nPort;
-			[SerializeField]
-			public readonly PortData oPort;
-
-#if UNITY_EDITOR
-			public EdgeData(Edge edge)
-			{
-				nPort = new PortData(edge.input);
-				oPort = new PortData(edge.output);
-			}
-
-			public static implicit operator EdgeData(Edge _) =>
-				new EdgeData(_);
-#endif
-		}
-
-		[Serializable]
-
-		public readonly struct PortData
-		{
-			[SerializeField]
-			public readonly GUID NodeGuid;
-			[SerializeField]
-			public readonly string PortName;
-			[SerializeField]
-			public readonly Direction Direction;
-			[SerializeField]
-			public readonly Orientation Orientation;
-			[SerializeField]
-			public readonly Port.Capacity Capacity;
-			[SerializeField]
-			public readonly string Type;
+			public Guid NodeGuid;
+			public string PortName;
+			public Direction Direction;
+			public Orientation Orientation;
+			public Port.Capacity Capacity;
+			public string Type;
 
 #if UNITY_EDITOR
 			// public PortData(GUID guid, string portName, Direction direction, Orientation orientation, Port.Capacity capacity, Type type)
@@ -141,7 +106,7 @@ namespace Cuberoot
 			// 	Orientation = orientation;
 			// 	Capacity = capacity;
 			// 	Type = type;
-			// }
+
 			public PortData(Port port)
 			{
 				NodeGuid = ((CustomNode)port.node).Guid;
@@ -158,32 +123,50 @@ namespace Cuberoot
 		}
 
 		#endregion
+		#region Edge Data
+
+		/// <summary>
+		/// Stores data for a single link between two Nodes.
+		///</summary>
+		[Serializable]
+
+		public struct EdgeData
+		{
+			public PortData nPort;
+			public PortData oPort;
+
+#if UNITY_EDITOR
+			public EdgeData(Edge edge)
+			{
+				nPort = new PortData(edge.input);
+				oPort = new PortData(edge.output);
+			}
+
+			public static implicit operator EdgeData(Edge _) =>
+				new EdgeData(_);
+#endif
+		}
+
+		#endregion
 		#region Bake Data
 
-		[SerializeField]
-
-		public NodeData[] nodes;
-
-		[SerializeField]
-
-		public EdgeData[] edges;
+		public NodeData[] nodes = new NodeData[0];
+		public EdgeData[] edges = new EdgeData[0];
 
 		#endregion
 		#region Methods
 
-#if UNITY_EDITOR
-		// protected override void OnEnable()
-		// {
-		// 	base.OnEnable();
-
-		// 	nodes = 
-		// }
-
-		protected override void Compile()
+		public override object Clone()
 		{
+			var that = (NodeGraphEditableObject)ScriptableObject.CreateInstance(GetType());
 
+			that.nodes = this.nodes;
+			that.edges = this.edges;
+
+			return that;
 		}
 
+#if UNITY_EDITOR
 		public void CompileNodes(List<CustomNode> nodes)
 		{
 			this.nodes = new NodeData[nodes.Count];
@@ -203,6 +186,8 @@ namespace Cuberoot
 			{
 				var iEdge = edges[i];
 				this.edges[i] = iEdge;
+
+				Debug.Log($"Edge in guid: \"{this.edges[i].nPort.NodeGuid}\", Edge out guid: \"{this.edges[i].oPort.NodeGuid}\"");
 			}
 		}
 #endif

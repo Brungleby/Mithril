@@ -39,7 +39,7 @@ namespace Cuberoot.Editor
 		#endregion
 		#region
 
-		public GUID Guid;
+		public Guid Guid;
 		public bool IsPredefined = false;
 
 		public UnityEvent OnModified;
@@ -159,7 +159,7 @@ namespace Cuberoot.Editor
 					return iPort;
 			}
 
-			throw new KeyNotFoundException();
+			throw new System.Exception($"The port \"{portName}\" was not found on {this.title}.");
 		}
 
 		public Port CreateExecutiveInputPort(string name = null) =>

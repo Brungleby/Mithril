@@ -148,7 +148,7 @@ namespace Cuberoot.Editor
 		#endregion
 		#region Node Handling
 
-		public CustomNode CreateNewNode(Type type, GUID guid, Rect rect, bool invokeOnModified = true)
+		public CustomNode CreateNewNode(Type type, Guid guid, Rect rect, bool invokeOnModified = true)
 		{
 			var __node = (CustomNode)Activator.CreateInstance(type);
 
@@ -164,7 +164,7 @@ namespace Cuberoot.Editor
 
 			return __node;
 		}
-		public CustomNode CreateNewNode(Type type, GUID? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
+		public CustomNode CreateNewNode(Type type, Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
 		{
 			var __node = (CustomNode)Activator.CreateInstance(type);
 
@@ -184,7 +184,7 @@ namespace Cuberoot.Editor
 
 			return __node;
 		}
-		public CustomNode CreateNewNodeAtCursor(Type type, GUID? guid = null, Vector2? size = null, string title = null, bool invokeOnModified = true)
+		public CustomNode CreateNewNodeAtCursor(Type type, Guid? guid = null, Vector2? size = null, string title = null, bool invokeOnModified = true)
 		{
 			var __node = CreateNewNode(type, guid, null, title, invokeOnModified);
 
@@ -201,7 +201,7 @@ namespace Cuberoot.Editor
 		public CustomNode CreateNewNode(NodeGraphEditableObject.NodeData data) =>
 			CreateNewNode(Type.GetType(data.SubtypeName), data.Guid, data.Rect, data.Title, false);
 
-		public T CreateNewNode<T>(GUID? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
+		public T CreateNewNode<T>(Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
 		where T : CustomNode, new() =>
 			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
 
@@ -234,15 +234,13 @@ namespace Cuberoot.Editor
 
 		public virtual void CreatePredefinedNodes() { }
 
-		public CustomNode FindNode(GUID guid)
+		public CustomNode FindNode(Guid guid)
 		{
 			foreach (var i in nodes)
-			{
 				if (i is CustomNode iNode && iNode.Guid == guid)
 					return iNode;
-			}
 
-			throw new KeyNotFoundException();
+			throw new System.Exception($"Node with GUID {guid} was not found in {this.name}.");
 		}
 
 		#endregion

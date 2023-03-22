@@ -27,7 +27,7 @@ namespace Cuberoot
 	///</summary>
 	[Serializable]
 
-	public abstract class EditableObject : ScriptableObject
+	public abstract class EditableObject : ScriptableObject, ICloneable
 	{
 		#region Data
 
@@ -54,12 +54,16 @@ namespace Cuberoot
 
 		protected virtual void OnDisable() { }
 
+		public abstract object Clone();
+
 #if UNITY_EDITOR
 		public abstract Type[] UsableEditorTypes { get; }
 
 		public void Save()
 		{
-			Editor.Utils.SaveAssetAtFilePath(this, AssetDatabase.GetAssetPath(this), false);
+			// Editor.Utils.SaveAssetAtFilePath(this, AssetDatabase.GetAssetPath(this), false);
+			Editor.Utils.SaveAsset(this);
+			// Editor.Utils.SerializeAsset(this);
 		}
 
 		/// <summary>
