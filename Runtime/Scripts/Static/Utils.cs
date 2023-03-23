@@ -40,6 +40,35 @@ namespace Cuberoot
 		}
 
 		#endregion
+		#region IEnumerable.AllToString
+
+		public static string AllToString<T>(this ICollection<T> collection)
+		{
+			int __figures = (collection.Count / 10) + 1;
+
+			string __result = $"{collection.ToString()}\n";
+			int __index = 0;
+			foreach (var i in collection)
+			{
+				string __indexString = __index.ToString().PadLeft(__figures, '0');
+
+				__result += $"[{__indexString}] {i.ToString()}\n";
+
+				__index++;
+			}
+
+			return __result.Substring(0, __result.Length - 1);
+		}
+
+		public static string AllToString<T>(this IEnumerable<T> enumerable)
+		{
+			var __list = new List<T>();
+			__list.AddRange(enumerable);
+
+			return __list.AllToString();
+		}
+
+		#endregion
 		#region ICollection.AddAll
 
 		public static void AddAll<T>(this ICollection<T> collection, ICollection<T> toAdd)

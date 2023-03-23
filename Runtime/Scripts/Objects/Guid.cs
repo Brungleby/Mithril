@@ -24,7 +24,7 @@ namespace Cuberoot
 	///</summary>
 	[System.Serializable]
 
-	public struct Guid
+	public struct Guid : ISerializable
 	{
 		#region Data
 
@@ -102,23 +102,20 @@ namespace Cuberoot
 
 			/** <<============================================================>> **/
 
-			// EditorGUI.LabelField(position, label);
 			position = EditorGUI.PrefixLabel(position, label);
 
-
 			/** <<============================================================>> **/
+
 			var __indent = EditorGUI.indentLevel;
 			EditorGUI.indentLevel = 0;
-
-			var __text = property.FindPropertyRelative("_guid").stringValue;
-
 			GUI.enabled = false;
 
+			var __text = property.FindPropertyRelative("_guid").stringValue;
 			EditorGUI.TextField(position, __text);
 
 			GUI.enabled = true;
-
 			EditorGUI.indentLevel = __indent;
+
 			/** <<============================================================>> **/
 
 			EditorGUI.EndProperty();

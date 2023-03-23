@@ -95,20 +95,18 @@ namespace Cuberoot
 		{
 			AssertEditorType(type);
 
-			if (_currentlyOpenEditor != null)
+			if (_currentlyOpenEditor == null)
 			{
-				if (UnityEditor.EditorUtility.DisplayDialog("A window currently editing this object is still open. Click OK to save the asset, close the window, and proceed opening this one.", "OK", "Cancel"))
-				{
-					Close();
-				}
-				else
-					throw new Exception("Editor failed to open.");
+				_currentlyOpenEditor = InstantiableEditorWindow.Instantiate(type, this);
+				_currentlyOpenEditor.Show();
 			}
-
-			/** <<============================================================>> **/
-
-			_currentlyOpenEditor = InstantiableEditorWindow.Instantiate(type, this);
-			_currentlyOpenEditor.Show();
+			else
+			{
+				if (_currentlyOpenEditor.GetType() == type)
+					_currentlyOpenEditor.Focus();
+				else
+					Editor.Utils.PromptConfirmation("A window currently editing this object is still open. Click OK to save the asset, close the window, and proceed opening this one.");
+			}
 
 			return _currentlyOpenEditor;
 		}
@@ -130,7 +128,7 @@ namespace Cuberoot
 		public void AssertEditorType(Type type)
 		{
 			if (!UsableEditorTypes.Contains(type))
-				throw new KeyNotFoundException($"\"{filePath}\" ({GetType()}) cannot be opened with \"{type}\".");
+				throw new Exception($"\"{filePath}\" ({GetType()}) cannot be opened with \"{type}\".");
 		}
 		#endregion
 #endif

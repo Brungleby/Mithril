@@ -27,8 +27,9 @@ namespace Cuberoot.Editor
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
+	[System.Serializable]
 
-	public class CustomNode : Node
+	public class CustomNode : Node, ISerializable
 	{
 		#region Data
 
@@ -64,6 +65,16 @@ namespace Cuberoot.Editor
 
 		#endregion
 
+		#region ISerializable
+
+		public string Serialize() =>
+			JsonUtility.ToJson(GetSerializableVersion());
+
+		public virtual object GetSerializableVersion() =>
+			new NodeGraphEditableObject.NodeData(this);
+
+		#endregion
+
 		#region
 
 		public void RefreshAll()
@@ -82,6 +93,9 @@ namespace Cuberoot.Editor
 
 			// this.
 		}
+
+		public override bool IsCopiable() =>
+			!IsPredefined;
 
 		#endregion
 
@@ -166,6 +180,23 @@ namespace Cuberoot.Editor
 			CreatePort<bool>(name ?? "In", Direction.Input, Port.Capacity.Multi);
 		public Port CreateExecutiveOutputPort(string name = null) =>
 			CreatePort<bool>(name ?? "Out", Direction.Output, Port.Capacity.Single);
+
+		#endregion
+
+		#region Edge Handling
+
+		public List<Edge> GetAllConnectedEdges()
+		{
+			var __result = new List<Edge>();
+			var __ports = GetAllPorts();
+
+			foreach (var iPort in __ports)
+			{
+				__result.AddRange(iPort.connections);
+			}
+
+			return __result;
+		}
 
 		#endregion
 

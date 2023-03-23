@@ -30,6 +30,26 @@ namespace Cuberoot.Editor
 
 	public class CustomNodeGraphView : GraphView
 	{
+		#region Inner Classes
+		[Serializable]
+
+		private struct Clipboard : ISerializable
+		{
+			[SerializeField]
+			private object[] elements;
+
+			public Clipboard(IEnumerable<ISerializable> elements)
+			{
+				this.elements = elements.ToArray();
+			}
+
+			// public string Serialize()
+			// {
+			// 	foreach()
+			// }
+		}
+
+		#endregion
 		#region Data
 
 		#region
@@ -76,6 +96,10 @@ namespace Cuberoot.Editor
 			this.AddManipulator(new RectangleSelector());
 			// this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
 
+			deleteSelection += OnDelete;
+			unserializeAndPaste += OnPaste;
+			serializeGraphElements += OnCopy;
+
 			RegisterCallback<MouseMoveEvent>(OnMouseMove);
 
 			var __background = new GridBackground();
@@ -95,19 +119,39 @@ namespace Cuberoot.Editor
 
 		#region Overrides
 
-		protected override bool canDeleteSelection
-		{
-			get
-			{
-				foreach (var i in selection)
-				{
-					if (i is CustomNode iNode && iNode.IsPredefined)
-						return false;
-				}
+		// protected override bool canCutSelection => base.canCutSelection;
 
-				return base.canDeleteSelection;
-			}
-		}
+		protected override bool canPaste => true;
+
+		// protected override bool canDuplicateSelection
+		// {
+		// 	get
+		// 	{
+		// 		foreach (var i in selection)
+		// 			if (i is CustomNode iNode && iNode.IsPredefined)
+		// 				return false;
+
+		// 		return base.canDuplicateSelection;
+		// 	}
+		// }
+
+		// protected override bool canDeleteSelection
+		// {
+		// 	get
+		// 	{
+		// 		foreach (var i in selection)
+		// 		{
+		// 			if (i is CustomNode iNode && iNode.IsPredefined)
+		// 				return false;
+		// 		}
+
+		// 		return base.canDeleteSelection;
+		// 	}
+		// }
+
+		// protected override bool canCopySelection => base.canCopySelection;
+
+
 
 		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
 		{
@@ -147,6 +191,14 @@ namespace Cuberoot.Editor
 
 		#endregion
 		#region Node Handling
+
+		#region Predefined Nodes
+
+		public virtual void CreatePredefinedNodes() { }
+
+		#endregion
+
+		#region Creation
 
 		public CustomNode CreateNewNode(Type type, Guid guid, Rect rect, bool invokeOnModified = true)
 		{
@@ -205,6 +257,76 @@ namespace Cuberoot.Editor
 		where T : CustomNode, new() =>
 			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
 
+
+		#endregion
+
+		#region Duplication / Cut / Paste
+
+		private string OnCopy(IEnumerable<GraphElement> elements)
+		{
+			var __serializableElements = elements
+				.Where(i => i is ISerializable)
+				.Cast<ISerializable>()
+			;
+
+			Debug.Log(__serializableElements.AllToString());
+
+			ISerializable __clipboard = new Clipboard(__serializableElements);
+			var __data = __clipboard.Serialize();
+
+			Debug.Log(__data);
+
+			// ISerializable __node = (CustomNode)elements
+			// 	.Where(i => i is CustomNode)
+			// 	.First()
+			// ;
+
+			// Debug.Log(__node.Serialize());
+
+			// GUIUtility.systemCopyBuffer = __result;
+			// return __result;
+
+			return GUIUtility.systemCopyBuffer;
+		}
+
+		private void OnPaste(string operationName, string data)
+		{
+
+
+
+		}
+
+		#endregion
+
+		#region Modification
+
+
+
+		#endregion
+
+		#region Deletion
+
+		private void OnDelete(string operationName, AskUser askUser)
+		{
+			var __toRemove = new List<GraphElement>();
+			foreach (GraphElement i in selection)
+			{
+				if (i is CustomNode iNode)
+				{
+					if (iNode.IsPredefined)
+						continue;
+
+					var __connectedEdges = iNode.GetAllConnectedEdges();
+
+					__toRemove.AddRange(__connectedEdges);
+				}
+
+				__toRemove.Add(i);
+			}
+
+			DeleteElements(__toRemove);
+		}
+
 		public void ClearAllNodes()
 		{
 			var __nodes = nodes.Cast<CustomNode>();
@@ -232,7 +354,12 @@ namespace Cuberoot.Editor
 			ClearAllNodes();
 		}
 
-		public virtual void CreatePredefinedNodes() { }
+
+
+
+		#endregion
+
+		#region Query
 
 		public CustomNode FindNode(Guid guid)
 		{
@@ -242,6 +369,8 @@ namespace Cuberoot.Editor
 
 			throw new System.Exception($"Node with GUID {guid} was not found in {this.name}.");
 		}
+
+		#endregion
 
 		#endregion
 		#region Utils

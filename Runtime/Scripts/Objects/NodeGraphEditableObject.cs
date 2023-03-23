@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
 using Cuberoot.Editor;
@@ -186,8 +185,6 @@ namespace Cuberoot
 			{
 				var iEdge = edges[i];
 				this.edges[i] = iEdge;
-
-				Debug.Log($"Edge in guid: \"{this.edges[i].nPort.NodeGuid}\", Edge out guid: \"{this.edges[i].oPort.NodeGuid}\"");
 			}
 		}
 #endif
