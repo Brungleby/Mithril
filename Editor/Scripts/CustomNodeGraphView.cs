@@ -20,6 +20,9 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
+using NodeData = Cuberoot.NodeGraphEditableObject.NodeData;
+using EdgeData = Cuberoot.NodeGraphEditableObject.EdgeData;
+
 #endregion
 
 namespace Cuberoot.Editor
@@ -31,22 +34,38 @@ namespace Cuberoot.Editor
 	public class CustomNodeGraphView : GraphView
 	{
 		#region Inner Classes
+
 		[Serializable]
 
 		private struct Clipboard : ISerializable
 		{
 			[SerializeField]
-			private object[] elements;
+			public NodeData[] nodeData;
 
-			public Clipboard(IEnumerable<ISerializable> elements)
+			[SerializeField]
+			public EdgeData[] edgeData;
+
+			[SerializeField]
+			public Vector2 averagePosition;
+
+			public Clipboard(IEnumerable<GraphElement> elements)
 			{
-				this.elements = elements.ToArray();
-			}
+				var __nodes = new List<NodeData>();
+				var __edges = new List<EdgeData>();
 
-			// public string Serialize()
-			// {
-			// 	foreach()
-			// }
+				foreach (var iElement in elements)
+				{
+					if (iElement is CustomNode iNode)
+						__nodes.Add(iNode);
+					else if (iElement is Edge iEdge)
+						__edges.Add(iEdge);
+				}
+
+				nodeData = __nodes.ToArray();
+				edgeData = __edges.ToArray();
+
+				averagePosition = __nodes.Select(i => i.Rect.position).Average();
+			}
 		}
 
 		#endregion
@@ -250,8 +269,13 @@ namespace Cuberoot.Editor
 			return __node;
 		}
 
-		public CustomNode CreateNewNode(NodeGraphEditableObject.NodeData data) =>
-			CreateNewNode(Type.GetType(data.SubtypeName), data.Guid, data.Rect, data.Title, false);
+		public CustomNode CreateNewNode(NodeGraphEditableObject.NodeData data, bool createNewGuid = false) =>
+			CreateNewNode(
+				Type.GetType(data.SubtypeName),
+				createNewGuid ? Guid.Generate() : data.Guid,
+				data.Rect, data.Title, false
+			)
+		;
 
 		public T CreateNewNode<T>(Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
 		where T : CustomNode, new() =>
@@ -260,47 +284,99 @@ namespace Cuberoot.Editor
 
 		#endregion
 
-		#region Duplication / Cut / Paste
+		#region Dupe / Cut / Copy / Paste
 
 		private string OnCopy(IEnumerable<GraphElement> elements)
 		{
-			var __serializableElements = elements
-				.Where(i => i is ISerializable)
-				.Cast<ISerializable>()
-			;
+			ISerializable __clipboard = new Clipboard(elements);
 
-			Debug.Log(__serializableElements.AllToString());
-
-			ISerializable __clipboard = new Clipboard(__serializableElements);
-			var __data = __clipboard.Serialize();
-
-			Debug.Log(__data);
-
-			// ISerializable __node = (CustomNode)elements
-			// 	.Where(i => i is CustomNode)
-			// 	.First()
-			// ;
-
-			// Debug.Log(__node.Serialize());
-
-			// GUIUtility.systemCopyBuffer = __result;
-			// return __result;
+			Editor.Clipboard.Copy(__clipboard);
 
 			return GUIUtility.systemCopyBuffer;
 		}
 
 		private void OnPaste(string operationName, string data)
 		{
+			var __clipboard = Editor.Clipboard.PasteText<Clipboard>(data);
 
+			OnPaste(__clipboard);
+		}
 
+		private void OnPaste(Clipboard clipboard)
+		{
+			/** <<============================================================>> **/
 
+			var __guidLinks = new MapField<Guid, Guid>();
+
+			/** <<============================================================>> **/
+
+			var __nodes = new List<CustomNode>();
+
+			var __deltaPosition = mousePosition - clipboard.averagePosition;
+
+			foreach (var iNodeData in clipboard.nodeData)
+			{
+				var iNode = CreateNewNode(iNodeData, true);
+				iNode.SetPositionOnly(iNodeData.Rect.position + __deltaPosition);
+
+				__nodes.Add(iNode);
+				__guidLinks.Add((iNodeData.Guid, iNode.Guid));
+			}
+
+			/** <<============================================================>> **/
+
+			var __edges = new List<Edge>();
+
+			foreach (var iEdgeData in clipboard.edgeData)
+			{
+				var __linkData = iEdgeData;
+
+				__linkData.nPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.nPort.NodeGuid);
+				__linkData.oPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.oPort.NodeGuid);
+
+				try
+				{ __edges.Add(CreateEdge(__linkData)); }
+				catch
+				{ continue; }
+			}
+
+			/** <<============================================================>> **/
+
+			var __newSelection = new List<ISelectable>();
+
+			__newSelection.AddRange(__nodes);
+			__newSelection.AddRange(__edges);
+
+			this.SetSelection(__newSelection);
 		}
 
 		#endregion
 
 		#region Modification
 
+		public Edge CreateEdge(EdgeData edge)
+		{
+			var nPort = FindNode(edge.nPort.NodeGuid).FindPort(edge.nPort.PortName);
+			var oPort = FindNode(edge.oPort.NodeGuid).FindPort(edge.oPort.PortName);
 
+			return ConnectPorts(nPort, oPort);
+		}
+
+		public Edge ConnectPorts(Port input, Port output)
+		{
+			var __edge = new Edge
+			{
+				input = input,
+				output = output
+			};
+
+			__edge?.input.Connect(__edge);
+			__edge?.output.Connect(__edge);
+
+			Add(__edge);
+
+			return __edge;
+		}
 
 		#endregion
 

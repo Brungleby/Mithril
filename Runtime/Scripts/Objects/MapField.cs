@@ -47,6 +47,19 @@ public class MapField<Key, Value> : IDictionary<Key, Value>
 		}
 	}
 
+	public MapField(IEnumerable<(Key, Value)> pairs)
+	{
+		_Dictionary = new();
+
+		var __fieldPairs = new List<FieldKeyValuePair<Key, Value>>();
+		foreach (var iPair in pairs)
+		{
+			var iFieldPair = new FieldKeyValuePair<Key, Value> { Key = iPair.Item1, Value = iPair.Item2 };
+			__fieldPairs.Add(iFieldPair);
+			_Dictionary.Add(iFieldPair.Key, iFieldPair.Value);
+		}
+	}
+
 	#endregion
 	#region Fields
 
@@ -70,8 +83,10 @@ public class MapField<Key, Value> : IDictionary<Key, Value>
 
 	public void Add(Key key, Value value) => _Dictionary.Add(key, value);
 	public void Add(KeyValuePair<Key, Value> item) => _Dictionary.Add(item.Key, item.Value);
+	public void Add((Key, Value) item) => _Dictionary.Add(item.Item1, item.Item2);
 	public void Clear() => _Dictionary.Clear();
 	public bool Contains(KeyValuePair<Key, Value> item) => _Dictionary.ContainsKey(item.Key);
+	public bool Contains((Key, Value) item) => _Dictionary.ContainsKey(item.Item1);
 	public bool ContainsKey(Key key) => _Dictionary.ContainsKey(key);
 	public void CopyTo(KeyValuePair<Key, Value>[] array, int arrayIndex)
 	{
@@ -80,7 +95,14 @@ public class MapField<Key, Value> : IDictionary<Key, Value>
 	public IEnumerator<KeyValuePair<Key, Value>> GetEnumerator() => _Dictionary.GetEnumerator();
 	public bool Remove(Key key) => _Dictionary.Remove(key);
 	public bool Remove(KeyValuePair<Key, Value> item) => _Dictionary.Remove(item.Key);
+	public bool Remove((Key, Value) item) => _Dictionary.Remove(item.Item1);
 	public bool TryGetValue(Key key, out Value value) => _Dictionary.TryGetValue(key, out value);
+	public Value TryGetValue(Key key)
+	{
+		Value __value;
+		_Dictionary.TryGetValue(key, out __value);
+		return __value;
+	}
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

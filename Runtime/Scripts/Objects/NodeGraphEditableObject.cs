@@ -34,7 +34,7 @@ namespace Cuberoot
 		///</summary>
 		[Serializable]
 
-		public struct NodeData
+		public struct NodeData : ISerializable
 		{
 			public Guid Guid;
 			public string SubtypeName;
@@ -87,7 +87,7 @@ namespace Cuberoot
 
 		[Serializable]
 
-		public struct PortData
+		public struct PortData : ISerializable
 		{
 			public Guid NodeGuid;
 			public string PortName;
@@ -129,7 +129,7 @@ namespace Cuberoot
 		///</summary>
 		[Serializable]
 
-		public struct EdgeData
+		public struct EdgeData : ISerializable
 		{
 			public PortData nPort;
 			public PortData oPort;

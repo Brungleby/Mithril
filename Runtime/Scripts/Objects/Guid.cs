@@ -40,6 +40,14 @@ namespace Cuberoot
 
 		#region Constructors
 
+		// public Guid()
+		// {
+		// 	this._guid = GUID.Generate().ToString();
+		// }
+
+		public static Guid Generate() =>
+			new Guid(GUID.Generate());
+
 		public Guid(GUID guid)
 		{
 			this._guid = guid.ToString();
@@ -74,14 +82,8 @@ namespace Cuberoot
 
 		#endregion
 
-		public override bool Equals(object obj)
-		{
-			return _guid.Equals(((Guid)obj)._guid);
-			// if (obj == null || obj.GetType() != _guid.GetType())
-			// 	return false;
-
-			// return string.Equals(_guid, ((Guid)obj)._guid);
-		}
+		public override bool Equals(object obj) =>
+			_guid.Equals(((Guid)obj)._guid);
 
 		public override int GetHashCode() =>
 			_guid.GetHashCode();

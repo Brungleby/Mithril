@@ -26,35 +26,69 @@ namespace Cuberoot.Editor
 
 	public static class Clipboard
 	{
-		#region Data
+		#region Exception
 
-		#region
-
-
-
-		#endregion
+		public class UnserializableException : System.Exception
+		{
+			public UnserializableException() { }
+			public UnserializableException(object obj) : base($"{obj} is not safely serializable. Please consider implementing the Cuberoot.ISerializable interface for this object.") { }
+		}
 
 		#endregion
 		#region Methods
 
 		#region
 
-		public static void Copy(ISerializable obj) =>
-			GUIUtility.systemCopyBuffer = obj.Serialize();
+		public static void Copy(string text)
+		{
+			GUIUtility.systemCopyBuffer = text;
+		}
+		public static void Copy(ISerializable obj)
+		{
+			var __data = obj.Serialize();
+
+			AssertValidJson(obj, __data);
+
+			Copy(__data);
+		}
 		public static void Copy(object obj)
 		{
-			var __data = JsonUtility.ToJson(obj);
+			var __data = JsonUtility.ToJson(obj, true);
 
-			if (JsonUtility.FromJson<object>(__data) == null)
-				throw new Exception($"{obj} is not safely serializable. Please consider implementing the Cuberoot.ISerializable interface for this object.");
+			AssertValidJson(obj, __data);
 
-			GUIUtility.systemCopyBuffer = __data;
+			Copy(__data);
 		}
 
-		public static object Paste(string data) =>
-			JsonUtility.FromJson<object>(data);
-		public static T Paste<T>(string data) =>
+		public static object Paste() =>
+			JsonUtility.FromJson<object>(GUIUtility.systemCopyBuffer);
+		public static T Paste<T>() =>
+			JsonUtility.FromJson<T>(GUIUtility.systemCopyBuffer);
+		public static string PasteText() =>
+			GUIUtility.systemCopyBuffer;
+		public static T PasteText<T>(string data) =>
 			JsonUtility.FromJson<T>(data);
+
+		public static bool IsValidJson(string text) =>
+			text != "{}";
+		public static void AssertValidJson(string text)
+		{
+			if (IsValidJson(text))
+				return;
+			throw new UnserializableException();
+
+		}
+		public static void AssertValidJson(object query, string text)
+		{
+			try
+			{
+				AssertValidJson(text);
+			}
+			catch
+			{
+				throw new UnserializableException(query);
+			}
+		}
 
 		#endregion
 

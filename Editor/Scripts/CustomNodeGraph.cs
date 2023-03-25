@@ -99,9 +99,6 @@ namespace Cuberoot.Editor
 			var __nodes = __data.nodes.ToList();
 			var __predefinedNodes = GetPredefinedNodes();
 
-			if (__nodes.Count == 0)
-				return;
-
 			/** <<============================================================>> **/
 
 			foreach (var iPredefinedNode in __predefinedNodes)
@@ -116,40 +113,15 @@ namespace Cuberoot.Editor
 			}
 
 			foreach (var iNode in __nodes.Where(i => !i.IsPredefined))
-			{
-				var __node = _graph.CreateNewNode(iNode);
-			}
+				_graph.CreateNewNode(iNode);
 
 			/** <<============================================================>> **/
 
-			var __edges = __data.edges;
-			foreach (var iEdge in __edges)
-			{
-				var nNode = _graph.FindNode(iEdge.nPort.NodeGuid);
-				var oNode = _graph.FindNode(iEdge.oPort.NodeGuid);
-
-				var nPort = nNode.FindPort(iEdge.nPort.PortName);
-				var oPort = oNode.FindPort(iEdge.oPort.PortName);
-
-				ConnectPorts(nPort, oPort);
-			}
+			foreach (var iEdge in __data.edges)
+				_graph.CreateEdge(iEdge);
 		}
 
 		#region
-
-		private void ConnectPorts(Port input, Port output)
-		{
-			var __edge = new Edge
-			{
-				input = input,
-				output = output
-			};
-
-			__edge?.input.Connect(__edge);
-			__edge?.output.Connect(__edge);
-
-			_graph.Add(__edge);
-		}
 
 		#endregion
 

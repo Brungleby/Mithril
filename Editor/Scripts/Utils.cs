@@ -10,8 +10,10 @@
 #region Includes
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 
 using System.Text;
 
@@ -33,11 +35,35 @@ namespace Cuberoot.Editor
 	{
 		#region GraphView
 
+		public static Vector2 GetPositionOnly(this GraphElement element) =>
+			element.GetPosition().position;
+
+		public static Vector2 GetSizeOnly(this GraphElement element) =>
+			element.GetPosition().size;
+
 		public static void SetPositionOnly(this GraphElement element, Vector2 position) =>
-			element.SetPosition(new Rect(position, element.GetPosition().size));
+			element.SetPosition(new Rect(position, element.GetSizeOnly()));
 
 		public static void SetSizeOnly(this GraphElement element, Vector2 size) =>
-			element.SetPosition(new Rect(element.GetPosition().position, size));
+			element.SetPosition(new Rect(element.GetPositionOnly(), size));
+
+		public static void AddToSelection(this GraphView graph, IEnumerable<ISelectable> selectables)
+		{
+			foreach (var iSelectable in selectables)
+				graph.AddToSelection(iSelectable);
+		}
+
+		public static void SetSelection(this GraphView graph, ISelectable selectable)
+		{
+			graph.ClearSelection();
+			graph.AddToSelection(selectable);
+		}
+
+		public static void SetSelection(this GraphView graph, IEnumerable<ISelectable> selectable)
+		{
+			graph.ClearSelection();
+			graph.AddToSelection(selectable);
+		}
 
 		#endregion
 		#region EditorWindow

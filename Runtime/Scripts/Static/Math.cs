@@ -10,6 +10,7 @@
 #region Includes
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -495,6 +496,25 @@ namespace Cuberoot
 
 		public static bool Approx(this in Vector3 a, in Vector3 b, in float d = DEFAULT_APPROX_THRESHOLD) =>
 			a.x.Approx(b.x, d) && a.y.Approx(b.y, d) && a.z.Approx(b.z, d);
+
+		#endregion
+		#region Average
+
+		public static float Average(this IEnumerable<float> values) =>
+			System.Linq.Enumerable.Average(values);
+
+		public static Vector2 Average(this IEnumerable<Vector2> positions) =>
+			new Vector2(
+				positions.Select(i => i.x).Average(),
+				positions.Select(i => i.y).Average()
+			);
+
+		public static Vector3 Average(this IEnumerable<Vector3> positions) =>
+			new Vector3(
+				positions.Select(i => i.x).Average(),
+				positions.Select(i => i.y).Average(),
+				positions.Select(i => i.z).Average()
+			);
 
 		#endregion
 
