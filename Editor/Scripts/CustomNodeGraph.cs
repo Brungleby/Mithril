@@ -41,18 +41,18 @@ namespace Cuberoot.Editor
 		#region Methods
 
 		private List<Edge> GetEdges() => _graph.edges.ToList();
-		private List<CustomNode> GetPredefinedNodes() => _graph.nodes
-			.Cast<CustomNode>()
+		private List<Node> GetPredefinedNodes() => _graph.nodes
+			.Cast<Node>()
 			.Where(i => i.IsPredefined)
 			.ToList()
 		;
-		private List<CustomNode> GetNodes() => _graph.nodes
-			.Cast<CustomNode>()
+		private List<Node> GetNodes() => _graph.nodes
+			.Cast<Node>()
 			.Where(i => !i.IsPredefined)
 			.ToList()
 		;
-		private List<CustomNode> GetAllNodes() => _graph.nodes
-			.Cast<CustomNode>()
+		private List<Node> GetAllNodes() => _graph.nodes
+			.Cast<Node>()
 			.ToList()
 		;
 
@@ -83,7 +83,7 @@ namespace Cuberoot.Editor
 
 		protected override void PushChangesToObject(ref EditableObject data)
 		{
-			var __data = (NodeGraphEditableObject)data;
+			var __data = (NodeGraphData)data;
 
 			__data.CompileNodes(GetAllNodes());
 			__data.CompileEdges(GetEdges());
@@ -95,7 +95,7 @@ namespace Cuberoot.Editor
 		{
 			_graph.CreatePredefinedNodes();
 
-			var __data = (NodeGraphEditableObject)data;
+			var __data = (NodeGraphData)data;
 			var __nodes = __data.nodes.ToList();
 			var __predefinedNodes = GetPredefinedNodes();
 

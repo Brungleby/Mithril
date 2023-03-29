@@ -20,8 +20,8 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-using NodeData = Cuberoot.NodeGraphEditableObject.NodeData;
-using EdgeData = Cuberoot.NodeGraphEditableObject.EdgeData;
+using NodeData = Cuberoot.NodeData;
+using EdgeData = Cuberoot.EdgeData;
 
 #endregion
 
@@ -55,8 +55,8 @@ namespace Cuberoot.Editor
 
 				foreach (var iElement in elements)
 				{
-					if (iElement is CustomNode iNode)
-						__nodes.Add(iNode);
+					if (iElement is Node iNode)
+						__nodes.Add(NodeData.CreateFrom(iNode));
 					else if (iElement is Edge iEdge)
 						__edges.Add(iEdge);
 				}
@@ -90,7 +90,7 @@ namespace Cuberoot.Editor
 			var __result = new List<SearchTreeEntry>
 			{
 				new SearchTreeGroupEntry(new GUIContent("Available Nodes"), 0),
-					new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(CustomNode) },
+					new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(Node) },
 
 			};
 
@@ -138,39 +138,7 @@ namespace Cuberoot.Editor
 
 		#region Overrides
 
-		// protected override bool canCutSelection => base.canCutSelection;
-
 		protected override bool canPaste => true;
-
-		// protected override bool canDuplicateSelection
-		// {
-		// 	get
-		// 	{
-		// 		foreach (var i in selection)
-		// 			if (i is CustomNode iNode && iNode.IsPredefined)
-		// 				return false;
-
-		// 		return base.canDuplicateSelection;
-		// 	}
-		// }
-
-		// protected override bool canDeleteSelection
-		// {
-		// 	get
-		// 	{
-		// 		foreach (var i in selection)
-		// 		{
-		// 			if (i is CustomNode iNode && iNode.IsPredefined)
-		// 				return false;
-		// 		}
-
-		// 		return base.canDeleteSelection;
-		// 	}
-		// }
-
-		// protected override bool canCopySelection => base.canCopySelection;
-
-
 
 		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
 		{
@@ -178,7 +146,12 @@ namespace Cuberoot.Editor
 
 			ports.ForEach((port) =>
 			{
-				if (startPort != port && startPort.node != port.node)
+				if (
+					startPort != port &&
+					startPort.node != port.node &&
+					startPort.direction != port.direction &&
+					startPort.portType == port.portType
+				)
 					__result.Add(port);
 			});
 
@@ -219,9 +192,9 @@ namespace Cuberoot.Editor
 
 		#region Creation
 
-		public CustomNode CreateNewNode(Type type, Guid guid, Rect rect, bool invokeOnModified = true)
+		public Node CreateNewNode(Type type, Guid guid, Rect rect, bool invokeOnModified = true)
 		{
-			var __node = (CustomNode)Activator.CreateInstance(type);
+			var __node = (Node)Activator.CreateInstance(type);
 
 			__node.Guid = guid;
 			__node.title = __node.DefaultName;
@@ -235,9 +208,9 @@ namespace Cuberoot.Editor
 
 			return __node;
 		}
-		public CustomNode CreateNewNode(Type type, Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
+		public Node CreateNewNode(Type type, Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
 		{
-			var __node = (CustomNode)Activator.CreateInstance(type);
+			var __node = (Node)Activator.CreateInstance(type);
 
 			if (guid != null)
 				__node.Guid = guid.Value;
@@ -255,7 +228,7 @@ namespace Cuberoot.Editor
 
 			return __node;
 		}
-		public CustomNode CreateNewNodeAtCursor(Type type, Guid? guid = null, Vector2? size = null, string title = null, bool invokeOnModified = true)
+		public Node CreateNewNodeAtCursor(Type type, Guid? guid = null, Vector2? size = null, string title = null, bool invokeOnModified = true)
 		{
 			var __node = CreateNewNode(type, guid, null, title, invokeOnModified);
 
@@ -269,7 +242,7 @@ namespace Cuberoot.Editor
 			return __node;
 		}
 
-		public CustomNode CreateNewNode(NodeGraphEditableObject.NodeData data, bool createNewGuid = false) =>
+		public Node CreateNewNode(NodeData data, bool createNewGuid = false) =>
 			CreateNewNode(
 				Type.GetType(data.SubtypeName),
 				createNewGuid ? Guid.Generate() : data.Guid,
@@ -278,7 +251,7 @@ namespace Cuberoot.Editor
 		;
 
 		public T CreateNewNode<T>(Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
-		where T : CustomNode, new() =>
+		where T : Node, new() =>
 			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
 
 
@@ -310,7 +283,7 @@ namespace Cuberoot.Editor
 
 			/** <<============================================================>> **/
 
-			var __nodes = new List<CustomNode>();
+			var __nodes = new List<Node>();
 
 			var __deltaPosition = mousePosition - clipboard.averagePosition;
 
@@ -387,7 +360,7 @@ namespace Cuberoot.Editor
 			var __toRemove = new List<GraphElement>();
 			foreach (GraphElement i in selection)
 			{
-				if (i is CustomNode iNode)
+				if (i is Node iNode)
 				{
 					if (iNode.IsPredefined)
 						continue;
@@ -405,7 +378,7 @@ namespace Cuberoot.Editor
 
 		public void ClearAllNodes()
 		{
-			var __nodes = nodes.Cast<CustomNode>();
+			var __nodes = nodes.Cast<Node>();
 			foreach (var iNode in __nodes)
 			{
 				if (iNode != null)
@@ -437,10 +410,10 @@ namespace Cuberoot.Editor
 
 		#region Query
 
-		public CustomNode FindNode(Guid guid)
+		public Node FindNode(Guid guid)
 		{
 			foreach (var i in nodes)
-				if (i is CustomNode iNode && iNode.Guid == guid)
+				if (i is Node iNode && iNode.Guid == guid)
 					return iNode;
 
 			throw new System.Exception($"Node with GUID {guid} was not found in {this.name}.");

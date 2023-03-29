@@ -29,7 +29,7 @@ namespace Cuberoot.Editor
 	///</summary>
 	[System.Serializable]
 
-	public class CustomNode : Node, ISerializable
+	public class Node : UnityEditor.Experimental.GraphView.Node, ISerializable
 	{
 		#region Data
 
@@ -52,7 +52,7 @@ namespace Cuberoot.Editor
 
 		#region Construction
 
-		public CustomNode()
+		public Node()
 		{
 			Guid = GUID.Generate();
 			this.title = DefaultName;
@@ -67,11 +67,12 @@ namespace Cuberoot.Editor
 
 		#region ISerializable
 
-		public string Serialize() =>
-			JsonUtility.ToJson(GetSerializableVersion());
+		public string Serialize()
+		{
 
-		public virtual object GetSerializableVersion() =>
-			new NodeGraphEditableObject.NodeData(this);
+
+			return JsonUtility.ToJson(NodeData.CreateFrom(this));
+		}
 
 		#endregion
 
@@ -144,7 +145,7 @@ namespace Cuberoot.Editor
 			CreatePort(typeof(bool), portName, direction, capacity, orientation);
 		public Port CreatePort<T>(string name, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
 			CreatePort(typeof(T), name, direction, capacity, orientation);
-		public Port CreatePort(NodeGraphEditableObject.PortData data) =>
+		public Port CreatePort(PortData data) =>
 			CreatePort(System.Type.GetType(data.Type), data.PortName, data.Direction, data.Capacity, data.Orientation);
 
 
@@ -177,9 +178,9 @@ namespace Cuberoot.Editor
 		}
 
 		public Port CreateExecutiveInputPort(string name = null) =>
-			CreatePort<bool>(name ?? "In", Direction.Input, Port.Capacity.Multi);
+			CreatePort<Exec>(name ?? "In", Direction.Input, Port.Capacity.Multi);
 		public Port CreateExecutiveOutputPort(string name = null) =>
-			CreatePort<bool>(name ?? "Out", Direction.Output, Port.Capacity.Single);
+			CreatePort<Exec>(name ?? "Out", Direction.Output, Port.Capacity.Single);
 
 		#endregion
 
@@ -202,4 +203,6 @@ namespace Cuberoot.Editor
 
 		#endregion
 	}
+
+	public struct Exec { }
 }
