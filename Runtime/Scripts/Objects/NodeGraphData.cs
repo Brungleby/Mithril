@@ -99,7 +99,7 @@ namespace Cuberoot
 #if UNITY_EDITOR
 		public virtual void Init(Node node)
 		{
-			Guid = node.Guid;
+			Guid = node.guid;
 
 			SubtypeName = node.GetType().AssemblyQualifiedName;
 			Title = node.title;
@@ -165,7 +165,7 @@ namespace Cuberoot
 
 		public PortData(Port port)
 		{
-			NodeGuid = ((Node)port.node).Guid;
+			NodeGuid = ((Node)port.node).guid;
 			PortName = port.portName;
 			Direction = port.direction;
 			Orientation = port.orientation;

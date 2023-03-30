@@ -33,19 +33,55 @@ namespace Cuberoot.Editor
 	{
 		#region Data
 
-		#region Static
+		public static readonly float DEFAULT_NODE_WIDTH = 150f;
+		public static readonly float NODE_HEADER_HEIGHT = 50f;
+		public static readonly float NODE_PORT_HEIGHT = 25f;
+		public static readonly float TEXT_LINE_HEIGHT = 15f;
 
-		public static readonly Vector2 DEFAULT_NODE_SIZE = new Vector2(150f, 200f);
+		public static Vector2 DEFAULT_NODE_SIZE => new Vector2(
+			DEFAULT_NODE_WIDTH,
+			NODE_HEADER_HEIGHT + NODE_PORT_HEIGHT
+		);
 
-		#endregion
-		#region
+		/** <<============================================================>> **/
 
-		public Guid Guid;
+		public Guid guid;
+
 		public bool IsPredefined = false;
 
 		public UnityEvent OnModified;
 
-		#endregion
+		/** <<============================================================>> **/
+
+		public virtual string DefaultName => "New Custom Node";
+		public virtual Orientation DefaultOrientation => Orientation.Horizontal;
+		public virtual Vector2 DefaultSize => new Vector2(
+			DEFAULT_NODE_WIDTH,
+			NODE_HEADER_HEIGHT + (NODE_PORT_HEIGHT * maxPortCount)
+		);
+
+		public Vector2 position
+		{
+			get => this.GetPositionOnly();
+			set => this.SetPositionOnly(value);
+		}
+		public Vector2 size
+		{
+			// get => this.GetSizeOnly();
+			// set => this.SetSizeOnly(value);
+			get => new Vector2(style.width.value.value, style.height.value.value);
+			set
+			{
+				style.width = value.x;
+				style.height = value.y;
+
+				contentContainer.style.width = value.x;
+				contentContainer.style.height = value.y;
+			}
+		}
+
+		public int maxPortCount =>
+			Math.Max(GetInputPorts().Count, GetOutputPorts().Count);
 
 		#endregion
 		#region Methods
@@ -54,25 +90,16 @@ namespace Cuberoot.Editor
 
 		public Node()
 		{
-			Guid = GUID.Generate();
+			this.guid = Guid.GenerateNew();
 			this.title = DefaultName;
-			SetPosition(new Rect(Vector2.zero, DefaultSize));
 		}
-
-		public virtual string DefaultName => "New Custom Node";
-		public virtual Vector2 DefaultSize => DEFAULT_NODE_SIZE;
-		public virtual Orientation DefaultOrientation => Orientation.Horizontal;
 
 		#endregion
 
 		#region ISerializable
 
-		public string Serialize()
-		{
-
-
-			return JsonUtility.ToJson(NodeData.CreateFrom(this));
-		}
+		public string Serialize() =>
+			JsonUtility.ToJson(NodeData.CreateFrom(this));
 
 		#endregion
 
@@ -82,17 +109,26 @@ namespace Cuberoot.Editor
 		{
 			RefreshExpandedState();
 			RefreshPorts();
+			RefreshSize();
+
 		}
 
-		public virtual void InitializeFor(CustomNodeGraphView graph)
+		public virtual void Init(CustomNodeGraphView graph)
 		{
+			RefreshAll();
+
 			OnModified = new UnityEvent();
 			OnModified.AddListener(() =>
 			{
 				graph.OnModified.Invoke();
 			});
 
-			// this.
+		}
+
+		public void RefreshSize()
+		{
+			this.size = DefaultSize;
+			// contentContainer
 		}
 
 		public override bool IsCopiable() =>

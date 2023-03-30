@@ -109,12 +109,15 @@ namespace Cuberoot.Editor
 						.First()
 					;
 
-					iPredefinedNode.Guid = iMatchingPredefinedNodeData.Guid;
+					iPredefinedNode.guid = iMatchingPredefinedNodeData.Guid;
 					iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.Rect);
 				}
 
 			foreach (var iNode in __nodes.Where(i => !i.IsPredefined))
+			{
+				// Debug.Log(iNode.Rect);
 				_graph.CreateNewNode(iNode);
+			}
 
 			/** <<============================================================>> **/
 

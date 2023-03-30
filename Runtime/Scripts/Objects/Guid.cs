@@ -45,7 +45,7 @@ namespace Cuberoot
 		// 	this._guid = GUID.Generate().ToString();
 		// }
 
-		public static Guid Generate() =>
+		public static Guid GenerateNew() =>
 			new Guid(GUID.Generate());
 
 		public Guid(GUID guid)
@@ -81,6 +81,9 @@ namespace Cuberoot
 			!a.Equals(b);
 
 		#endregion
+
+		public string Serialize() =>
+			JsonUtility.ToJson(_guid);
 
 		public override bool Equals(object obj) =>
 			_guid.Equals(((Guid)obj)._guid);

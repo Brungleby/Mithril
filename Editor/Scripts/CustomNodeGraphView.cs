@@ -192,67 +192,53 @@ namespace Cuberoot.Editor
 
 		#region Creation
 
-		public Node CreateNewNode(Type type, Guid guid, Rect rect, bool invokeOnModified = true)
+		public Node CreateNewNode(Type type, Guid guid, Rect rect, string title = null, bool invokeOnModified = true)
 		{
 			var __node = (Node)Activator.CreateInstance(type);
 
-			__node.Guid = guid;
-			__node.title = __node.DefaultName;
-			__node.SetPosition(rect);
-			__node.InitializeFor(this);
+			__node.guid = guid;
+			__node.title = title;
+			__node.SetPositionOnly(rect.position);
 
 			AddElement(__node);
+			__node.Init(this);
+			__node.RefreshAll();
 
 			if (invokeOnModified)
 				OnModified.Invoke();
 
 			return __node;
 		}
-		public Node CreateNewNode(Type type, Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
-		{
-			var __node = (Node)Activator.CreateInstance(type);
+		public Node CreateNewNode(Type type, Guid guid) =>
+			CreateNewNode(type, guid, new Rect(Vector2.zero, Node.DEFAULT_NODE_SIZE));
+		public Node CreateNewNode(Type type) =>
+			CreateNewNode(type, Guid.GenerateNew());
 
-			if (guid != null)
-				__node.Guid = guid.Value;
-			if (rect != null)
-				__node.SetPosition(rect.Value);
-			if (title != null)
-				__node.title = title;
+		public T CreateNewNode<T>(Guid guid, Rect rect, string title = null, bool invokeOnModified = true)
+		where T : Node, new() =>
+			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
+		public T CreateNewNode<T>(Guid guid, string title = null, bool invokeOnModified = true)
+		where T : Node, new() =>
+			CreateNewNode<T>(guid, new Rect(Vector2.zero, Node.DEFAULT_NODE_SIZE), title, invokeOnModified);
+		public T CreateNewNode<T>(string title = null, bool invokeOnModified = true)
+		where T : Node, new() =>
+			CreateNewNode<T>(Guid.GenerateNew(), title, invokeOnModified);
 
-			__node.InitializeFor(this);
-
-			AddElement(__node);
-
-			if (invokeOnModified)
-				OnModified.Invoke();
-
-			return __node;
-		}
-		public Node CreateNewNodeAtCursor(Type type, Guid? guid = null, Vector2? size = null, string title = null, bool invokeOnModified = true)
-		{
-			var __node = CreateNewNode(type, guid, null, title, invokeOnModified);
-
-			__node.SetPosition(new Rect(
-				mousePosition,
-				(size != null) ?
-					size.Value :
-					__node.GetPosition().size
-			));
-
-			return __node;
-		}
 
 		public Node CreateNewNode(NodeData data, bool createNewGuid = false) =>
 			CreateNewNode(
 				Type.GetType(data.SubtypeName),
-				createNewGuid ? Guid.Generate() : data.Guid,
+				createNewGuid ? Guid.GenerateNew() : data.Guid,
 				data.Rect, data.Title, false
 			)
 		;
 
-		public T CreateNewNode<T>(Guid? guid = null, Rect? rect = null, string title = null, bool invokeOnModified = true)
-		where T : Node, new() =>
-			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
+		public Node CreateNewNodeAtCursor(Type type, Guid guid, Vector2 size, string title = null, bool invokeOnModified = true) =>
+			CreateNewNode(type, guid, new Rect(mousePosition, size), title, invokeOnModified);
+		public Node CreateNewNodeAtCursor(Type type, Guid guid) =>
+			CreateNewNodeAtCursor(type, guid, Node.DEFAULT_NODE_SIZE);
+		public Node CreateNewNodeAtCursor(Type type) =>
+			CreateNewNodeAtCursor(type, Guid.GenerateNew());
 
 
 		#endregion
@@ -293,7 +279,7 @@ namespace Cuberoot.Editor
 				iNode.SetPositionOnly(iNodeData.Rect.position + __deltaPosition);
 
 				__nodes.Add(iNode);
-				__guidLinks.Add((iNodeData.Guid, iNode.Guid));
+				__guidLinks.Add((iNodeData.Guid, iNode.guid));
 			}
 
 			/** <<============================================================>> **/
@@ -403,9 +389,6 @@ namespace Cuberoot.Editor
 			ClearAllNodes();
 		}
 
-
-
-
 		#endregion
 
 		#region Query
@@ -413,7 +396,7 @@ namespace Cuberoot.Editor
 		public Node FindNode(Guid guid)
 		{
 			foreach (var i in nodes)
-				if (i is Node iNode && iNode.Guid == guid)
+				if (i is Node iNode && iNode.guid == guid)
 					return iNode;
 
 			throw new System.Exception($"Node with GUID {guid} was not found in {this.name}.");
