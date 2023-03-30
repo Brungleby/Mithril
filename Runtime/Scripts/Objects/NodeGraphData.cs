@@ -86,39 +86,48 @@ namespace Cuberoot
 
 	public class NodeData : object, ISerializable
 	{
-		public Guid Guid;
-		public string SubtypeName;
-		public string Title;
-		public bool IsPredefined;
+		public Guid guid;
+		public string title;
+		public bool isPredefined;
 
 #if UNITY_EDITOR
-		public Rect Rect;
+		public Rect rect;
 #endif
+		public PortData[] ports;
 
-		public PortData[] Ports;
+		[SerializeField]
+		private string _nodeType;
+		public Type nodeType
+		{
+			get => Type.GetType(_nodeType);
+			set => _nodeType = value.AssemblyQualifiedName;
+		}
+
 #if UNITY_EDITOR
 		public virtual void Init(Node node)
 		{
-			Guid = node.guid;
+			guid = node.guid;
 
-			SubtypeName = node.GetType().AssemblyQualifiedName;
-			Title = node.title;
-			IsPredefined = node.IsPredefined;
+			nodeType = node.GetType();
+			title = node.title;
+			isPredefined = node.IsPredefined;
 
-			Rect = node.GetPosition();
+			rect = node.GetPosition();
 
-			Ports = GetPortsFrom(node);
+			ports = GetPortsFrom(node);
 		}
 
-		public static T CreateFrom<T>(Node node)
-		where T : NodeData, new()
+		private static NodeData CreateFrom(Type type, Node node)
 		{
-			var __result = new T();
+			var __result = (NodeData)Activator.CreateInstance(type);
 			__result.Init(node);
 			return __result;
 		}
 		public static NodeData CreateFrom(Node node) =>
-			CreateFrom<NodeData>(node);
+			CreateFrom(node.DataType, node);
+		public static T CreateFrom<T>(Node node)
+		where T : NodeData, new() =>
+			(T)CreateFrom(typeof(T), node);
 
 		public static PortData[] GetPortsFrom(Node node)
 		{
@@ -136,7 +145,7 @@ namespace Cuberoot
 		}
 #endif
 		public override string ToString() =>
-			Guid.ToString();
+			guid.ToString();
 	}
 
 	#endregion

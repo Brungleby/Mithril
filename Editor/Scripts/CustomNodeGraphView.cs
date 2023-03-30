@@ -64,7 +64,7 @@ namespace Cuberoot.Editor
 				nodeData = __nodes.ToArray();
 				edgeData = __edges.ToArray();
 
-				averagePosition = __nodes.Select(i => i.Rect.position).Average();
+				averagePosition = __nodes.Select(i => i.rect.position).Average();
 			}
 		}
 
@@ -192,20 +192,28 @@ namespace Cuberoot.Editor
 
 		#region Creation
 
+		private void AddNodeToView(Node node, bool invokeOnModified = true)
+		{
+			AddElement(node);
+			node.RefreshAll();
+
+			if (invokeOnModified)
+				OnModified.Invoke();
+		}
+
 		public Node CreateNewNode(Type type, Guid guid, Rect rect, string title = null, bool invokeOnModified = true)
 		{
 			var __node = (Node)Activator.CreateInstance(type);
 
+			__node.InitInGraph(this);
+
+			if (title != null)
+				__node.title = title;
+
 			__node.guid = guid;
-			__node.title = title;
 			__node.SetPositionOnly(rect.position);
 
-			AddElement(__node);
-			__node.Init(this);
-			__node.RefreshAll();
-
-			if (invokeOnModified)
-				OnModified.Invoke();
+			AddNodeToView(__node);
 
 			return __node;
 		}
@@ -225,13 +233,25 @@ namespace Cuberoot.Editor
 			CreateNewNode<T>(Guid.GenerateNew(), title, invokeOnModified);
 
 
-		public Node CreateNewNode(NodeData data, bool createNewGuid = false) =>
-			CreateNewNode(
-				Type.GetType(data.SubtypeName),
-				createNewGuid ? Guid.GenerateNew() : data.Guid,
-				data.Rect, data.Title, false
-			)
-		;
+		// public Node CreateNewNode(NodeData data, bool createNewGuid = false) =>
+		// 	CreateNewNode(
+		// 		Type.GetType(data.nodeType),
+		// 		createNewGuid ? Guid.GenerateNew() : data.guid,
+		// 		data.rect, data.title, false
+		// 	)
+		// ;
+		public Node CreateNewNode<T>(T data, bool createNewGUID = false)
+		where T : NodeData
+		{
+			var __node = (Node)Activator.CreateInstance(data.nodeType);
+
+			__node.Init(data);
+			__node.InitInGraph(this);
+
+			AddNodeToView(__node);
+
+			return __node;
+		}
 
 		public Node CreateNewNodeAtCursor(Type type, Guid guid, Vector2 size, string title = null, bool invokeOnModified = true) =>
 			CreateNewNode(type, guid, new Rect(mousePosition, size), title, invokeOnModified);
@@ -276,10 +296,10 @@ namespace Cuberoot.Editor
 			foreach (var iNodeData in clipboard.nodeData)
 			{
 				var iNode = CreateNewNode(iNodeData, true);
-				iNode.SetPositionOnly(iNodeData.Rect.position + __deltaPosition);
+				iNode.SetPositionOnly(iNodeData.rect.position + __deltaPosition);
 
 				__nodes.Add(iNode);
-				__guidLinks.Add((iNodeData.Guid, iNode.guid));
+				__guidLinks.Add((iNodeData.guid, iNode.guid));
 			}
 
 			/** <<============================================================>> **/

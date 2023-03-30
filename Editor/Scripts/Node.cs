@@ -59,6 +59,7 @@ namespace Cuberoot.Editor
 			DEFAULT_NODE_WIDTH,
 			NODE_HEADER_HEIGHT + (NODE_PORT_HEIGHT * maxPortCount)
 		);
+		public virtual System.Type DataType => typeof(NodeData);
 
 		public Vector2 position
 		{
@@ -74,9 +75,6 @@ namespace Cuberoot.Editor
 			{
 				style.width = value.x;
 				style.height = value.y;
-
-				contentContainer.style.width = value.x;
-				contentContainer.style.height = value.y;
 			}
 		}
 
@@ -94,6 +92,22 @@ namespace Cuberoot.Editor
 			this.title = DefaultName;
 		}
 
+		public virtual void Init(NodeData data)
+		{
+			guid = data.guid;
+			title = data.title ?? DefaultName;
+			this.SetPositionOnly(data.rect.position);
+		}
+
+		public virtual void InitInGraph(CustomNodeGraphView graph)
+		{
+			OnModified = new UnityEvent();
+			OnModified.AddListener(() =>
+			{
+				graph.OnModified.Invoke();
+			});
+		}
+
 		#endregion
 
 		#region ISerializable
@@ -103,38 +117,20 @@ namespace Cuberoot.Editor
 
 		#endregion
 
-		#region
+		public override bool IsCopiable() =>
+			!IsPredefined;
 
 		public void RefreshAll()
 		{
+			RefreshSize();
 			RefreshExpandedState();
 			RefreshPorts();
-			RefreshSize();
-
-		}
-
-		public virtual void Init(CustomNodeGraphView graph)
-		{
-			RefreshAll();
-
-			OnModified = new UnityEvent();
-			OnModified.AddListener(() =>
-			{
-				graph.OnModified.Invoke();
-			});
-
 		}
 
 		public void RefreshSize()
 		{
 			this.size = DefaultSize;
-			// contentContainer
 		}
-
-		public override bool IsCopiable() =>
-			!IsPredefined;
-
-		#endregion
 
 		#region Port Handling
 

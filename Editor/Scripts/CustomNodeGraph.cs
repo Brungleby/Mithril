@@ -105,19 +105,16 @@ namespace Cuberoot.Editor
 				foreach (var iPredefinedNode in __predefinedNodes)
 				{
 					var iMatchingPredefinedNodeData = __nodes
-						.Where(i => i.IsPredefined && i.Title == iPredefinedNode.title)
+						.Where(i => i.isPredefined && i.title == iPredefinedNode.title)
 						.First()
 					;
 
-					iPredefinedNode.guid = iMatchingPredefinedNodeData.Guid;
-					iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.Rect);
+					iPredefinedNode.guid = iMatchingPredefinedNodeData.guid;
+					iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.rect);
 				}
 
-			foreach (var iNode in __nodes.Where(i => !i.IsPredefined))
-			{
-				// Debug.Log(iNode.Rect);
+			foreach (var iNode in __nodes.Where(i => !i.isPredefined))
 				_graph.CreateNewNode(iNode);
-			}
 
 			/** <<============================================================>> **/
 
