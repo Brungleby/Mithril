@@ -82,7 +82,7 @@ namespace Cuberoot
 
 		#endregion
 
-		public string Serialize() =>
+		public string GetSerializedString() =>
 			JsonUtility.ToJson(_guid);
 
 		public override bool Equals(object obj) =>

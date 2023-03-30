@@ -112,7 +112,7 @@ namespace Cuberoot.Editor
 
 		#region ISerializable
 
-		public string Serialize() =>
+		public string GetSerializedString() =>
 			JsonUtility.ToJson(NodeData.CreateFrom(this));
 
 		#endregion

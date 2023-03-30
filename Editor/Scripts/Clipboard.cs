@@ -45,7 +45,7 @@ namespace Cuberoot.Editor
 		}
 		public static void Copy(ISerializable obj)
 		{
-			var __data = obj.Serialize();
+			var __data = obj.GetSerializedString();
 
 			AssertValidJson(obj, __data);
 

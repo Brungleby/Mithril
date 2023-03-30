@@ -85,6 +85,7 @@ namespace Cuberoot.Editor
 		{
 			var __data = (NodeGraphData)data;
 
+			__data.viewPosition = _graph.viewTransform.position;
 			__data.CompileNodes(GetAllNodes());
 			__data.CompileEdges(GetEdges());
 
@@ -93,9 +94,15 @@ namespace Cuberoot.Editor
 
 		protected override void PullObjectToWindow(EditableObject data)
 		{
+			var __data = (NodeGraphData)data;
+
+			/** <<============================================================>> **/
+
+			_graph.SetViewPosition(__data.viewPosition);
 			_graph.CreatePredefinedNodes();
 
-			var __data = (NodeGraphData)data;
+			/** <<============================================================>> **/
+
 			var __nodes = __data.nodes.ToList();
 			var __predefinedNodes = GetPredefinedNodes();
 

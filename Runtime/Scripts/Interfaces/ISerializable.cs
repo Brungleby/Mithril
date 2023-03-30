@@ -9,10 +9,12 @@
 
 #region Includes
 
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEditor;
 
 #endregion
 
@@ -24,6 +26,6 @@ namespace Cuberoot
 
 	public interface ISerializable
 	{
-		string Serialize() => JsonUtility.ToJson(this);
+		string GetSerializedString() => JsonUtility.ToJson(this);
 	}
 }

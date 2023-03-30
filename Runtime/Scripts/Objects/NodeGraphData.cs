@@ -31,7 +31,9 @@ namespace Cuberoot
 	public abstract class NodeGraphData : EditableObject
 	{
 		#region Bake Data
-
+#if UNITY_EDITOR
+		public Vector2 viewPosition;
+#endif
 		public NodeData[] nodes = new NodeData[0];
 		public EdgeData[] edges = new EdgeData[0];
 

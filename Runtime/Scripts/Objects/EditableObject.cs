@@ -75,7 +75,15 @@ namespace Cuberoot
 		[UnityEditor.Callbacks.OnOpenAsset]
 		public static bool OnOpenAsset(int instanceID, int line)
 		{
-			var __target = (EditableObject)EditorUtility.InstanceIDToObject(instanceID);
+			EditableObject __target;
+			try
+			{
+				__target = (EditableObject)EditorUtility.InstanceIDToObject(instanceID);
+			}
+			catch
+			{
+				return false;
+			}
 
 			if (__target != null)
 			{
