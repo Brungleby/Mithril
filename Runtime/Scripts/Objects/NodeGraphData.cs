@@ -98,6 +98,14 @@ namespace Cuberoot
 		public PortData[] ports;
 
 		[SerializeField]
+		private string _selfType;
+		public Type selfType
+		{
+			get => Type.GetType(_selfType);
+			set => _selfType = value.AssemblyQualifiedName;
+		}
+
+		[SerializeField]
 		private string _nodeType;
 		public Type nodeType
 		{
@@ -109,14 +117,15 @@ namespace Cuberoot
 		public virtual void Init(Node node)
 		{
 			guid = node.guid;
-
-			nodeType = node.GetType();
 			title = node.title;
 			isPredefined = node.IsPredefined;
 
 			rect = node.GetPosition();
 
 			ports = GetPortsFrom(node);
+
+			selfType = GetType();
+			nodeType = node.GetType();
 		}
 
 		private static NodeData CreateFrom(Type type, Node node)
