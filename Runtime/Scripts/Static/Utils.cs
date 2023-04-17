@@ -69,6 +69,31 @@ namespace Cuberoot
 		}
 
 		#endregion
+
+		#region 
+
+		public static T[] Combine<T>(this T[] a, T[] b)
+		{
+			var c = new T[a.Length + b.Length];
+
+			int i = 0;
+			foreach (var ia in a)
+			{
+				c[i] = ia;
+				i++;
+			}
+
+			foreach (var ib in b)
+			{
+				c[i] = ib;
+				i++;
+			}
+
+			return c;
+		}
+
+		#endregion
+
 		#region ICollection.AddAll
 
 		public static void AddAll<T>(this ICollection<T> collection, ICollection<T> toAdd)
