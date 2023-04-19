@@ -79,11 +79,11 @@ namespace Cuberoot.Editor
 		{
 			// Create instances of the subclasses
 			TestObjectA objA = ScriptableObject.CreateInstance<TestObjectA>();
-			objA.fart = "fArt";
+			objA.fart = "fArt\npoo";
 			objA.count = 24;
 
 			TestObjectB objB = ScriptableObject.CreateInstance<TestObjectB>();
-			objB.fart = "tBt";
+			objB.fart = "tBt is \"stinky\".";
 			objB.volume = 99.0f;
 
 			// Add them to the array
@@ -93,16 +93,19 @@ namespace Cuberoot.Editor
 		public string Save()
 		{
 			// return JsonUtility.ToJson(this, true);
-			return Serializer.Serialize(this, false);
-
+			// return Serializer.Serialize(this, true);
+			return Serializer.Serialize(32.56f, true);
 		}
 
 		public static void Load(string text)
 		{
-			var obj = ScriptableObject.CreateInstance<TestScriptableObject>();
-			obj = JsonUtility.FromJson<TestScriptableObject>(text);
+			// var obj = ScriptableObject.CreateInstance<TestScriptableObject>();
+			// obj = JsonUtility.FromJson<TestScriptableObject>(text);
 
-			Debug.Log(obj.ToString());
+			// var obj = Serializer.Extract<TestScriptableObject>(text);
+			var obj = Serializer.Extract<float>(text);
+
+			Debug.Log($"FINAL EXTRACTION RESULT: {obj.ToString()}");
 		}
 	}
 
@@ -118,8 +121,6 @@ namespace Cuberoot.Editor
 
 			if (GUILayout.Button($"Print JSON"))
 				TestScriptableObject.Load(EditorGUIUtility.systemCopyBuffer);
-
-
 
 			base.OnInspectorGUI();
 		}
