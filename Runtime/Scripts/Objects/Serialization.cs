@@ -31,8 +31,8 @@ namespace Cuberoot
 
 		#region
 
-		private readonly static string TYPE_LABEL = "type";
-		private readonly static string DATA_LABEL = "data";
+		private readonly static string TYPE_LABEL = "TYPE";
+		private readonly static string DATA_LABEL = "DATA";
 
 		private readonly static char[] ALL_ESCAPE_CHARS = new char[] { '\"', '\\', /*'\0',*/ /*'\a',*/ '\b', '\f', '\n', '\r', '\t', /*'\v'*/ };
 
@@ -68,14 +68,14 @@ namespace Cuberoot
 
 		#region String Helpers
 
-		private static char GetEscapeChar(char c)
+		private static char GetSerializationEscapeChar(char c)
 		{
 			switch (c)
 			{
-				// case '\0':
-				// 	return '0';
-				// case '\a':
-				// 	return 'a';
+				case '\0':
+					return '0';
+				case '\a':
+					return 'a';
 				case '\b':
 					return 'b';
 				case '\f':
@@ -86,8 +86,8 @@ namespace Cuberoot
 					return 'r';
 				case '\t':
 					return 't';
-				// case '\v':
-				// 	return 'v';
+				case '\v':
+					return 'v';
 				default:
 					return c;
 			}
@@ -149,7 +149,6 @@ namespace Cuberoot
 			"," + NEWLINE;
 
 		#endregion
-
 
 		/// <summary>
 		/// Converts the given <paramref name="obj"/> into a serialized JSON string.
@@ -243,7 +242,7 @@ namespace Cuberoot
 
 				if (__escapeIndex > -1)
 				{
-					__result += $"{value.Substring(0, __escapeIndex)}\\{GetEscapeChar(value[__escapeIndex])}";
+					__result += $"{value.Substring(0, __escapeIndex)}\\{GetSerializationEscapeChar(value[__escapeIndex])}";
 					value = value.Substring(__escapeIndex + 1);
 
 					continue;
@@ -324,6 +323,31 @@ namespace Cuberoot
 			return __result.ToArray();
 		}
 
+		private static char GetExtractionEscapeChar(char c)
+		{
+			switch (c)
+			{
+				// case '0':
+				// 	return '\0';
+				// case 'a':
+				// 	return '\a';
+				case 'b':
+					return '\b';
+				case 'f':
+					return '\f';
+				case 'n':
+					return '\n';
+				case 'r':
+					return '\r';
+				case 't':
+					return '\t';
+				// case 'v':
+				// 	return '\v';
+				default:
+					return c;
+			}
+		}
+
 		#endregion
 
 		/// <summary>
@@ -337,18 +361,10 @@ namespace Cuberoot
 		{
 			var __fieldPairs = GetObjectFields(data);
 
-			var __typeString = ValueToString(__fieldPairs[0].Item2);
-			var __dataString = __fieldPairs[0].Item2;
+			var __type = Type.GetType(ValueToString(__fieldPairs[0].Item2));
+			var __data = __fieldPairs[1].Item2;
 
-			var __type = Type.GetType(__typeString);
-			var __extractObject = Activator.CreateInstance(__type);
-
-			var __fields = GetSerializableFields(__type);
-
-			foreach (var iField in __fields)
-				iField.SetValue(__extractObject, ExtractValue(iField.FieldType, __dataString));
-
-			return __extractObject;
+			return ExtractValue(__type, __data);
 		}
 
 		private static object ExtractValue(Type type, string data)
@@ -362,7 +378,7 @@ namespace Cuberoot
 			if (type == typeof(Array))
 				return ValueToArray(type, data);
 
-			return Extract(data);
+			return ValueToObject(type, data);
 		}
 
 		private static (string, string)[] GetObjectFields(string data)
@@ -413,8 +429,8 @@ namespace Cuberoot
 
 				if (__escapeIndex > -1)
 				{
-					__result += value.Substring(0, __escapeIndex - 1);
-					value = value.Substring(__escapeIndex + 1);
+					__result += $"{value.Substring(0, __escapeIndex)}{GetExtractionEscapeChar(value[__escapeIndex + 1])}";
+					value = value.Substring(__escapeIndex + 2);
 					continue;
 				}
 
@@ -441,10 +457,17 @@ namespace Cuberoot
 			return __arr;
 		}
 
-		// private object ValueToObject(Type type, string data)
-		// {
-		// 	var __fieldPairs = GetObjectFields(data);
-		// }
+		private static object ValueToObject(Type type, string data)
+		{
+			// var __fields = GetSerializableFields(__type);
+
+			// Debug.Log(__fields.Length);
+
+			// foreach (var iField in __fields)
+			// 	iField.SetValue(__extractObject, ExtractValue(iField.FieldType, __dataString));
+
+			throw new NotImplementedException();
+		}
 
 		#endregion
 

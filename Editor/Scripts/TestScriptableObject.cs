@@ -92,18 +92,14 @@ namespace Cuberoot.Editor
 
 		public string Save()
 		{
-			// return JsonUtility.ToJson(this, true);
 			// return Serializer.Serialize(this, true);
-			return Serializer.Serialize(32.56f, true);
+			return Serializer.Serialize("32.56f\nPoopy!!!", true);
 		}
 
 		public static void Load(string text)
 		{
-			// var obj = ScriptableObject.CreateInstance<TestScriptableObject>();
-			// obj = JsonUtility.FromJson<TestScriptableObject>(text);
-
 			// var obj = Serializer.Extract<TestScriptableObject>(text);
-			var obj = Serializer.Extract<float>(text);
+			var obj = Serializer.Extract(text);
 
 			Debug.Log($"FINAL EXTRACTION RESULT: {obj.ToString()}");
 		}
