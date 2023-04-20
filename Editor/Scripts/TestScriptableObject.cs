@@ -57,6 +57,11 @@ namespace Cuberoot.Editor
 	public class TestObjectA : TestObject
 	{
 		public int count;
+
+		public override string ToString()
+		{
+			return $"TestObjectA: Fart: {fart}, Count: {count}";
+		}
 	}
 
 	[Serializable]
@@ -70,10 +75,9 @@ namespace Cuberoot.Editor
 	public class TestScriptableObject : ScriptableObject
 	{
 		[SerializeField]
-		[SerializeReference]
-		private TestObject[] objects;
+		private TestObject[] _objects;
 
-		public TestObject[] Objects => objects;
+		public TestObject[] objects => _objects;
 
 		private void OnEnable()
 		{
@@ -87,13 +91,12 @@ namespace Cuberoot.Editor
 			objB.volume = 99.0f;
 
 			// Add them to the array
-			objects = new TestObject[] { objA, objB };
+			_objects = new TestObject[] { objA, objB };
 		}
 
 		public string Save()
 		{
-			// return Serializer.Serialize(this, true);
-			return Serializer.Serialize("32.56f\nPoopy!!!", true);
+			return Serializer.Serialize(this);
 		}
 
 		public static void Load(string text)
@@ -101,7 +104,7 @@ namespace Cuberoot.Editor
 			// var obj = Serializer.Extract<TestScriptableObject>(text);
 			var obj = Serializer.Extract(text);
 
-			Debug.Log($"FINAL EXTRACTION RESULT: {obj.ToString()}");
+			Debug.Log($"FINAL EXTRACTION RESULT: {obj}");
 		}
 	}
 

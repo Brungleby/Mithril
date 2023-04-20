@@ -61,6 +61,16 @@ namespace Cuberoot
 			;
 		}
 
+		private static FieldInfo GetSerializableField(Type type, string name)
+		{
+			var __result = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+			Debug.Assert(__result.GetCustomAttributes(typeof(SerializeField), true).Any()
+				|| (__result.Attributes & FieldAttributes.Public) != 0);
+
+			return __result;
+		}
+
 		private static bool IsEscapeChar(char c) =>
 			ALL_ESCAPE_CHARS.Contains(c);
 
@@ -72,10 +82,10 @@ namespace Cuberoot
 		{
 			switch (c)
 			{
-				case '\0':
-					return '0';
-				case '\a':
-					return 'a';
+				// case '\0':
+				// 	return '0';
+				// case '\a':
+				// 	return 'a';
 				case '\b':
 					return 'b';
 				case '\f':
@@ -86,8 +96,8 @@ namespace Cuberoot
 					return 'r';
 				case '\t':
 					return 't';
-				case '\v':
-					return 'v';
+				// case '\v':
+				// 	return 'v';
 				default:
 					return c;
 			}
@@ -154,14 +164,11 @@ namespace Cuberoot
 		/// Converts the given <paramref name="obj"/> into a serialized JSON string.
 		///</summary>
 
-		public string Serialize<T>(T obj) =>
-			Serialize(typeof(T), obj);
-
-		public static string Serialize<T>(T obj, bool prettyPrint)
+		public static string Serialize<T>(T obj, bool prettyPrint = false)
 		{
 			var _ = new Serializer();
 			_._prettyPrint = prettyPrint;
-			return _.Serialize(obj);
+			return _.Serialize(typeof(T), obj);
 		}
 
 		private string Serialize(Type type, object obj)
@@ -271,7 +278,19 @@ namespace Cuberoot
 			var __start = data.IndexOf(start) + 1;
 			var __end = data.LastIndexOf(end);
 
-			return data.Substring(__start, __end - __start);
+			try
+			{
+				return data.Substring(__start, __end - __start).Trim();
+			}
+			catch (Exception e)
+			{
+				if (__start == -1)
+					throw new KeyNotFoundException("Start character not found in the given data string.");
+				if (__end == -1)
+					throw new KeyNotFoundException("End character not found in the given data string.");
+
+				throw e;
+			}
 		}
 
 		private static string UnwrapSimple(string data, char key) =>
@@ -280,9 +299,25 @@ namespace Cuberoot
 		private static (string, string) Split(string data, char sep = ',')
 		{
 			bool __isInQuotes = false;
+			int __braceDepth = 0;
 
 			for (var i = 0; i < data.Length; i++)
 			{
+				if (data[i] == '[' || data[i] == '{')
+				{
+					__braceDepth++;
+					continue;
+				}
+
+				if (data[i] == ']' || data[i] == '}')
+				{
+					__braceDepth--;
+					continue;
+				}
+
+				if (__braceDepth > 0)
+					continue;
+
 				if (data[i] == '\"' && (i == 0 || data[i - 1] != '\\'))
 				{
 					__isInQuotes = !__isInQuotes;
@@ -359,12 +394,19 @@ namespace Cuberoot
 
 		public static object Extract(string data)
 		{
-			var __fieldPairs = GetObjectFields(data);
+			try
+			{
+				var __fieldPairs = GetObjectFields(data);
 
-			var __type = Type.GetType(ValueToString(__fieldPairs[0].Item2));
-			var __data = __fieldPairs[1].Item2;
+				var __type = Type.GetType(ValueToString(__fieldPairs[0].Item2));
+				var __data = __fieldPairs[1].Item2;
 
-			return ExtractValue(__type, __data);
+				return ExtractValue(__type, __data);
+			}
+			catch
+			{
+				throw new FormatException("The JSON string provided for deserialization is not valid.");
+			}
 		}
 
 		private static object ExtractValue(Type type, string data)
@@ -375,7 +417,7 @@ namespace Cuberoot
 			if (type == typeof(string))
 				return ValueToString(data);
 
-			if (type == typeof(Array))
+			if (type.IsArray)
 				return ValueToArray(type, data);
 
 			return ValueToObject(type, data);
@@ -409,10 +451,10 @@ namespace Cuberoot
 		private static object ValueToPrimitive(Type type, string data)
 		{
 			var __method = type.GetMethod("Parse", new[] { typeof(string) });
-			var __parameters = new object[] { data };
+			var __params = new object[] { data };
 
 			try
-			{ return __method.Invoke(null, __parameters); }
+			{ return __method.Invoke(null, __params); }
 			catch
 			{ throw new NotImplementedException(); }
 		}
@@ -445,7 +487,7 @@ namespace Cuberoot
 		{
 			data = Unwrap(data, '[', ']');
 			var __elements = SplitArray(data);
-			var __arr = Array.CreateInstance(type, __elements.Length);
+			var __arr = Array.CreateInstance(type.GetElementType(), __elements.Length);
 
 			int i = 0;
 			foreach (var iElement in __elements)
@@ -459,14 +501,55 @@ namespace Cuberoot
 
 		private static object ValueToObject(Type type, string data)
 		{
-			// var __fields = GetSerializableFields(__type);
+			data = Unwrap(data, '{', '}');
 
-			// Debug.Log(__fields.Length);
+			object __result;
+			{
+				if (type.IsSubclassOf(typeof(ScriptableObject)))
+					__result = ScriptableObject.CreateInstance(type);
+				else
+					__result = Activator.CreateInstance(type);
 
-			// foreach (var iField in __fields)
-			// 	iField.SetValue(__extractObject, ExtractValue(iField.FieldType, __dataString));
+				// var __methodInfo_CreateInstance = typeof(Cuberoot.Editor.TestScriptableObject).GetMethod("CreateInstance", BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public);
+				// var __params = new object[] { type };
 
-			throw new NotImplementedException();
+				// Debug.Log(__methodInfo_CreateInstance);
+
+				// try
+				// {
+				// 	__result = __methodInfo_CreateInstance.Invoke(null, __params);
+				// }
+				// catch
+				// {
+				// 	__result = Activator.CreateInstance(type);
+				// }
+			}
+
+			if (!string.IsNullOrWhiteSpace(data))
+			{
+				var __fieldStrings = SplitArray(data);
+
+				foreach (var iFieldString in __fieldStrings)
+				{
+					var __fieldPair = GetFieldData(iFieldString);
+
+					try
+					{
+						var __field = GetSerializableField(type, __fieldPair.Item1);
+						var __value = Extract(__fieldPair.Item2);
+
+						__field.SetValue(__result, __value);
+					}
+					catch (Exception e)
+					{
+						Debug.LogWarning($"[{type}] Failed to assign field '{__fieldPair.Item1}' from the given data string:\n{__fieldPair.Item2}");
+
+						throw e;
+					}
+				}
+			}
+
+			return __result;
 		}
 
 		#endregion
