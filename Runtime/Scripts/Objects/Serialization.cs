@@ -65,9 +65,9 @@ namespace Cuberoot
 		/// Serializes an object to JSON and saves it to the given <paramref name="filePath"/>.
 		///</summary>
 
-		public static async void EncodeToFile(string filePath, object obj)
+		public static void EncodeToFile(string filePath, object obj, bool prettyPrint = false)
 		{
-			await File.WriteAllTextAsync(filePath, Encode(obj));
+			File.WriteAllTextAsync(filePath, Encode(obj, prettyPrint));
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 
@@ -80,12 +80,12 @@ namespace Cuberoot
 		/// Serializes the given <see cref="UnityEngine.Object"/> and saves it to a JSON file of the same name.
 		///</summary>
 
-		public static void EncodeToFile<T>(T obj)
+		public static void EncodeToFile<T>(T obj, bool prettyPrint = false)
 		where T : UnityEngine.Object
 		{
 			var __filePath = AssetDatabase.GetAssetPath(obj);
 			__filePath = Path.ChangeExtension(__filePath, JSON_EXT);
-			EncodeToFile(__filePath, obj);
+			EncodeToFile(__filePath, obj, prettyPrint);
 		}
 
 		/// <summary>
@@ -121,43 +121,51 @@ namespace Cuberoot
 		public static string Encode(object obj, bool prettyPrint = false)
 		{
 			var _ = new Serialization(prettyPrint);
-			return _.Encode(obj.GetType(), obj);
+			return _.EncodeAny(obj.GetType(), obj);
 		}
 
 		#region Internal
 
-		private string Encode(Type type, object obj)
+		private string EncodeAny(Type type, object value)
+		{
+			if (type == typeof(string))
+				return EncodeString((string)value);
+
+			if (type.IsPrimitive)
+				return EncodePrimitive(value);
+
+			if (type.IsEnum)
+				return EncodeEnum(value);
+
+			if (type.IsArray)
+				return EncodeArray(type, (Array)value);
+
+			return EncodeTypedObject(type, value);
+		}
+
+		private string EncodeTypedObject(Type type, object obj)
 		{
 			var __result = string.Empty;
 			__result += OPEN_BRACE;
 
 			__result += $"\"{TYPE_LABEL}\":{SPACE}{EncodeType(type)}" + ITERATE;
-			__result += $"\"{DATA_LABEL}\":{SPACE}{EncodeAny(type, obj)}";
+			__result += $"\"{DATA_LABEL}\":{SPACE}{EncodeObjectFields(type, obj)}";
 
 			__result += CLOSE_BRACE;
 			return __result;
 		}
 
-		private string EncodeAny(Type type, object value)
-		{
-			if (value.GetType().IsPrimitive)
-				return EncodePrimitive(value);
-
-			if (value.GetType() == typeof(string))
-				return EncodeString((string)value);
-
-			if (value.GetType().IsArray)
-				return EncodeArray(type, (Array)value);
-
-			return EncodeObject(type, value);
-		}
-
 		private string EncodePrimitive(object value)
 		{
-			return value.ToString();
+			return value.ToString().ToLower();
 		}
 
-		private string EncodeObject(Type type, object value)
+		private string EncodeEnum(object value)
+		{
+			return ((int)value).ToString();
+		}
+
+		private string EncodeObjectFields(Type type, object value)
 		{
 			var __result = string.Empty;
 			__result += OPEN_BRACE;
@@ -167,10 +175,18 @@ namespace Cuberoot
 			for (var i = 0; i < __fields.Length; i++)
 			{
 				var iField = __fields[i];
-				__result += $"\"{iField.Name}\":{SPACE}{EncodeFieldInfo(iField, value)}";
+				try
+				{
 
-				if (i != __fields.Length - 1)
-					__result += ITERATE;
+					__result += $"\"{iField.Name}\":{SPACE}{EncodeFieldInfo(iField, value)}";
+
+					if (i != __fields.Length - 1)
+						__result += ITERATE;
+				}
+				catch (Exception e)
+				{
+					throw new Exception($"Error encoding field \"{iField.Name}\" ({iField.FieldType}): {e.Message}");
+				}
 			}
 
 			__result += CLOSE_BRACE;
@@ -188,7 +204,7 @@ namespace Cuberoot
 			for (var i = 0; i < array.Length; i++)
 			{
 				var iObject = array.GetValue(i);
-				__result += Encode(iObject.GetType(), iObject);
+				__result += EncodeAny(iObject.GetType(), iObject);
 
 				if (i != array.Length - 1)
 					__result += ITERATE;
@@ -200,6 +216,9 @@ namespace Cuberoot
 
 		private static string EncodeString(string value)
 		{
+			if (value == null)
+				return "\"\"";
+
 			var __result = string.Empty;
 
 			do
@@ -225,7 +244,7 @@ namespace Cuberoot
 			EncodeString(value.ToString());
 
 		private string EncodeFieldInfo(FieldInfo field, object parent) =>
-			Encode(field.FieldType, field.GetValue(parent));
+			EncodeAny(field.FieldType, field.GetValue(parent));
 
 		#endregion
 		#region String Helpers

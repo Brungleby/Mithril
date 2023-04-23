@@ -62,7 +62,7 @@ namespace Cuberoot
 		public void Save()
 		{
 			// Editor.Utils.SaveAssetAtFilePath(this, AssetDatabase.GetAssetPath(this), false);
-			Editor.Utils.SaveAsset(this);
+			Editor.Utils.SaveAssetSerialized(this);
 			// Editor.Utils.SerializeAsset(this);
 		}
 

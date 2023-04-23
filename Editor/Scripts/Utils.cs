@@ -145,44 +145,16 @@ namespace Cuberoot.Editor
 				EditorUtility.SetDirty(obj);
 
 			AssetDatabase.SaveAssetIfDirty(obj);
-			// AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 		}
-		// public static void SaveAsset(EditableObject obj)
-		// {
 
-		// }
+		public static void SaveAssetSerialized<T>(T obj)
+		where T : ScriptableObject
+		{
+			SaveAsset(obj);
 
-		// public static void SerializeAsset<T>(T obj)
-		// where T : ScriptableObject
-		// {
-		// 	var __pathObj = AssetDatabase.GetAssetPath(obj);
-		// 	var __pathBin = __pathObj.ReplaceFileExtension("json");
-
-		// 	string __data = JsonUtility.ToJson(obj, true);
-		// 	File.WriteAllText(__pathBin, __data);
-
-		// 	AssetDatabase.Refresh();
-		// }
-
-		// public static void DeserializeAsset<T>(ref T obj)
-		// where T : ScriptableObject
-		// {
-		// 	var __pathObj = AssetDatabase.GetAssetPath(obj);
-		// 	var __pathBin = __pathObj.ReplaceFileExtension("json");
-
-		// 	if (File.Exists(__pathBin))
-		// 	{
-		// 		string __data = File.ReadAllText(__pathBin);
-		// 		obj = (T)JsonUtility.FromJson(__data, typeof(T));
-		// 	}
-		// }
-
-		// public static string ReplaceFileExtension(this string path, string ext)
-		// {
-		// 	var __substring = path.Substring(0, path.LastIndexOf('.'));
-		// 	return $"{__substring}.{ext}";
-		// }
+			Serialization.EncodeToFile(obj, false);
+		}
 
 		// public static void SaveAssetAtFilePath(UnityEngine.Object obj, string path, bool warnIfExisting = true)
 		// {
