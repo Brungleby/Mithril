@@ -94,15 +94,14 @@ namespace Cuberoot.Editor
 			_objects = new TestObject[] { objA, objB };
 		}
 
-		public string Save()
+		public void Save()
 		{
-			return Serializer.Serialize(this);
+			Serialization.EncodeToFile(this);
 		}
 
-		public static void Load(string text)
+		public void Load()
 		{
-			// var obj = Serializer.Extract<TestScriptableObject>(text);
-			var obj = Serializer.Extract(text);
+			var obj = Serialization.DecodeFromAsset(this);
 
 			Debug.Log($"FINAL EXTRACTION RESULT: {obj}");
 		}
@@ -115,11 +114,11 @@ namespace Cuberoot.Editor
 		{
 			var __target = (TestScriptableObject)target;
 
-			if (GUILayout.Button($"Copy as JSON"))
-				EditorGUIUtility.systemCopyBuffer = __target.Save();
+			if (GUILayout.Button($"Save JSON File"))
+				__target.Save();
 
-			if (GUILayout.Button($"Print JSON"))
-				TestScriptableObject.Load(EditorGUIUtility.systemCopyBuffer);
+			if (GUILayout.Button($"Load JSON File"))
+				__target.Load();
 
 			base.OnInspectorGUI();
 		}

@@ -10,22 +10,25 @@
 #region Includes
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEditor;
 
 #endregion
 
 namespace Cuberoot
 {
+	#region Serialization
+
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class Serializer : object
+	public sealed class Serialization : object
 	{
 		#region Data
 
@@ -34,51 +37,200 @@ namespace Cuberoot
 		private readonly static string TYPE_LABEL = "TYPE";
 		private readonly static string DATA_LABEL = "DATA";
 
-		private readonly static char[] ALL_ESCAPE_CHARS = new char[] { '\"', '\\', /*'\0',*/ /*'\a',*/ '\b', '\f', '\n', '\r', '\t', /*'\v'*/ };
+		private readonly static string JSON_EXT = ".json";
+		private readonly static char[] JSON_ESCAPE_CHARS = new char[] { '\"', '\\', /*'\0',*/ /*'\a',*/ '\b', '\f', '\n', '\r', '\t', /*'\v'*/ };
 
-		private bool _prettyPrint = false;
+		private readonly bool _prettyPrint = false;
 		private int _indentDepth = 0;
 
-		public int indentDepth
+		private int indentDepth
 		{
 			get => _indentDepth;
-			private set => _indentDepth = value.Max(0);
+			set => _indentDepth = value.Max(0);
 		}
-
 
 		#endregion
 
 		#endregion
 		#region Methods
 
-		private static FieldInfo[] GetSerializableFields(Type type)
+		private Serialization(bool prettyPrint)
 		{
-			return type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-				.Where(i =>
-					i.GetCustomAttributes(typeof(SerializeField), true).Any()
-					|| (i.Attributes & FieldAttributes.Public) != 0)
-				.ToArray()
-			;
+			_prettyPrint = prettyPrint;
 		}
 
-		private static FieldInfo GetSerializableField(Type type, string name)
+		#region File Handling
+
+		/// <summary>
+		/// Serializes an object to JSON and saves it to the given <paramref name="filePath"/>.
+		///</summary>
+
+		public static async void EncodeToFile(string filePath, object obj)
 		{
-			var __result = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+			await File.WriteAllTextAsync(filePath, Encode(obj));
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 
-			Debug.Assert(__result.GetCustomAttributes(typeof(SerializeField), true).Any()
-				|| (__result.Attributes & FieldAttributes.Public) != 0);
+			var __jsonObj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath);
+			__jsonObj.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;
+			AssetDatabase.Refresh();
+		}
 
+		/// <summary>
+		/// Serializes the given <see cref="UnityEngine.Object"/> and saves it to a JSON file of the same name.
+		///</summary>
+
+		public static void EncodeToFile<T>(T obj)
+		where T : UnityEngine.Object
+		{
+			var __filePath = AssetDatabase.GetAssetPath(obj);
+			__filePath = Path.ChangeExtension(__filePath, JSON_EXT);
+			EncodeToFile(__filePath, obj);
+		}
+
+		/// <summary>
+		/// Decodes the JSON data as an object found at the given <paramref name="filePath"/>.
+		///</summary>
+
+		public static T DecodeFromFile<T>(string filePath)
+		{
+			string __data = File.ReadAllText(filePath);
+			return Decode<T>(__data);
+		}
+
+		/// <summary>
+		/// Decodes the JSON data linked to this <see cref="UnityEngine.Object"/>. Primarily used to refresh or load data for the first time.
+		///</summary>
+
+		public static T DecodeFromAsset<T>(T obj)
+		where T : UnityEngine.Object
+		{
+			var __filePath = AssetDatabase.GetAssetPath(obj);
+			__filePath = Path.ChangeExtension(__filePath, JSON_EXT);
+			return DecodeFromFile<T>(__filePath);
+		}
+
+		#endregion
+
+		#region Encoding
+
+		/// <summary>
+		/// Converts the given <paramref name="obj"/> into a serialized JSON string.
+		///</summary>
+
+		public static string Encode(object obj, bool prettyPrint = false)
+		{
+			var _ = new Serialization(prettyPrint);
+			return _.Encode(obj.GetType(), obj);
+		}
+
+		#region Internal
+
+		private string Encode(Type type, object obj)
+		{
+			var __result = string.Empty;
+			__result += OPEN_BRACE;
+
+			__result += $"\"{TYPE_LABEL}\":{SPACE}{EncodeType(type)}" + ITERATE;
+			__result += $"\"{DATA_LABEL}\":{SPACE}{EncodeAny(type, obj)}";
+
+			__result += CLOSE_BRACE;
 			return __result;
 		}
 
-		private static bool IsEscapeChar(char c) =>
-			ALL_ESCAPE_CHARS.Contains(c);
+		private string EncodeAny(Type type, object value)
+		{
+			if (value.GetType().IsPrimitive)
+				return EncodePrimitive(value);
 
-		#region Serialization
+			if (value.GetType() == typeof(string))
+				return EncodeString((string)value);
 
+			if (value.GetType().IsArray)
+				return EncodeArray(type, (Array)value);
+
+			return EncodeObject(type, value);
+		}
+
+		private string EncodePrimitive(object value)
+		{
+			return value.ToString();
+		}
+
+		private string EncodeObject(Type type, object value)
+		{
+			var __result = string.Empty;
+			__result += OPEN_BRACE;
+
+			var __fields = GetSerializableFields(type);
+
+			for (var i = 0; i < __fields.Length; i++)
+			{
+				var iField = __fields[i];
+				__result += $"\"{iField.Name}\":{SPACE}{EncodeFieldInfo(iField, value)}";
+
+				if (i != __fields.Length - 1)
+					__result += ITERATE;
+			}
+
+			__result += CLOSE_BRACE;
+			return __result;
+		}
+
+		private string EncodeArray(Type type, Array value)
+		{
+			object[] array = new object[(value).Length];
+			Array.Copy(value, array, array.Length);
+
+			var __result = string.Empty;
+			__result += OPEN_BRACKET;
+
+			for (var i = 0; i < array.Length; i++)
+			{
+				var iObject = array.GetValue(i);
+				__result += Encode(iObject.GetType(), iObject);
+
+				if (i != array.Length - 1)
+					__result += ITERATE;
+			}
+
+			__result += CLOSE_BRACKET;
+			return __result;
+		}
+
+		private static string EncodeString(string value)
+		{
+			var __result = string.Empty;
+
+			do
+			{
+				var __escapeIndex = value.IndexOfAny(JSON_ESCAPE_CHARS);
+
+				if (__escapeIndex > -1)
+				{
+					__result += $"{value.Substring(0, __escapeIndex)}\\{EncodeEscapeChar(value[__escapeIndex])}";
+					value = value.Substring(__escapeIndex + 1);
+
+					continue;
+				}
+
+				__result += value;
+				break;
+			} while (true);
+
+			return $"\"{__result}\"";
+		}
+
+		private static string EncodeType(Type value) =>
+			EncodeString(value.ToString());
+
+		private string EncodeFieldInfo(FieldInfo field, object parent) =>
+			Encode(field.FieldType, field.GetValue(parent));
+
+		#endregion
 		#region String Helpers
 
-		private static char GetSerializationEscapeChar(char c)
+		private static char EncodeEscapeChar(char c)
 		{
 			switch (c)
 			{
@@ -160,98 +312,103 @@ namespace Cuberoot
 
 		#endregion
 
+		#endregion
+		#region Decoding
+
 		/// <summary>
-		/// Converts the given <paramref name="obj"/> into a serialized JSON string.
+		/// Constructs a new object from the given serialized JSON <paramref name="data"/>.
 		///</summary>
 
-		public static string Serialize<T>(T obj, bool prettyPrint = false)
+		public static object Decode(string data)
 		{
-			var _ = new Serializer();
-			_._prettyPrint = prettyPrint;
-			return _.Serialize(typeof(T), obj);
+			try
+			{
+				var __fieldPairs = GetObjectFields(data);
+
+				var __type = Type.GetType(DecodeString(__fieldPairs[0].Item2));
+				var __data = __fieldPairs[1].Item2;
+
+				return DecodeAny(__type, __data);
+			}
+			catch
+			{
+				throw new FormatException("The JSON string provided for decoding is not valid.");
+			}
 		}
 
-		private string Serialize(Type type, object obj)
+		/// <inheritdoc cref="Decode"/>
+
+		public static T Decode<T>(string data) =>
+			(T)Decode(data);
+
+		#region Internal
+
+
+
+		private static object DecodeAny(Type type, string data)
 		{
-			var __result = string.Empty;
-			__result += OPEN_BRACE;
+			if (type.IsPrimitive)
+				return DecodePrimitive(type, data);
 
-			__result += $"\"{TYPE_LABEL}\":{SPACE}{SerializedValue(type)}" + ITERATE;
-			__result += $"\"{DATA_LABEL}\":{SPACE}{SerializeAny(type, obj)}";
+			if (type == typeof(string))
+				return DecodeString(data);
 
-			__result += CLOSE_BRACE;
+			if (type.IsArray)
+				return DecodeArray(type, data);
+
+			return DecodeObject(type, data);
+		}
+
+		private static (string, string)[] GetObjectFields(string data)
+		{
+			var __fieldStrings = SplitArray(Unwrap(data, '{', '}'));
+			var __result = new (string, string)[__fieldStrings.Length];
+
+			int i = 0;
+			foreach (var iFieldString in __fieldStrings)
+			{
+				__result[i] = GetFieldData(iFieldString);
+				i++;
+			}
+
 			return __result;
 		}
 
-		private string SerializeAny(Type type, object obj)
+		private static (string, string) GetFieldData(string fieldString)
 		{
-			if (obj.GetType().IsPrimitive)
-				return obj.ToString();
+			var __tuple = Split(fieldString, ':');
 
-			if (obj.GetType() == typeof(string))
-				return SerializeValue((string)obj);
-
-			if (obj.GetType().IsArray)
-			{
-				object[] __arr = new object[((Array)obj).Length];
-				Array.Copy((Array)obj, __arr, __arr.Length);
-				return SerializeArray(type, __arr);
-			}
-
-			return SerializeFields(type, obj);
+			return (
+				UnwrapSimple(__tuple.Item1, '\"'),
+				__tuple.Item2.Trim()
+			);
 		}
 
-		private string SerializeFields(Type type, object obj)
+		private static object DecodePrimitive(Type type, string data)
 		{
-			var __result = string.Empty;
-			__result += OPEN_BRACE;
+			var __method = type.GetMethod("Parse", new[] { typeof(string) });
+			var __params = new object[] { data };
 
-			var __fields = GetSerializableFields(type);
-
-			for (var i = 0; i < __fields.Length; i++)
-			{
-				var iField = __fields[i];
-				__result += $"\"{iField.Name}\":{SPACE}{SerializeValue(iField, obj)}";
-
-				if (i != __fields.Length - 1)
-					__result += ITERATE;
-			}
-
-			__result += CLOSE_BRACE;
-			return __result;
+			try
+			{ return __method.Invoke(null, __params); }
+			catch
+			{ throw new NotImplementedException(); }
 		}
 
-		private string SerializeArray(Type type, Array arr)
+		private static string DecodeString(string value)
 		{
-			var __result = string.Empty;
-			__result += OPEN_BRACKET;
+			value = UnwrapSimple(value, '\"');
 
-			for (var i = 0; i < arr.Length; i++)
-			{
-				var iObject = arr.GetValue(i);
-				__result += Serialize(iObject.GetType(), iObject);
-
-				if (i != arr.Length - 1)
-					__result += ITERATE;
-			}
-
-			__result += CLOSE_BRACKET;
-			return __result;
-		}
-
-		private static string SerializeValue(string value)
-		{
 			var __result = string.Empty;
 
 			do
 			{
-				var __escapeIndex = value.IndexOfAny(ALL_ESCAPE_CHARS);
+				var __escapeIndex = value.IndexOf('\\');
 
 				if (__escapeIndex > -1)
 				{
-					__result += $"{value.Substring(0, __escapeIndex)}\\{GetSerializationEscapeChar(value[__escapeIndex])}";
-					value = value.Substring(__escapeIndex + 1);
-
+					__result += $"{value.Substring(0, __escapeIndex)}{DecodeEscapeChar(value[__escapeIndex + 1])}";
+					value = value.Substring(__escapeIndex + 2);
 					continue;
 				}
 
@@ -259,18 +416,62 @@ namespace Cuberoot
 				break;
 			} while (true);
 
-			return $"\"{__result}\"";
+			return __result;
 		}
 
-		private static string SerializedValue(Type value) =>
-			SerializeValue(value.ToString());
+		private static Array DecodeArray(Type type, string data)
+		{
+			data = Unwrap(data, '[', ']');
+			var __elements = SplitArray(data);
+			var __arr = Array.CreateInstance(type.GetElementType(), __elements.Length);
 
-		private string SerializeValue(FieldInfo field, object parent) =>
-			Serialize(field.FieldType, field.GetValue(parent));
+			int i = 0;
+			foreach (var iElement in __elements)
+			{
+				__arr.SetValue(Decode(iElement), i);
+				i++;
+			}
 
+			return __arr;
+		}
+
+		private static object DecodeObject(Type type, string data)
+		{
+			data = Unwrap(data, '{', '}');
+
+			object __result;
+			if (type.IsSubclassOf(typeof(ScriptableObject)))
+				__result = ScriptableObject.CreateInstance(type);
+			else
+				__result = Activator.CreateInstance(type);
+
+			if (!string.IsNullOrWhiteSpace(data))
+			{
+				var __fieldStrings = SplitArray(data);
+
+				foreach (var iFieldString in __fieldStrings)
+				{
+					var __fieldPair = GetFieldData(iFieldString);
+
+					try
+					{
+						var __field = GetSerializableField(type, __fieldPair.Item1);
+						var __value = Decode(__fieldPair.Item2);
+
+						__field.SetValue(__result, __value);
+					}
+					catch (Exception e)
+					{
+						Debug.LogWarning($"[{type}] Failed to assign field '{__fieldPair.Item1}' from the given data string:\n{__fieldPair.Item2}");
+
+						throw e;
+					}
+				}
+			}
+
+			return __result;
+		}
 		#endregion
-		#region Extraction
-
 		#region String Helpers
 
 		private static string Unwrap(string data, char start, char end)
@@ -358,7 +559,7 @@ namespace Cuberoot
 			return __result.ToArray();
 		}
 
-		private static char GetExtractionEscapeChar(char c)
+		private static char DecodeEscapeChar(char c)
 		{
 			switch (c)
 			{
@@ -385,175 +586,30 @@ namespace Cuberoot
 
 		#endregion
 
-		/// <summary>
-		/// Constructs a new object from the given serialized JSON <paramref name="data"/>.
-		///</summary>
-
-		public static T Extract<T>(string data) =>
-			(T)Extract(data);
-
-		public static object Extract(string data)
-		{
-			try
-			{
-				var __fieldPairs = GetObjectFields(data);
-
-				var __type = Type.GetType(ValueToString(__fieldPairs[0].Item2));
-				var __data = __fieldPairs[1].Item2;
-
-				return ExtractValue(__type, __data);
-			}
-			catch
-			{
-				throw new FormatException("The JSON string provided for deserialization is not valid.");
-			}
-		}
-
-		private static object ExtractValue(Type type, string data)
-		{
-			if (type.IsPrimitive)
-				return ValueToPrimitive(type, data);
-
-			if (type == typeof(string))
-				return ValueToString(data);
-
-			if (type.IsArray)
-				return ValueToArray(type, data);
-
-			return ValueToObject(type, data);
-		}
-
-		private static (string, string)[] GetObjectFields(string data)
-		{
-			var __fieldStrings = SplitArray(Unwrap(data, '{', '}'));
-			var __result = new (string, string)[__fieldStrings.Length];
-
-			int i = 0;
-			foreach (var iFieldString in __fieldStrings)
-			{
-				__result[i] = GetFieldData(iFieldString);
-				i++;
-			}
-
-			return __result;
-		}
-
-		private static (string, string) GetFieldData(string fieldString)
-		{
-			var __tuple = Split(fieldString, ':');
-
-			return (
-				UnwrapSimple(__tuple.Item1, '\"'),
-				__tuple.Item2.Trim()
-			);
-		}
-
-		private static object ValueToPrimitive(Type type, string data)
-		{
-			var __method = type.GetMethod("Parse", new[] { typeof(string) });
-			var __params = new object[] { data };
-
-			try
-			{ return __method.Invoke(null, __params); }
-			catch
-			{ throw new NotImplementedException(); }
-		}
-
-		private static string ValueToString(string value)
-		{
-			value = UnwrapSimple(value, '\"');
-
-			var __result = string.Empty;
-
-			do
-			{
-				var __escapeIndex = value.IndexOf('\\');
-
-				if (__escapeIndex > -1)
-				{
-					__result += $"{value.Substring(0, __escapeIndex)}{GetExtractionEscapeChar(value[__escapeIndex + 1])}";
-					value = value.Substring(__escapeIndex + 2);
-					continue;
-				}
-
-				__result += value;
-				break;
-			} while (true);
-
-			return __result;
-		}
-
-		private static Array ValueToArray(Type type, string data)
-		{
-			data = Unwrap(data, '[', ']');
-			var __elements = SplitArray(data);
-			var __arr = Array.CreateInstance(type.GetElementType(), __elements.Length);
-
-			int i = 0;
-			foreach (var iElement in __elements)
-			{
-				__arr.SetValue(Extract(iElement), i);
-				i++;
-			}
-
-			return __arr;
-		}
-
-		private static object ValueToObject(Type type, string data)
-		{
-			data = Unwrap(data, '{', '}');
-
-			object __result;
-			{
-				if (type.IsSubclassOf(typeof(ScriptableObject)))
-					__result = ScriptableObject.CreateInstance(type);
-				else
-					__result = Activator.CreateInstance(type);
-
-				// var __methodInfo_CreateInstance = typeof(Cuberoot.Editor.TestScriptableObject).GetMethod("CreateInstance", BindingFlags.FlattenHierarchy | BindingFlags.Static | BindingFlags.Public);
-				// var __params = new object[] { type };
-
-				// Debug.Log(__methodInfo_CreateInstance);
-
-				// try
-				// {
-				// 	__result = __methodInfo_CreateInstance.Invoke(null, __params);
-				// }
-				// catch
-				// {
-				// 	__result = Activator.CreateInstance(type);
-				// }
-			}
-
-			if (!string.IsNullOrWhiteSpace(data))
-			{
-				var __fieldStrings = SplitArray(data);
-
-				foreach (var iFieldString in __fieldStrings)
-				{
-					var __fieldPair = GetFieldData(iFieldString);
-
-					try
-					{
-						var __field = GetSerializableField(type, __fieldPair.Item1);
-						var __value = Extract(__fieldPair.Item2);
-
-						__field.SetValue(__result, __value);
-					}
-					catch (Exception e)
-					{
-						Debug.LogWarning($"[{type}] Failed to assign field '{__fieldPair.Item1}' from the given data string:\n{__fieldPair.Item2}");
-
-						throw e;
-					}
-				}
-			}
-
-			return __result;
-		}
-
 		#endregion
+
+		private static FieldInfo[] GetSerializableFields(Type type)
+		{
+			return type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+				.Where(i =>
+					i.GetCustomAttributes(typeof(SerializeField), true).Any()
+					|| (i.Attributes & FieldAttributes.Public) != 0)
+				.ToArray()
+			;
+		}
+
+		private static FieldInfo GetSerializableField(Type type, string name)
+		{
+			var __result = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+			Debug.Assert(__result.GetCustomAttributes(typeof(SerializeField), true).Any()
+				|| (__result.Attributes & FieldAttributes.Public) != 0);
+
+			return __result;
+		}
 
 		#endregion
 	}
+
+	#endregion
 }
