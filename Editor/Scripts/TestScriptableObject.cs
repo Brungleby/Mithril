@@ -24,29 +24,6 @@ using UnityEditor;
 
 namespace Cuberoot.Editor
 {
-	/// <summary>
-	/// __TODO_ANNOTATE__
-	///</summary>
-
-	// public static class Serialization
-	// {
-	// 	public static void SerializeToFile<T>(this T obj, SerialSyntax syntax = SerialSyntax.Json)
-	// 	where T : UnityEngine.Object
-	// 	{
-	// 		var __filePath = UnityEditor.AssetDatabase.GetAssetPath(obj);
-	// 		SerializeToFile(obj, __filePath, syntax);
-	// 	}
-
-	// 	public static void SerializeToFile<T>(this T obj, string filePath, SerialSyntax syntax = SerialSyntax.Json)
-	// 	{
-	// 		var __fileText = Serialize(obj, syntax);
-	// 		File.WriteAllTextAsync(filePath, __fileText);
-	// 	}
-	// }
-
-
-
-
 	[Serializable]
 	public class TestObject : ScriptableObject
 	{
@@ -119,6 +96,13 @@ namespace Cuberoot.Editor
 
 			if (GUILayout.Button($"Load JSON File"))
 				__target.Load();
+
+			if (GUILayout.Button($"Load from Clipboard"))
+			{
+				Debug.Log($"Decoding from clipboard: {EditorGUIUtility.systemCopyBuffer}");
+				var __obj = Serialization.Decode(EditorGUIUtility.systemCopyBuffer);
+				Debug.Log($"Decoded type: {__obj.GetType()}, Decoded value: {__obj.ToString()}");
+			}
 
 			base.OnInspectorGUI();
 		}

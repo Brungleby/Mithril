@@ -240,6 +240,13 @@ namespace Cuberoot
 			return $"\"{__result}\"";
 		}
 
+		private static string EncodeChar(char value)
+		{
+			if (IsEscapeChar(value))
+				return $"'\\{EncodeEscapeChar(value)}'";
+			return $"'{value}'";
+		}
+
 		private static string EncodeType(Type value) =>
 			EncodeString(value.ToString());
 
@@ -248,6 +255,9 @@ namespace Cuberoot
 
 		#endregion
 		#region String Helpers
+
+		private static bool IsEscapeChar(char c) =>
+			JSON_ESCAPE_CHARS.Contains(c);
 
 		private static char EncodeEscapeChar(char c)
 		{
@@ -340,42 +350,172 @@ namespace Cuberoot
 
 		public static object Decode(string data)
 		{
+			return DecodeAnyValue(data);
+		}
+
+		/// <inheritdoc cref="Decode"/>
+
+		public static T Decode<T>(string data)
+		{
+			(Type, string) __wrapObject;
 			try
 			{
+				__wrapObject = DecodeWrapperObject(data);
+
+				if (!typeof(T).IsAssignableFrom(__wrapObject.Item1))
+					throw new InvalidCastException($"The JSON string provided for decoding is not valid: the root JSON type ({__wrapObject.Item1}) is not compatible with the provided generic type ({typeof(T)}).");
+			}
+			catch (InvalidWrapperObjectException) { }
+
+			return (T)Decode(data);
+		}
+
+		#region Internal
+
+		private static bool IsJsonObjectValue(string data) =>
+			data[0] == '{';
+
+		private static bool IsArrayValue(string data) =>
+			data[0] == '[';
+
+		private static bool IsStringValue(string data) =>
+			data[0] == '\"';
+
+		private static bool IsCharValue(string data) =>
+			data[0] == '\'';
+
+		private static object DecodeAnyValue(string data)
+		{
+			data = data.Trim();
+
+			if (IsJsonObjectValue(data))
+				return DecodeObject(data);
+
+			if (IsArrayValue(data))
+				throw new FormatException("The type of the array must be specified in a wrapper object.");
+
+			if (IsStringValue(data))
+				return DecodeString(data);
+
+			if (IsCharValue(data))
+				return DecodeChar(data);
+
+			return DecodePrimitive(data, typeof(decimal));
+		}
+
+		private static object DecodeAnyValue(string data, Type knownType)
+		{
+			data = data.Trim();
+
+			if (IsJsonObjectValue(data))
+				return DecodeObject(data, knownType);
+
+			if (IsArrayValue(data))
+				return DecodeArray(data, knownType);
+
+			if (knownType == typeof(string))
+				return DecodeString(data);
+
+			if (knownType == typeof(char))
+				return DecodeChar(data);
+
+			if (knownType.IsEnum)
+				knownType = typeof(int);
+
+			return DecodePrimitive(data, knownType);
+		}
+
+		private static object DecodeObject(string data)
+		{
+			try
+			{
+				var __wrapObject = DecodeWrapperObject(data);
+				return DecodeAnyValue(__wrapObject.Item2, __wrapObject.Item1);
+			}
+			catch (InvalidWrapperObjectException e)
+			{
+				throw e;
+			}
+			catch (Exception e)
+			{
+				throw new FormatException($"The JSON string provided for decoding is not valid: {e.Message}");
+			}
+		}
+
+		private static object DecodeObject(string data, Type knownType)
+		{
+			data = Unwrap(data, '{', '}');
+
+			object __result;
+			if (typeof(ScriptableObject).IsAssignableFrom(knownType))
+				__result = ScriptableObject.CreateInstance(knownType);
+			else
+				__result = Activator.CreateInstance(knownType);
+
+			if (string.IsNullOrWhiteSpace(data))
+				return __result;
+
+			var __fieldStrings = SplitArray(data);
+			foreach (var iFieldString in __fieldStrings)
+			{
+				var __fieldPair = GetFieldData(iFieldString);
+
+				try
+				{
+					var __field = GetSerializableFieldInfo(knownType, __fieldPair.Item1);
+					var __value = DecodeAnyValue(__fieldPair.Item2);
+
+					__field.SetValue(__result, __value);
+				}
+				catch (Exception e)
+				{
+					Debug.LogWarning($"[{knownType}] Failed to assign field '{__fieldPair.Item1}' from the given data string:\n{__fieldPair.Item2}");
+
+					throw e;
+				}
+			}
+
+			return __result;
+		}
+
+		private static (Type, string) DecodeWrapperObject(string data)
+		{
+			try
+			{
+				if (!IsJsonObjectValue(data))
+					throw new Exception();
+
 				var __fieldPairs = GetObjectFields(data);
 
 				var __type = Type.GetType(DecodeString(__fieldPairs[0].Item2));
 				var __data = __fieldPairs[1].Item2;
 
-				return DecodeAny(__type, __data);
+				return (__type, __data);
 			}
 			catch
 			{
-				throw new FormatException("The JSON string provided for decoding is not valid.");
+				throw new InvalidWrapperObjectException($"The given string is not a wrapper object: {data}");
 			}
 		}
 
-		/// <inheritdoc cref="Decode"/>
-
-		public static T Decode<T>(string data) =>
-			(T)Decode(data);
-
-		#region Internal
-
-
-
-		private static object DecodeAny(Type type, string data)
+		private static char DecodeChar(string data)
 		{
-			if (type.IsPrimitive)
-				return DecodePrimitive(type, data);
+			data = UnwrapSimple(data, '\'');
 
-			if (type == typeof(string))
-				return DecodeString(data);
+			if (data[0] == '\\')
+				return DecodeEscapeChar(data[1]);
+			return data[0];
+		}
 
-			if (type.IsArray)
-				return DecodeArray(type, data);
+		private static object DecodePrimitive(string data, Type knownType)
+		{
+			var __method = (knownType).GetMethod("Parse", new[] { typeof(string) });
+			var __params = new object[] { data };
 
-			return DecodeObject(type, data);
+			try
+			{ return __method.Invoke(null, __params); }
+			catch
+			{ throw new NotImplementedException(); }
 		}
 
 		private static (string, string)[] GetObjectFields(string data)
@@ -403,17 +543,6 @@ namespace Cuberoot
 			);
 		}
 
-		private static object DecodePrimitive(Type type, string data)
-		{
-			var __method = type.GetMethod("Parse", new[] { typeof(string) });
-			var __params = new object[] { data };
-
-			try
-			{ return __method.Invoke(null, __params); }
-			catch
-			{ throw new NotImplementedException(); }
-		}
-
 		private static string DecodeString(string value)
 		{
 			value = UnwrapSimple(value, '\"');
@@ -438,58 +567,24 @@ namespace Cuberoot
 			return __result;
 		}
 
-		private static Array DecodeArray(Type type, string data)
+		private static Array DecodeArray(string data, Type knownType)
 		{
 			data = Unwrap(data, '[', ']');
-			var __elements = SplitArray(data);
-			var __arr = Array.CreateInstance(type.GetElementType(), __elements.Length);
 
+			var __elements = SplitArray(data);
+			var __elementType = knownType.GetElementType();
+
+			var __arr = Array.CreateInstance(__elementType, __elements.Length);
 			int i = 0;
 			foreach (var iElement in __elements)
 			{
-				__arr.SetValue(Decode(iElement), i);
+				__arr.SetValue(DecodeAnyValue(iElement), i);
 				i++;
 			}
 
 			return __arr;
 		}
 
-		private static object DecodeObject(Type type, string data)
-		{
-			data = Unwrap(data, '{', '}');
-
-			object __result;
-			if (type.IsSubclassOf(typeof(ScriptableObject)))
-				__result = ScriptableObject.CreateInstance(type);
-			else
-				__result = Activator.CreateInstance(type);
-
-			if (!string.IsNullOrWhiteSpace(data))
-			{
-				var __fieldStrings = SplitArray(data);
-
-				foreach (var iFieldString in __fieldStrings)
-				{
-					var __fieldPair = GetFieldData(iFieldString);
-
-					try
-					{
-						var __field = GetSerializableField(type, __fieldPair.Item1);
-						var __value = Decode(__fieldPair.Item2);
-
-						__field.SetValue(__result, __value);
-					}
-					catch (Exception e)
-					{
-						Debug.LogWarning($"[{type}] Failed to assign field '{__fieldPair.Item1}' from the given data string:\n{__fieldPair.Item2}");
-
-						throw e;
-					}
-				}
-			}
-
-			return __result;
-		}
 		#endregion
 		#region String Helpers
 
@@ -617,14 +712,27 @@ namespace Cuberoot
 			;
 		}
 
-		private static FieldInfo GetSerializableField(Type type, string name)
+		private static FieldInfo GetSerializableFieldInfo(Type type, string name)
 		{
 			var __result = type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
-			Debug.Assert(__result.GetCustomAttributes(typeof(SerializeField), true).Any()
-				|| (__result.Attributes & FieldAttributes.Public) != 0);
+			if (__result == null
+				|| !(__result.GetCustomAttributes(typeof(SerializeField), true).Any()
+				|| (__result.Attributes & FieldAttributes.Public) != 0))
+				throw new Exception($"{type} does not contain a serializable field with the name \"{name}\".");
 
 			return __result;
+		}
+
+		[System.Serializable]
+		private class InvalidWrapperObjectException : FormatException
+		{
+			public InvalidWrapperObjectException() { }
+			public InvalidWrapperObjectException(string message) : base(message) { }
+			public InvalidWrapperObjectException(string message, System.Exception inner) : base(message, inner) { }
+			protected InvalidWrapperObjectException(
+				System.Runtime.Serialization.SerializationInfo info,
+				System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 		}
 
 		#endregion
