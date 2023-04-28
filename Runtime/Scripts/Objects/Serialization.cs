@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -137,8 +138,8 @@ namespace Cuberoot
 			if (type.IsEnum)
 				return EncodeEnum(value);
 
-			if (type.IsArray)
-				return EncodeArray(type, (Array)value);
+			if (IsEnumerable(type))
+				return EncodeEnumerable(type, (IEnumerable)value);
 
 			return EncodeTypedObject(type, value);
 		}
@@ -193,24 +194,41 @@ namespace Cuberoot
 			return __result;
 		}
 
-		private string EncodeArray(Type type, Array value)
+		private string EncodeEnumerable(Type type, IEnumerable value)
 		{
-			object[] array = new object[(value).Length];
-			Array.Copy(value, array, array.Length);
-
 			var __result = string.Empty;
+
+			/** <<============================================================>> **/
+
+			var __list = new List<object>();
+			foreach (var iElement in value)
+				__list.Add(iElement);
+			object[] __array = __list.ToArray();
+
+			/** <<============================================================>> **/
+
+			__result += OPEN_BRACE;
+
+			__result += $"\"{TYPE_LABEL}\":{SPACE}{EncodeType(type)}" + ITERATE;
+			__result += $"\"{DATA_LABEL}\":{SPACE}";
+
+			/** <<============================================================>> **/
+
 			__result += OPEN_BRACKET;
 
-			for (var i = 0; i < array.Length; i++)
+			for (var i = 0; i < __array.Length; i++)
 			{
-				var iObject = array.GetValue(i);
+				var iObject = __array.GetValue(i);
 				__result += EncodeAny(iObject.GetType(), iObject);
 
-				if (i != array.Length - 1)
+				if (i != __array.Length - 1)
 					__result += ITERATE;
 			}
 
+			/** <<============================================================>> **/
+
 			__result += CLOSE_BRACKET;
+			__result += CLOSE_BRACE;
 			return __result;
 		}
 
@@ -248,10 +266,15 @@ namespace Cuberoot
 		}
 
 		private static string EncodeType(Type value) =>
+			// EncodeString(value.Name);
+			// EncodeString(value.AssemblyQualifiedName);
 			EncodeString(value.ToString());
 
 		private string EncodeFieldInfo(FieldInfo field, object parent) =>
 			EncodeAny(field.FieldType, field.GetValue(parent));
+
+		private bool IsEnumerable(Type type) =>
+			type.GetInterfaces().Contains(typeof(IEnumerable));
 
 		#endregion
 		#region String Helpers
@@ -353,6 +376,12 @@ namespace Cuberoot
 			return DecodeAnyValue(data);
 		}
 
+		public static object Decode(string data, Type type)
+		{
+			// return DecodeAnyValue(data, type);
+			return DecodeAnyValue(data);
+		}
+
 		/// <inheritdoc cref="Decode"/>
 
 		public static T Decode<T>(string data)
@@ -371,6 +400,16 @@ namespace Cuberoot
 		}
 
 		#region Internal
+
+		private static bool IsCollectionType(Type type)
+		{
+			var __genericType = typeof(ICollection<>);
+			var __concreteType = __genericType.MakeGenericType(type.GetGenericArguments());
+
+			var __result = type.GetInterfaces().Contains(__concreteType);
+
+			return type.GetInterfaces().Contains(__concreteType);
+		}
 
 		private static bool IsJsonObjectValue(string data) =>
 			data[0] == '{';
@@ -392,7 +431,7 @@ namespace Cuberoot
 				return DecodeObject(data);
 
 			if (IsArrayValue(data))
-				throw new FormatException("The type of the array must be specified in a wrapper object.");
+				return DecodeArray(data, typeof(object));
 
 			if (IsStringValue(data))
 				return DecodeString(data);
@@ -400,7 +439,7 @@ namespace Cuberoot
 			if (IsCharValue(data))
 				return DecodeChar(data);
 
-			return DecodePrimitive(data, typeof(decimal));
+			return DecodePrimitive(data, typeof(int));
 		}
 
 		private static object DecodeAnyValue(string data, Type knownType)
@@ -409,6 +448,9 @@ namespace Cuberoot
 
 			if (IsJsonObjectValue(data))
 				return DecodeObject(data, knownType);
+
+			if (IsCollectionType(knownType))
+				return DecodeCollection(data, knownType);
 
 			if (IsArrayValue(data))
 				return DecodeArray(data, knownType);
@@ -438,7 +480,9 @@ namespace Cuberoot
 			}
 			catch (Exception e)
 			{
-				throw new FormatException($"The JSON string provided for decoding is not valid: {e.Message}");
+				Debug.LogError(e);
+
+				throw new FormatException($"The JSON string provided for decoding is not valid: {data}");
 			}
 		}
 
@@ -574,15 +618,42 @@ namespace Cuberoot
 			var __elements = SplitArray(data);
 			var __elementType = knownType.GetElementType();
 
-			var __arr = Array.CreateInstance(__elementType, __elements.Length);
+			var __result = Array.CreateInstance(__elementType, __elements.Length);
 			int i = 0;
 			foreach (var iElement in __elements)
 			{
-				__arr.SetValue(DecodeAnyValue(iElement), i);
+				__result.SetValue(DecodeAnyValue(iElement), i);
 				i++;
 			}
 
-			return __arr;
+			return __result;
+		}
+
+		private static object DecodeCollection(string data, Type knownType)
+		{
+			var __elementType = knownType.GetGenericArguments()[0];
+			var __collectionType = knownType.GetGenericTypeDefinition();
+			var __array = DecodeArray(data, __elementType.MakeArrayType());
+
+			// Debug.Log($"Array: {__array.ContentsToString()}");
+
+			var __castToArrayMethod = typeof(Enumerable)
+				.GetMethod(nameof(Enumerable.ToList))
+				.MakeGenericMethod(__elementType);
+
+			var __collection = __castToArrayMethod.Invoke(null, new[] { __array });
+
+			// Debug.Log($"List: {((IEnumerable)__collection).ContentsToString()}");
+
+			var __castElementsMethod = typeof(Enumerable)
+				.GetMethod(nameof(Enumerable.Cast))
+				.MakeGenericMethod(__elementType);
+
+			object __result = __castElementsMethod.Invoke(null, new[] { __collection });
+
+			// Debug.Log($"Result: {((IEnumerable)__result).ContentsToString()}");
+
+			return __result;
 		}
 
 		#endregion

@@ -39,34 +39,109 @@ namespace Cuberoot
 			return false;
 		}
 
-		#endregion
-		#region IEnumerable.AllToString
-
-		public static string AllToString<T>(this ICollection<T> collection)
+		public static int GetLength(this IEnumerable enumerable)
 		{
-			int __figures = (collection.Count / 10) + 1;
+			int i = 0;
+			foreach (var iElement in enumerable)
+				i++;
+			return i;
+		}
 
-			string __result = $"{collection.ToString()}\n";
-			int __index = 0;
-			foreach (var i in collection)
+		#endregion
+		#region ContentsToString
+
+		public static string GetNameWithGenerics(this Type type, bool recursive = true)
+		{
+			var __result = string.Empty;
+
+			__result += type.Name;
+
+			var __generics = type.GetGenericArguments();
+			if (__generics.Length > 0)
 			{
-				string __indexString = __index.ToString().PadLeft(__figures, '0');
+				__result += '[';
 
-				__result += $"[{__indexString}] {i.ToString()}\n";
+				var i = 0;
+				foreach (var iType in __generics)
+				{
+					__result += recursive ? iType.GetNameWithGenerics() : iType.Name;
 
-				__index++;
+					if (i < __generics.Length - 1)
+						__result += ", ";
+
+					i++;
+				}
+
+				__result += ']';
 			}
 
-			return __result.Substring(0, __result.Length - 1);
+			//
+
+			return __result;
 		}
 
-		public static string AllToString<T>(this IEnumerable<T> enumerable)
+		public static string ContentsToString(this IEnumerable enumerable, int start = 0, int limit = -1)
 		{
-			var __list = new List<T>();
-			__list.AddRange(enumerable);
+			var __length = enumerable.GetLength();
+			var __figures = (__length / 10) + 1;
 
-			return __list.AllToString();
+			var __result = string.Empty;
+
+			__result += $"{enumerable.GetType().GetNameWithGenerics()} ({__length})";
+
+			int i = 0;
+			foreach (var iElement in enumerable)
+			{
+				if (i < start)
+					continue;
+				if (i == limit)
+					break;
+
+				string __iString = i.ToString().PadLeft(__figures, '0');
+				__result += $"\n[{__iString}] {iElement.ToString()}";
+
+				i++;
+			}
+
+			return __result;
 		}
+
+		// public static string ContentsToString<T>(this ICollection<T> collection, Type knownType)
+		// {
+		// 	int __figures = (collection.Count / 10) + 1;
+
+		// 	string __result = $"{knownType.GetGenericTypeDefinition()}<{knownType.GetGenericArguments()[0]}>\n";
+		// 	int __index = 0;
+		// 	foreach (var i in collection)
+		// 	{
+		// 		string __indexString = __index.ToString().PadLeft(__figures, '0');
+
+		// 		__result += $"[{__indexString}] {i.ToString()}\n";
+
+		// 		__index++;
+		// 	}
+
+		// 	return __result.Substring(0, __result.Length - 1);
+		// }
+
+		// public static string ContentsToString<T>(this ICollection<T> collection) =>
+		// 	collection.ContentsToString(collection.GetType());
+
+		// public static string ContentsToString<T>(this IEnumerable<T> enumerable)
+		// {
+		// 	var __list = new List<T>();
+		// 	__list.AddRange(enumerable);
+
+		// 	return __list.ContentsToString(enumerable.GetType());
+		// }
+
+		// public static string ContentsToString(this IEnumerable enumerable)
+		// {
+		// 	var __list = new List<object>();
+		// 	__list.AddAll(enumerable);
+
+		// 	return __list.ContentsToString(enumerable.GetType());
+		// }
 
 		#endregion
 
@@ -100,6 +175,24 @@ namespace Cuberoot
 		{
 			foreach (var i in toAdd)
 				collection.Add(i);
+		}
+
+		public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> toAdd)
+		{
+			foreach (var i in toAdd)
+				collection.Add(i);
+		}
+
+		public static void AddAll<T>(this ICollection<T> collection, IEnumerable toAdd)
+		{
+			foreach (var i in toAdd)
+				collection.Add((T)i);
+		}
+
+		public static void AddAll(this ICollection<object> collection, IEnumerable toAdd)
+		{
+			foreach (var i in toAdd)
+				collection.Add((object)i);
 		}
 
 		#endregion
