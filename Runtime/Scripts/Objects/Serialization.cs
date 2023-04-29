@@ -21,7 +21,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	#region Serialization
 

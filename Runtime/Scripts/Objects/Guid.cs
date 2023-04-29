@@ -17,7 +17,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// A simplified and serializable GUID represented as a string.

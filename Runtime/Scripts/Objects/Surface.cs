@@ -16,13 +16,13 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
-	/// A Surface is Cuberoot's custom Physical Material class. It contains simple physics information for pawns to use when moving and allows for other things such as colliders with associated sound effects.
+	/// A Surface is Mithril's custom Physical Material class. It contains simple physics information for pawns to use when moving and allows for other things such as colliders with associated sound effects.
 	///</summary>
 
-	[CreateAssetMenu(fileName = "New Surface", menuName = "Cuberoot/Physics/Surface", order = 50)]
+	[CreateAssetMenu(fileName = "New Surface", menuName = "Mithril/Physics/Surface", order = 50)]
 
 	public class Surface : ScriptableObject
 	{

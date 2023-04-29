@@ -19,7 +19,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Cuberoot.Editor
+namespace Mithril.Editor
 {
 
 	[Serializable]

@@ -18,7 +18,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Cuberoot.Editor
+namespace Mithril.Editor
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__
@@ -31,7 +31,7 @@ namespace Cuberoot.Editor
 		public class UnserializableException : System.Exception
 		{
 			public UnserializableException() { }
-			public UnserializableException(object obj) : base($"{obj} is not safely serializable. Please consider implementing the Cuberoot.ISerializable interface for this object.") { }
+			public UnserializableException(object obj) : base($"{obj} is not safely serializable. Please consider implementing the Mithril.ISerializable interface for this object.") { }
 		}
 
 		#endregion

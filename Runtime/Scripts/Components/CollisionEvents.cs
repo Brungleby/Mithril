@@ -2,7 +2,7 @@
 /** CollisionEvents.cs
 *
 *	Created by LIAM WOFFORD, USA-TX.
-*	(c) 2023, Cuberoot Software, LLC.
+*	(c) 2023, CUBEROOT SOFTWARE, LLC.
 **/
 
 #region Includes
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-using Cuberoot;
+using Mithril;
 
 #endregion
 

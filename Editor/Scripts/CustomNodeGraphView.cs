@@ -20,12 +20,12 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-using NodeData = Cuberoot.NodeData;
-using EdgeData = Cuberoot.EdgeData;
+using NodeData = Mithril.NodeData;
+using EdgeData = Mithril.EdgeData;
 
 #endregion
 
-namespace Cuberoot.Editor
+namespace Mithril.Editor
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__

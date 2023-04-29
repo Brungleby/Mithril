@@ -19,7 +19,7 @@ using UnityEngine.Events;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	#region (class) Timer
 

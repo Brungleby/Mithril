@@ -14,7 +14,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// Denotes a state of play for a video or event.

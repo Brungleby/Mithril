@@ -1,5 +1,5 @@
 
-/** CuberootTemplate.cs
+/** MithrilTemplate.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -14,11 +14,11 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using Cuberoot;
+using Mithril;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	#region (abstract) HitResultBase
 

@@ -21,7 +21,7 @@ using UnityEditor.UIElements;
 
 #endregion
 
-namespace Cuberoot.Editor
+namespace Mithril.Editor
 {
 	#region InstantiableEditorWindow
 
@@ -32,7 +32,7 @@ namespace Cuberoot.Editor
 		#region Constants
 
 		public readonly static string DEFAULT_ICON_PATH =
-			"Assets/Cuberoot/Cuberoot.Core/Editor/Resources/Textures/Icon_Diamond.png";
+			"Assets/Mithril/Mithril.Core/Editor/Resources/Textures/Icon_Diamond.png";
 
 		#endregion
 		#region Members

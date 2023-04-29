@@ -20,7 +20,7 @@ using UnityEditor.Experimental.GraphView;
 
 #endregion
 
-namespace Cuberoot.Editor
+namespace Mithril.Editor
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__

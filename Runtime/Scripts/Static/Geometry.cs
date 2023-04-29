@@ -13,7 +13,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	#region (class) Geometry
 

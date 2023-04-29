@@ -18,7 +18,7 @@ using Unity.Mathematics;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	public static class Math
 	{

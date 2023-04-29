@@ -18,7 +18,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__

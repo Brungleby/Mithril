@@ -14,7 +14,7 @@ using UnityEngine.Events;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// A component that waits for a specified amount of time before triggering an event. This event can occur a specified or an unspecified (infinite) number of times.

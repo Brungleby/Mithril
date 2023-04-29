@@ -17,7 +17,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	public static class Utils
 	{

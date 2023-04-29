@@ -14,12 +14,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 
-using Cuberoot.Editor;
-using Node = Cuberoot.Editor.Node;
+using Mithril.Editor;
+using Node = Mithril.Editor.Node;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	#region NodeGraphData
 
@@ -59,7 +59,7 @@ namespace Cuberoot
 		}
 
 #if UNITY_EDITOR
-		public void CompileNodes(List<Cuberoot.Editor.Node> nodes)
+		public void CompileNodes(List<Mithril.Editor.Node> nodes)
 		{
 			this.nodes = new NodeData[nodes.Count];
 

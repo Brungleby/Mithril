@@ -16,7 +16,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// Add this component to any <see cref="GameObject"/> with a Collider or Collider2D to apply a <see cref="Surface"/>'s properties to it.

@@ -1,5 +1,5 @@
 
-/** CuberootTemplate.cs
+/** MithrilTemplate.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -13,7 +13,7 @@ using System;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	#region (class) LogicGate
 

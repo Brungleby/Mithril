@@ -15,11 +15,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-using Cuberoot.Editor;
+using Mithril.Editor;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// A ScriptableObject that initializes its own data using <see cref="EditableData"/>
@@ -92,7 +92,7 @@ namespace Cuberoot
 		public void Save()
 		{
 			// Editor.Utils.SaveAssetAtFilePath(this, AssetDatabase.GetAssetPath(this), false);
-			Cuberoot.Editor.Utils.SaveAssetSerialized(this);
+			Mithril.Editor.Utils.SaveAssetSerialized(this);
 			// Editor.Utils.SerializeAsset(this);
 		}
 
@@ -143,7 +143,7 @@ namespace Cuberoot
 				if (_currentlyOpenEditor.GetType() == type)
 					_currentlyOpenEditor.Focus();
 				else
-					Cuberoot.Editor.Utils.PromptConfirmation("A window currently editing this object is still open. Click OK to save the asset, close the window, and proceed opening this one.");
+					Mithril.Editor.Utils.PromptConfirmation("A window currently editing this object is still open. Click OK to save the asset, close the window, and proceed opening this one.");
 			}
 
 			return _currentlyOpenEditor;

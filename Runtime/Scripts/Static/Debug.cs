@@ -16,7 +16,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// A static collection of debug functions.

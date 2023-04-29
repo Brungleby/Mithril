@@ -16,7 +16,7 @@ using TMPro;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// This is a component that allows any given <see cref="TMP_Text"/> to be "printed out" over time. Primarily used for dialogue boxes.

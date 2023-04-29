@@ -13,7 +13,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// This is a simple script that makes its gameObject spin around along an axis.

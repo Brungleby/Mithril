@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// Implements methods that allow others to ask if it contains a given filter.

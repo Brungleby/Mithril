@@ -16,7 +16,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Cuberoot
+namespace Mithril
 {
 	/// <summary>
 	/// A list of items that have float weights associated to them. When selecting an item randomly from this list, items that have higher weights are more likely to be selected.
