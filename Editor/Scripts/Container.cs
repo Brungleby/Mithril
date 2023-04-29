@@ -54,9 +54,10 @@ namespace Cuberoot.Editor
 
 	[Serializable]
 	[CreateAssetMenu(menuName = "Serialization Test (Container)")]
-	public class Container : TypeSafeScriptableObject
+	public class Container : SmartObject
 	{
 		[SerializeField]
+		[UnityEngine.Serialization.FormerlySerializedAs("fart")]
 		public List<Item> items;
 
 		// [SerializeField]
@@ -67,7 +68,7 @@ namespace Cuberoot.Editor
 	}
 
 	[CustomEditor(typeof(Container))]
-	public class ContainerEditor : UnityEditor.Editor
+	public class ContainerEditor : SmartObject.Editor
 	{
 		public override void OnInspectorGUI()
 		{
@@ -84,8 +85,6 @@ namespace Cuberoot.Editor
 
 				__target.items.Add(__sword);
 				__target.items.Add(__shield);
-
-				// __target.items = new Item[] { __sword, __shield };
 			}
 
 			if (GUILayout.Button("Update"))
@@ -94,11 +93,6 @@ namespace Cuberoot.Editor
 				__sword.damage++;
 				var __shield = (Shield)__target.items[1];
 				__shield.health--;
-
-				// if (__target.item == null || __target.item.GetType() != typeof(Sword))
-				// 	__target.item = new Sword();
-				// Sword __sword = (Sword)__target.item;
-				// __sword.damage++;
 			}
 
 			if (GUILayout.Button("Save"))
@@ -107,21 +101,11 @@ namespace Cuberoot.Editor
 				AssetDatabase.SaveAssetIfDirty(__target);
 				AssetDatabase.SaveAssets();
 				AssetDatabase.Refresh();
-
 			}
 
 			if (GUILayout.Button("Print Object"))
 			{
-				__target.OnAfterDeserialize();
-
 				Debug.Log(__target.items.ContentsToString());
-				// Debug.Log($"contents => {__target.item.ToString()}");
-			}
-
-			if (GUILayout.Button("Print JSON"))
-			{
-				Debug.Log(__target.GetFieldJson("items"));
-				// Debug.Log(__target.GetFieldJson("item"));
 			}
 		}
 	}

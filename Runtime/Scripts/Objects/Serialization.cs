@@ -158,7 +158,15 @@ namespace Cuberoot
 
 		private string EncodePrimitive(object value)
 		{
-			return value.ToString().ToLower();
+			var __result = string.Empty;
+			__result += OPEN_BRACE;
+
+			__result += $"\"{TYPE_LABEL}\":{SPACE}{EncodeType(value.GetType())}" + ITERATE;
+			__result += $"\"{DATA_LABEL}\":{SPACE}{value.ToString().ToLower()}";
+
+			__result += CLOSE_BRACE;
+			return __result;
+			// return value.ToString().ToLower();
 		}
 
 		private string EncodeEnum(object value)
@@ -403,12 +411,14 @@ namespace Cuberoot
 
 		private static bool IsCollectionType(Type type)
 		{
-			var __genericType = typeof(ICollection<>);
-			var __concreteType = __genericType.MakeGenericType(type.GetGenericArguments());
+			// var __genericType = typeof(ICollection<>);
+			// var __concreteType = __genericType.MakeGenericType(type.GetGenericArguments());
 
-			var __result = type.GetInterfaces().Contains(__concreteType);
+			// var __result = type.GetInterfaces().Contains(__concreteType);
 
-			return type.GetInterfaces().Contains(__concreteType);
+			// return type.GetInterfaces().Contains(__concreteType);
+
+			return type.GetInterfaces().Contains(typeof(ICollection));
 		}
 
 		private static bool IsJsonObjectValue(string data) =>
@@ -439,12 +449,15 @@ namespace Cuberoot
 			if (IsCharValue(data))
 				return DecodeChar(data);
 
-			return DecodePrimitive(data, typeof(int));
+			throw new NotImplementedException();
 		}
 
 		private static object DecodeAnyValue(string data, Type knownType)
 		{
 			data = data.Trim();
+
+			if (knownType.IsPrimitive)
+				return DecodePrimitive(data, knownType);
 
 			if (IsJsonObjectValue(data))
 				return DecodeObject(data, knownType);
@@ -464,26 +477,13 @@ namespace Cuberoot
 			if (knownType.IsEnum)
 				knownType = typeof(int);
 
-			return DecodePrimitive(data, knownType);
+			throw new NotImplementedException();
 		}
 
 		private static object DecodeObject(string data)
 		{
-			try
-			{
-				var __wrapObject = DecodeWrapperObject(data);
-				return DecodeAnyValue(__wrapObject.Item2, __wrapObject.Item1);
-			}
-			catch (InvalidWrapperObjectException e)
-			{
-				throw e;
-			}
-			catch (Exception e)
-			{
-				Debug.LogError(e);
-
-				throw new FormatException($"The JSON string provided for decoding is not valid: {data}");
-			}
+			var __wrapObject = DecodeWrapperObject(data);
+			return DecodeAnyValue(__wrapObject.Item2, __wrapObject.Item1);
 		}
 
 		private static object DecodeObject(string data, Type knownType)
@@ -503,20 +503,10 @@ namespace Cuberoot
 			foreach (var iFieldString in __fieldStrings)
 			{
 				var __fieldPair = GetFieldData(iFieldString);
+				var __field = GetSerializableFieldInfo(knownType, __fieldPair.Item1);
+				var __value = DecodeAnyValue(__fieldPair.Item2);
 
-				try
-				{
-					var __field = GetSerializableFieldInfo(knownType, __fieldPair.Item1);
-					var __value = DecodeAnyValue(__fieldPair.Item2);
-
-					__field.SetValue(__result, __value);
-				}
-				catch (Exception e)
-				{
-					Debug.LogWarning($"[{knownType}] Failed to assign field '{__fieldPair.Item1}' from the given data string:\n{__fieldPair.Item2}");
-
-					throw e;
-				}
+				__field.SetValue(__result, __value);
 			}
 
 			return __result;
@@ -538,7 +528,7 @@ namespace Cuberoot
 			}
 			catch
 			{
-				throw new InvalidWrapperObjectException($"The given string is not a wrapper object: {data}");
+				throw new InvalidWrapperObjectException($"The given string is not a wrapper object: \"{data}\"");
 			}
 		}
 
@@ -558,8 +548,10 @@ namespace Cuberoot
 
 			try
 			{ return __method.Invoke(null, __params); }
+			catch (FormatException)
+			{ throw new FormatException($"{knownType} could not parse from \"{data}\""); }
 			catch
-			{ throw new NotImplementedException(); }
+			{ throw new NotImplementedException($"{knownType} is not a primitive type (\"{data}\")"); }
 		}
 
 		private static (string, string)[] GetObjectFields(string data)
