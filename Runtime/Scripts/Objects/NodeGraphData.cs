@@ -32,6 +32,14 @@ namespace Cuberoot
 	{
 		#region Bake Data
 #if UNITY_EDITOR
+		/**	__TODO_REFACTOR__
+		*
+		*	Because EditableObjects can be edited using multiple windows,
+		*	we should either store the view position of each window type,
+		*	or none at all.
+		*/
+
+		[HideInInspector]
 		public Vector2 viewPosition;
 #endif
 		public NodeData[] nodes = new NodeData[0];
@@ -51,7 +59,7 @@ namespace Cuberoot
 		}
 
 #if UNITY_EDITOR
-		public void CompileNodes(List<Editor.Node> nodes)
+		public void CompileNodes(List<Cuberoot.Editor.Node> nodes)
 		{
 			this.nodes = new NodeData[nodes.Count];
 

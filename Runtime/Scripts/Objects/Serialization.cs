@@ -273,10 +273,20 @@ namespace Cuberoot
 			return $"'{value}'";
 		}
 
-		private static string EncodeType(Type value) =>
-			// EncodeString(value.Name);
-			// EncodeString(value.AssemblyQualifiedName);
-			EncodeString(value.ToString());
+		private static string EncodeType(Type value)
+		{
+			string __result;
+
+			/**	Reduces the length of the string for basic values
+			*	and ensures types from external assemblies are also saved
+			*/
+			if (value.Assembly == typeof(object).Assembly)
+				__result = value.ToString();
+			else
+				__result = value.AssemblyQualifiedName;
+
+			return EncodeString(__result);
+		}
 
 		private string EncodeFieldInfo(FieldInfo field, object parent) =>
 			EncodeAny(field.FieldType, field.GetValue(parent));
@@ -387,7 +397,7 @@ namespace Cuberoot
 		public static object Decode(string data, Type type)
 		{
 			// return DecodeAnyValue(data, type);
-			return DecodeAnyValue(data);
+			return Decode(data);
 		}
 
 		/// <inheritdoc cref="Decode"/>
@@ -418,7 +428,7 @@ namespace Cuberoot
 
 			// return type.GetInterfaces().Contains(__concreteType);
 
-			return type.GetInterfaces().Contains(typeof(ICollection));
+			return type.GetInterfaces().Contains(typeof(ICollection<>));
 		}
 
 		private static bool IsJsonObjectValue(string data) =>
@@ -449,7 +459,10 @@ namespace Cuberoot
 			if (IsCharValue(data))
 				return DecodeChar(data);
 
-			throw new NotImplementedException();
+			try
+			{ return DecodePrimitive(data, typeof(int)); }
+			catch
+			{ throw new NotImplementedException($"Unsure what type to assign to \"{data}\""); }
 		}
 
 		private static object DecodeAnyValue(string data, Type knownType)
@@ -477,7 +490,7 @@ namespace Cuberoot
 			if (knownType.IsEnum)
 				knownType = typeof(int);
 
-			throw new NotImplementedException();
+			throw new NotImplementedException($"Unsure how to assign the following data to {knownType}: \"{data}\"");
 		}
 
 		private static object DecodeObject(string data)
@@ -623,6 +636,8 @@ namespace Cuberoot
 
 		private static object DecodeCollection(string data, Type knownType)
 		{
+			Debug.Log(knownType);
+
 			var __elementType = knownType.GetGenericArguments()[0];
 			var __collectionType = knownType.GetGenericTypeDefinition();
 			var __array = DecodeArray(data, __elementType.MakeArrayType());

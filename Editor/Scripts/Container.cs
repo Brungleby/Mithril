@@ -68,7 +68,7 @@ namespace Cuberoot.Editor
 	}
 
 	[CustomEditor(typeof(Container))]
-	public class ContainerEditor : SmartObject.Editor
+	public class ContainerEditor : SmartObject.SmartObjectEditor
 	{
 		public override void OnInspectorGUI()
 		{
@@ -106,6 +106,22 @@ namespace Cuberoot.Editor
 			if (GUILayout.Button("Print Object"))
 			{
 				Debug.Log(__target.items.ContentsToString());
+			}
+
+			if (GUILayout.Button("Test"))
+			{
+				// Debug.Log(typeof(Vector2).AssemblyQualifiedName);
+
+				// string data = "{\"TYPE\":\"UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null\",\"DATA\":{\"x\":{\"TYPE\":\"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\"DATA\":102},\"y\":{\"TYPE\":\"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\"DATA\":148}}}";
+				// var __v = Serialization.Decode<Vector2>(data);
+				// Debug.Log(__v.ToString());
+
+				var __vector = new Vector2(3, 5);
+				var __vectorEncoded = Serialization.Encode(__vector);
+				Debug.Log(__vectorEncoded);
+
+				__vector = Serialization.Decode<Vector2>(__vectorEncoded);
+				Debug.Log(__vector);
 			}
 		}
 	}

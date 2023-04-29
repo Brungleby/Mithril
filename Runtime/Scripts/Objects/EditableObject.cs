@@ -27,8 +27,38 @@ namespace Cuberoot
 	///</summary>
 	[Serializable]
 
-	public abstract class EditableObject : ScriptableObject, ICloneable
+	public abstract class EditableObject : SmartObject, ICloneable
 	{
+		#region Inners
+
+		/// <summary>
+		/// Simple script that adds buttons to edit this object in compatible editors.
+		///</summary>
+
+		[CustomEditor(typeof(EditableObject), true)]
+		public class EditableObjectEditor : SmartObject.SmartObjectEditor
+		{
+			public override void OnInspectorGUI()
+			{
+				var __target = (EditableObject)target;
+				var __types = __target.UsableEditorTypes;
+
+				if (__types.Length > 0)
+				{
+					for (var i = 0; i < __types.Length; i++)
+					{
+						if (GUILayout.Button($"Open with {__types[i].Name}"))
+							__target.Open(__types[i]);
+					}
+				}
+				else
+					GUILayout.Label("This EditableObject does not support any editors.");
+
+				base.OnInspectorGUI();
+			}
+		}
+
+		#endregion
 		#region Data
 
 		private string _filePath;
@@ -62,7 +92,7 @@ namespace Cuberoot
 		public void Save()
 		{
 			// Editor.Utils.SaveAssetAtFilePath(this, AssetDatabase.GetAssetPath(this), false);
-			Editor.Utils.SaveAssetSerialized(this);
+			Cuberoot.Editor.Utils.SaveAssetSerialized(this);
 			// Editor.Utils.SerializeAsset(this);
 		}
 
@@ -113,7 +143,7 @@ namespace Cuberoot
 				if (_currentlyOpenEditor.GetType() == type)
 					_currentlyOpenEditor.Focus();
 				else
-					Editor.Utils.PromptConfirmation("A window currently editing this object is still open. Click OK to save the asset, close the window, and proceed opening this one.");
+					Cuberoot.Editor.Utils.PromptConfirmation("A window currently editing this object is still open. Click OK to save the asset, close the window, and proceed opening this one.");
 			}
 
 			return _currentlyOpenEditor;

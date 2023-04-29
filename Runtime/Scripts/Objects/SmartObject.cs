@@ -40,7 +40,7 @@ namespace Cuberoot
 		///</summary>
 
 		[CustomEditor(typeof(SmartObject), true)]
-		public class Editor : UnityEditor.Editor
+		public class SmartObjectEditor : UnityEditor.Editor
 		{
 			/// <summary>
 			/// This implementation of <see cref="UnityEditor.Editor.OnInspectorGUI"/> is unique. Functional GUI elements should be implemented here, but fields that can be modified should be implemented in <see cref="OnInspectorGUI_Fields"/>.
@@ -49,6 +49,18 @@ namespace Cuberoot
 			public override void OnInspectorGUI()
 			{
 				var __target = (SmartObject)target;
+
+				var currentEvent = Event.current;
+				if (currentEvent.alt)
+				{
+					if (GUILayout.Button("Copy JSON"))
+						GUIUtility.systemCopyBuffer = __target.GetJsonString();
+				}
+				else
+				{
+					if (GUILayout.Button("Print JSON"))
+						Debug.Log(__target.GetJsonString());
+				}
 
 				EditorGUI.BeginChangeCheck();
 
@@ -120,6 +132,13 @@ namespace Cuberoot
 			private string _name;
 			public string name => _name;
 
+			private string _expectedType;
+			private Type expectedType
+			{
+				get => Type.GetType(_expectedType);
+				set => _expectedType = value.ToString();
+			}
+
 			[SerializeField]
 			[HideInInspector]
 			private string _json;
@@ -158,7 +177,7 @@ namespace Cuberoot
 		private ObjectMirror _mirror;
 
 		/// <summary>
-		/// Updated by <see cref="SmartObject.Editor"/>; indicates whether or not it is being directly edited in the inspector.
+		/// Updated by <see cref="SmartObject.SmartObjectEditor"/>; indicates whether or not it is being directly edited in the inspector.
 		///</summary>
 
 		private bool _isBeingModifiedInInspector = false;
@@ -220,7 +239,7 @@ namespace Cuberoot
 		/// The JSON serialization of this object.
 		///</returns>
 
-		public string GetJson(bool prettyPrint = false)
+		public string GetJsonString(bool prettyPrint = false)
 		{
 			return Serialization.Encode(this, prettyPrint);
 		}
