@@ -24,6 +24,8 @@ using UnityEditor;
 
 namespace Cuberoot
 {
+	#region SmartObject
+
 	/// <summary>
 	/// A more feature-rich implementation of <see cref="ScriptableObject"/> which serializes its contents properly, and is suitable for storing polymorphic data.
 	///</summary>
@@ -54,7 +56,7 @@ namespace Cuberoot
 				if (currentEvent.alt)
 				{
 					if (GUILayout.Button("Copy JSON"))
-						GUIUtility.systemCopyBuffer = __target.GetJsonString();
+						GUIUtility.systemCopyBuffer = __target.GetJsonString(true);
 				}
 				else
 				{
@@ -167,12 +169,15 @@ namespace Cuberoot
 
 		#region Data
 
+		public static readonly BindingFlags SERIALIZABLE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
 		/// <summary>
 		/// Mirror of this object; stores json information for each field (not including this one).
 		///</summary>
 
 		[SerializeField]
 		[HideInInspector]
+		[NonSerializedBySmartObject]
 
 		private ObjectMirror _mirror;
 
@@ -222,14 +227,8 @@ namespace Cuberoot
 
 		private static FieldInfo[] GetSerializableFieldInfos(Type type)
 		{
-			var __ignoreFields = typeof(SmartObject).GetFields();
-
-			if (__ignoreFields.Length > 0)
-				Debug.Log(__ignoreFields.ContentsToString());
-
-			return type
-				.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-				.Where(i => !__ignoreFields.Contains(i))
+			return type.GetFields(SERIALIZABLE_FIELD_FLAGS)
+				.Where(i => i.GetCustomAttribute<NonSerializedBySmartObject>() == null)
 				.Where(i => i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
 				.ToArray()
 			;
@@ -246,4 +245,13 @@ namespace Cuberoot
 
 		#endregion
 	}
+
+	#endregion
+
+	#region NonSerializedInSmartObject
+
+	[AttributeUsage(AttributeTargets.Field)]
+	public sealed class NonSerializedBySmartObject : Attribute { }
+
+	#endregion
 }

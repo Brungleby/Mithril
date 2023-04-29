@@ -19,7 +19,6 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-
 #endregion
 
 namespace Cuberoot.Editor
