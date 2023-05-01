@@ -1,0 +1,6 @@
+{
+    "name": "Mithril.Core.Tests.PlayMode",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

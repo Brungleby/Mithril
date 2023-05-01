@@ -192,7 +192,7 @@ namespace Mithril
 
 		#region ISerializationCallbackReceiver
 
-		public void OnAfterDeserialize()
+		public virtual void OnAfterDeserialize()
 		{
 			if (!_isBeingModifiedInInspector)
 				LoadValues();
@@ -200,7 +200,7 @@ namespace Mithril
 			_isBeingModifiedInInspector = false;
 		}
 
-		public void OnBeforeSerialize()
+		public virtual void OnBeforeSerialize()
 		{
 			if (!_isBeingModifiedInInspector)
 				SaveValues();
