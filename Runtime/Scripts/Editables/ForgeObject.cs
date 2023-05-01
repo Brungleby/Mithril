@@ -89,27 +89,12 @@ namespace Mithril
 #endif
 		#endregion
 		#region Methods
-		#region ISerializationCallbackReceiver
-
-		// public override void OnAfterDeserialize()
-		// {
-		// 	base.OnAfterDeserialize();
-		// }
-
-		// public override void OnBeforeSerialize()
-		// {
-		// 	base.OnBeforeSerialize();
-		// }
-
-		#endregion
 
 		public void Save()
 		{
-			_isSaving = true;
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssetIfDirty(this);
 			AssetDatabase.Refresh();
-			_isSaving = false;
 		}
 
 #if UNITY_EDITOR

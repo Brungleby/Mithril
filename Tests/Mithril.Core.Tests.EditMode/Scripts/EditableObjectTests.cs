@@ -60,32 +60,11 @@ namespace Mithril
 		}
 
 		[Test]
-		public void TestObject_Exists()
-		{
-			/** <<============================================================>> **/
-			#region Arrange
-
-			TestForgeObject __testObject;
-
-			#endregion
-
-			/** <<============================================================>> **/
-			#region Act
-
-			__testObject = testObject;
-
-			#endregion
-
-			/** <<============================================================>> **/
-			#region Assert
-
-			Assert.True(__testObject != null);
-
-			#endregion
-		}
+		public void TestObject_Exists() =>
+			Assert.NotNull(testObject);
 
 		[Test]
-		public void TestObject_Name()
+		public void TestObject_NameMatchesAssetFile()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __expected = "New Test Forge Object";
@@ -97,16 +76,20 @@ namespace Mithril
 		}
 
 		[Test]
-		public void TestObject_NotUsuallySaving()
+		public void TestObject_IsNotSaving() =>
+			Assert.IsFalse(testObject.isSaving);
+
+		[Test]
+		public void TestObject_NewIsAutosaved()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
+			var __testObject = ScriptableObject.CreateInstance<TestForgeObject>();
 
 			/** <<==  ACT      ===============================================>> **/
-
+			// __testObject.isAutosaved = true;
 
 			/** <<==  ASSERT   ===============================================>> **/
-			Assert.False(testObject.isSaving);
-
+			Assert.True(__testObject.isAutosaved);
 		}
 	}
 

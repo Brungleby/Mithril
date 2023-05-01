@@ -89,7 +89,10 @@ namespace Mithril.Editor
 				}
 			}
 
-			public SaveButton(Action action) : base(action) { }
+			public SaveButton(Action action) : base(action)
+			{
+				style.width = WIDTH;
+			}
 
 			private void RefreshText()
 			{
@@ -103,8 +106,13 @@ namespace Mithril.Editor
 		#endregion
 		#region Data
 
-		public readonly static string DEFAULT_ICON_PATH =
+		readonly static public string DEFAULT_ICON_PATH =
 			"Assets/Mithril/Mithril.Core/Editor/Resources/Textures/Icon_Diamond.png";
+
+		readonly static public float TOOLBAR_TOGGLE_PADDING_TOP =
+			1f;
+		readonly static public float TOOLBAR_PADDING_LEFT =
+			3f;
 
 		#region
 
@@ -211,6 +219,7 @@ namespace Mithril.Editor
 			Utils.InitializeWindowHeader(this, obj.fileName, iconPath);
 			isModified = false;
 
+			_autosaveToggleElement.value = _workObject.isAutosaved;
 			OnGUI();
 		}
 
@@ -232,17 +241,13 @@ namespace Mithril.Editor
 			_toolbar = new Toolbar();
 			InitializeToolbar(_toolbar);
 			rootVisualElement.Add(_toolbar);
+
+			rootVisualElement.style.paddingTop = _toolbar.style.height;
 		}
 
 		protected virtual void InitializeToolbar(Toolbar toolbar)
 		{
-			/** <<============================================================>> **/
-
-			_autosaveToggleElement = new Toggle();
-
-			_autosaveToggleElement.style.flexDirection = FlexDirection.RowReverse;
-
-			toolbar.Add(_autosaveToggleElement);
+			toolbar.style.paddingLeft = TOOLBAR_PADDING_LEFT;
 
 			/** <<============================================================>> **/
 
@@ -254,6 +259,16 @@ namespace Mithril.Editor
 			};
 
 			toolbar.Add(_saveButtonElement);
+
+			/** <<============================================================>> **/
+
+			_autosaveToggleElement = new Toggle();
+			_autosaveToggleElement.style.paddingTop = TOOLBAR_TOGGLE_PADDING_TOP;
+
+			if (_workObject != null)
+				_autosaveToggleElement.value = _workObject.isAutosaved;
+
+			toolbar.Add(_autosaveToggleElement);
 		}
 
 		protected virtual void DisposeVisualElements() { }
