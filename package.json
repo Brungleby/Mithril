@@ -2,7 +2,7 @@
 	"name": "com.cuberoot.mithril",
 	"displayName": "Mithril.Core",
 	"description": "Contains basic auxiliary objects and functions necessary to use Mithril.",
-	"version": "1.0.0",
+	"version": "0.0.0",
 	"unity": "2021.3",
 	"dependencies": {
 		"com.unity.mathematics": "1.2.6",
