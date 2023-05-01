@@ -23,6 +23,34 @@ using UnityEditor;
 
 namespace Mithril
 {
+	public static class SerializationExtensions
+	{
+		public static readonly BindingFlags SERIALIZABLE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+
+		public static FieldInfo[] GetSerializableFields(this Type type)
+		{
+			return type
+				.GetFields(SERIALIZABLE_FIELD_FLAGS)
+				.Where(i => i.GetCustomAttribute<NonSerializedBySmartObject>() == null)
+				.Where(i => i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
+				.ToArray()
+			;
+		}
+
+		public static FieldInfo GetSerializableField(this Type type, string name)
+		{
+			var __result = type.GetField(name, SERIALIZABLE_FIELD_FLAGS);
+
+			if (!(__result.GetCustomAttribute<NonSerializedBySmartObject>() == null))
+				return null;
+
+			if (!(__result.IsPublic || __result.GetCustomAttribute<SerializeField>() != null))
+				return null;
+
+			return __result;
+		}
+	}
+
 	#region Serialization
 
 	/// <summary>
@@ -132,6 +160,9 @@ namespace Mithril
 			if (type == typeof(string))
 				return EncodeString((string)value);
 
+			if (type == typeof(bool))
+				return EncodeBool(value);
+
 			if (type.IsPrimitive)
 				return EncodePrimitive(value);
 
@@ -162,16 +193,20 @@ namespace Mithril
 			__result += OPEN_BRACE;
 
 			__result += $"\"{TYPE_LABEL}\":{SPACE}{EncodeType(value.GetType())}" + ITERATE;
-			__result += $"\"{DATA_LABEL}\":{SPACE}{value.ToString().ToLower()}";
+			__result += $"\"{DATA_LABEL}\":{SPACE}{value.ToString()}";
 
 			__result += CLOSE_BRACE;
 			return __result;
-			// return value.ToString().ToLower();
 		}
 
 		private string EncodeEnum(object value)
 		{
 			return ((int)value).ToString();
+		}
+
+		private string EncodeBool(object value)
+		{
+			return ((bool)value).ToString();
 		}
 
 		private string EncodeObjectFields(Type type, object value)
@@ -459,15 +494,27 @@ namespace Mithril
 			if (IsCharValue(data))
 				return DecodeChar(data);
 
+
 			try
 			{ return DecodePrimitive(data, typeof(int)); }
 			catch
-			{ throw new NotImplementedException($"Unsure what type to assign to \"{data}\""); }
+			{
+				try
+				{ return DecodePrimitive(data, typeof(bool)); }
+				catch
+				{ throw new NotImplementedException($"Unsure what type to assign to \"{data}\""); }
+			}
 		}
 
 		private static object DecodeAnyValue(string data, Type knownType)
 		{
 			data = data.Trim();
+
+			if (knownType == typeof(string))
+				return DecodeString(data);
+
+			if (knownType == typeof(char))
+				return DecodeChar(data);
 
 			if (knownType.IsPrimitive)
 				return DecodePrimitive(data, knownType);
@@ -480,15 +527,6 @@ namespace Mithril
 
 			if (IsArrayValue(data))
 				return DecodeArray(data, knownType);
-
-			if (knownType == typeof(string))
-				return DecodeString(data);
-
-			if (knownType == typeof(char))
-				return DecodeChar(data);
-
-			if (knownType.IsEnum)
-				knownType = typeof(int);
 
 			throw new NotImplementedException($"Unsure how to assign the following data to {knownType}: \"{data}\"");
 		}

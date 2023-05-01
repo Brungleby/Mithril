@@ -93,10 +93,13 @@ namespace Mithril
 			[HideInInspector]
 			private SerializedField[] _serializedFields;
 
+			public string json =>
+				_serializedFields.ContentsToString();
+
 			public ObjectMirror(object obj)
 			{
 				var __serializedFields = new List<SerializedField>();
-				foreach (var iField in GetSerializableFieldInfos((obj.GetType())))
+				foreach (var iField in obj.GetType().GetSerializableFields())
 				{
 					__serializedFields.Add(new SerializedField(iField, iField.GetValue(obj)));
 				}
@@ -110,12 +113,12 @@ namespace Mithril
 					FieldInfo iField;
 					try
 					{
-						iField = obj.GetType().GetField(iSerializedField.name);
+						iField = obj.GetType().GetSerializableField(iSerializedField.name);
 					}
 					catch
 					{
 						var __oldName = obj.GetType().GetCustomAttribute<FormerlySerializedAsAttribute>().oldName;
-						iField = obj.GetType().GetField(__oldName);
+						iField = obj.GetType().GetSerializableField(__oldName);
 					}
 
 					iField.SetValue(obj, iSerializedField.Deserialize());
@@ -169,8 +172,6 @@ namespace Mithril
 
 		#region Data
 
-		public static readonly BindingFlags SERIALIZABLE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-
 		/// <summary>
 		/// Mirror of this object; stores json information for each field (not including this one).
 		///</summary>
@@ -195,7 +196,7 @@ namespace Mithril
 		public virtual void OnAfterDeserialize()
 		{
 			if (!_isBeingModifiedInInspector)
-				LoadValues();
+				LoadMirror();
 
 			_isBeingModifiedInInspector = false;
 		}
@@ -203,12 +204,12 @@ namespace Mithril
 		public virtual void OnBeforeSerialize()
 		{
 			if (!_isBeingModifiedInInspector)
-				SaveValues();
+				SaveMirror();
 		}
 
 		#endregion
 
-		private void LoadValues()
+		protected void LoadMirror()
 		{
 			if (_mirror == null)
 				return;
@@ -216,22 +217,9 @@ namespace Mithril
 			_mirror.ApplyTo(this);
 		}
 
-		private void SaveValues()
+		protected void SaveMirror()
 		{
 			_mirror = new ObjectMirror(this);
-		}
-
-		/// <returns>
-		/// The fields which Unity will serialize, i.e. public fields (or nonpublic with the [<see cref="SerializeField"/>] attribute).
-		///</returns>
-
-		private static FieldInfo[] GetSerializableFieldInfos(Type type)
-		{
-			return type.GetFields(SERIALIZABLE_FIELD_FLAGS)
-				.Where(i => i.GetCustomAttribute<NonSerializedBySmartObject>() == null)
-				.Where(i => i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
-				.ToArray()
-			;
 		}
 
 		/// <returns>
@@ -240,7 +228,7 @@ namespace Mithril
 
 		public string GetJsonString(bool prettyPrint = false)
 		{
-			return Serialization.Encode(this, prettyPrint);
+			return _mirror.json;
 		}
 
 		#endregion

@@ -37,11 +37,6 @@ namespace Mithril
 
 		#region
 
-		public TestForgeObject()
-		{
-
-		}
-
 		public override System.Type[] usableEditorWindows =>
 			new System.Type[] {
 				typeof(TestForgeWindow)

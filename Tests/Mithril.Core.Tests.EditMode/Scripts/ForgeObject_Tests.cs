@@ -19,7 +19,7 @@ namespace Mithril
 {
 	#region EditableObjectTests
 
-	public class EditableObjectTests
+	public class ForgeObject_Tests
 	{
 		private TestForgeObject _testObject;
 		private TestForgeObject testObject
@@ -90,6 +90,35 @@ namespace Mithril
 
 			/** <<==  ASSERT   ===============================================>> **/
 			Assert.True(__testObject.isAutosaved);
+		}
+
+		[Test]
+		public void TestObject_HasIsAutosavedField()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+
+			Assert.NotNull(testObject.GetType().GetSerializableField("_isAutosaved"));
+		}
+
+		[Test]
+		public void TestObject_ContainsIsAutosavedField()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __allFields = testObject.GetType().GetSerializableFields();
+			var __queryField = testObject.GetType().GetSerializableField("_isAutosaved");
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+
+			Assert.IsTrue(__allFields.Contains(__queryField), __allFields.ContentsToString());
 		}
 	}
 

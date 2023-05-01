@@ -67,7 +67,9 @@ namespace Mithril
 #if UNITY_EDITOR
 		private ForgeWindow _currentlyOpenEditor;
 
-		private bool _isAutosaved = true;
+		[SerializeField]
+		[HideInInspector]
+		protected bool _isAutosaved = true;
 		public bool isAutosaved
 		{
 			get => _isAutosaved;
@@ -92,6 +94,8 @@ namespace Mithril
 
 		public void Save()
 		{
+			SaveMirror();
+
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssetIfDirty(this);
 			AssetDatabase.Refresh();
@@ -115,6 +119,7 @@ namespace Mithril
 					Mithril.Editor.Utils.PromptConfirmation("A different type of window currently editing this object is still open. Click OK to save the asset, close the existing window, and proceed opening this one.");
 			}
 
+			LoadMirror();
 			return _currentlyOpenEditor;
 		}
 		public T Open<T>()

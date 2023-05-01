@@ -13,4 +13,7 @@ MonoBehaviour:
   m_Name: New Test Forge Object
   m_EditorClassIdentifier: 
   _mirror:
-    _serializedFields: []
+    _serializedFields:
+    - _name: _isAutosaved
+      _json: False
+  _isAutosaved: 0
