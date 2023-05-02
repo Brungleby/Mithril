@@ -103,7 +103,7 @@ namespace Mithril.Editor
 			OnModified = new UnityEvent();
 			OnModified.AddListener(() =>
 			{
-				graph.OnModified.Invoke();
+				graph.onModified.Invoke();
 			});
 		}
 

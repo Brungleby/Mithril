@@ -13,11 +13,13 @@ using UnityEngine.TestTools;
 
 using UnityEditor;
 
+using Mithril.Editor;
+
 #endregion
 
 namespace Mithril
 {
-	#region EditableObjectTests
+	#region ForgeObject_Tests
 
 	public class ForgeObject_Tests
 	{
@@ -123,4 +125,59 @@ namespace Mithril
 	}
 
 	#endregion
+	#region ForgeNodeWindow_Tests
+
+	public class ForgeNodeWindow_Tests
+	{
+		private TestForgeWindow window =>
+			EditorWindow.GetWindow<TestForgeWindow>();
+
+		private Node node =>
+			window.graph.GetNode<Node>();
+
+		[Test]
+		public void Node_Exists()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+
+			Assert.IsNotNull(node);
+		}
+
+		[Test]
+		public void Node_TitleValueIs_NewCustomNode()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __expected = "New Custom Node";
+			var __node = node;
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+			Assert.AreEqual(__expected, __node.title);
+		}
+
+		[Test]
+		public void Node_TitleProperty_IsSerialized()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __node = node;
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+
+			Assert.IsNotNull(__node.GetType().GetProperty("title"));
+		}
+	}
+
+	#endregion
+
 }

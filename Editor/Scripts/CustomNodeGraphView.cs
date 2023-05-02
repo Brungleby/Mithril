@@ -73,7 +73,7 @@ namespace Mithril.Editor
 
 		#region
 
-		public UnityEvent OnModified;
+		public UnityEvent onModified;
 
 		private NodeSearchWindow _searchWindow;
 
@@ -104,7 +104,7 @@ namespace Mithril.Editor
 
 		public CustomNodeGraphView()
 		{
-			OnModified = new UnityEvent();
+			onModified = new UnityEvent();
 
 			styleSheets.Add(Resources.Load<StyleSheet>("Stylesheets/GraphBackgroundDefault"));
 
@@ -198,7 +198,7 @@ namespace Mithril.Editor
 			node.RefreshAll();
 
 			if (invokeOnModified)
-				OnModified.Invoke();
+				onModified.Invoke();
 		}
 
 		public Node CreateNewNode(Type type, Guid guid, Rect rect, string title = null, bool invokeOnModified = true)
@@ -262,6 +262,19 @@ namespace Mithril.Editor
 
 
 		#endregion
+
+		public T GetNode<T>()
+		where T : Node
+		{
+			foreach (var i in nodes)
+			{
+				if (typeof(T).IsAssignableFrom(i.GetType()))
+					return (T)i;
+			}
+
+
+			return null;
+		}
 
 		#region Dupe / Cut / Copy / Paste
 

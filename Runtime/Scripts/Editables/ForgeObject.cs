@@ -63,20 +63,18 @@ namespace Mithril
 
 		private bool _isSaving = false;
 		public bool isSaving => _isSaving;
-
 #if UNITY_EDITOR
 		private ForgeWindow _currentlyOpenEditor;
 
 		[SerializeField]
 		[HideInInspector]
-		protected bool _isAutosaved = true;
+		private bool _isAutosaved = true;
 		public bool isAutosaved
 		{
 			get => _isAutosaved;
 			set => _isAutosaved = value;
 		}
 #endif
-
 		#endregion
 
 		#endregion
@@ -87,7 +85,6 @@ namespace Mithril
 		public string fileName => name;
 
 		public abstract Type[] usableEditorWindows { get; }
-
 #endif
 		#endregion
 		#region Methods
@@ -100,7 +97,6 @@ namespace Mithril
 			AssetDatabase.SaveAssetIfDirty(this);
 			AssetDatabase.Refresh();
 		}
-
 #if UNITY_EDITOR
 		#region Open
 

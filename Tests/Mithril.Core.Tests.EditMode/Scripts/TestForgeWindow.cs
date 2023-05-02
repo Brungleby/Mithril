@@ -22,7 +22,7 @@ namespace Mithril
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class TestForgeWindow : ForgeWindow
+	public sealed class TestForgeWindow : ForgeNodeWindow
 	{
 		#region Data
 

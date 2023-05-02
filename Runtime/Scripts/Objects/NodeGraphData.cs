@@ -28,7 +28,7 @@ namespace Mithril
 	///</summary>
 	[Serializable]
 
-	public abstract class NodeGraphData : EditableObject
+	public abstract class NodeGraphData : ForgeObject
 	{
 		#region Bake Data
 #if UNITY_EDITOR
@@ -48,15 +48,15 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		public override object Clone()
-		{
-			var that = (NodeGraphData)ScriptableObject.CreateInstance(GetType());
+		// public override object Clone()
+		// {
+		// 	var that = (NodeGraphData)ScriptableObject.CreateInstance(GetType());
 
-			that.nodes = this.nodes;
-			that.edges = this.edges;
+		// 	that.nodes = this.nodes;
+		// 	that.edges = this.edges;
 
-			return that;
-		}
+		// 	return that;
+		// }
 
 #if UNITY_EDITOR
 		public void CompileNodes(List<Mithril.Editor.Node> nodes)

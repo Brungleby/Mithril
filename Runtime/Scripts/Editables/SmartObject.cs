@@ -178,7 +178,7 @@ namespace Mithril
 
 		[SerializeField]
 		[HideInInspector]
-		[NonSerializedBySmartObject]
+		[NonSerializedBySmartObjectAttribute]
 
 		private ObjectMirror _mirror;
 
@@ -239,7 +239,7 @@ namespace Mithril
 	#region NonSerializedInSmartObject
 
 	[AttributeUsage(AttributeTargets.Field)]
-	public sealed class NonSerializedBySmartObject : Attribute { }
+	public sealed class NonSerializedBySmartObjectAttribute : Attribute { }
 
 	#endregion
 }

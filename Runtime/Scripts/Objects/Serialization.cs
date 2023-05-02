@@ -23,34 +23,14 @@ using UnityEditor;
 
 namespace Mithril
 {
-	public static class SerializationExtensions
+	#region IInclusiveSerializable
+
+	public interface IInclusiveSerializable
 	{
-		public static readonly BindingFlags SERIALIZABLE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-
-		public static FieldInfo[] GetSerializableFields(this Type type)
-		{
-			return type
-				.GetFields(SERIALIZABLE_FIELD_FLAGS)
-				.Where(i => i.GetCustomAttribute<NonSerializedBySmartObject>() == null)
-				.Where(i => i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
-				.ToArray()
-			;
-		}
-
-		public static FieldInfo GetSerializableField(this Type type, string name)
-		{
-			var __result = type.GetField(name, SERIALIZABLE_FIELD_FLAGS);
-
-			if (!(__result.GetCustomAttribute<NonSerializedBySmartObject>() == null))
-				return null;
-
-			if (!(__result.IsPublic || __result.GetCustomAttribute<SerializeField>() != null))
-				return null;
-
-			return __result;
-		}
+		static string[] baseSerializableFieldNames { get; }
 	}
 
+	#endregion
 	#region Serialization
 
 	/// <summary>
@@ -65,6 +45,7 @@ namespace Mithril
 
 		private readonly static string TYPE_LABEL = "TYPE";
 		private readonly static string DATA_LABEL = "DATA";
+		private readonly static string CUSTOM_LABEL = "CUSTOM";
 
 		private readonly static string JSON_EXT = ".json";
 		private readonly static char[] JSON_ESCAPE_CHARS = new char[] { '\"', '\\', /*'\0',*/ /*'\a',*/ '\b', '\f', '\n', '\r', '\t', /*'\v'*/ };
@@ -456,13 +437,6 @@ namespace Mithril
 
 		private static bool IsCollectionType(Type type)
 		{
-			// var __genericType = typeof(ICollection<>);
-			// var __concreteType = __genericType.MakeGenericType(type.GetGenericArguments());
-
-			// var __result = type.GetInterfaces().Contains(__concreteType);
-
-			// return type.GetInterfaces().Contains(__concreteType);
-
 			return type.GetInterfaces().Contains(typeof(ICollection<>));
 		}
 
@@ -852,6 +826,128 @@ namespace Mithril
 		}
 
 		#endregion
+	}
+
+	#endregion
+	#region Extensions
+
+	public static class SerializationExtensions
+	{
+		public static readonly BindingFlags SERIALIZABLE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+
+		private static void AddAllUnique(this List<FieldInfo> list, IEnumerable<FieldInfo> fields)
+		{
+			foreach (var iField in fields)
+			{
+				if (list.Select(i => i.Name).Contains(iField.Name))
+					continue;
+
+				list.Add(iField);
+			}
+		}
+
+		private static void AddUnique(this List<FieldInfo> list, FieldInfo field)
+		{
+			if (!list.Select(i => i.Name).Contains(field.Name))
+				list.Add(field);
+		}
+
+		private static FieldInfo[] GetIncludedFields(this Type type, string[] names, Type baseIgnore)
+		{
+			var __result = new List<FieldInfo>();
+			var __missingNames = new List<string>();
+
+			foreach (var iName in names)
+			{
+				var __field = type.GetField(iName, SERIALIZABLE_FIELD_FLAGS);
+
+				if (__field == null)
+					__missingNames.Add(iName);
+				else
+					__result.Add(__field);
+			}
+
+			if (type.IsSubclassOf(baseIgnore))
+				__result.AddAllUnique(type.BaseType
+					.GetIncludedFields(__missingNames.ToArray(), baseIgnore));
+
+			return __result.ToArray();
+		}
+
+		public static FieldInfo[] GetIncludedFields(this Type inclusiveType, Type baseIgnore)
+		{
+			var __result = new List<FieldInfo>();
+
+			var __propertyInfo = inclusiveType.GetProperty("baseSerializableFieldNames");
+			var __names = (string[])__propertyInfo.GetGetMethod().Invoke(null, null);
+			foreach (var iName in __names)
+			{
+				var __field = inclusiveType.GetField(iName, SERIALIZABLE_FIELD_FLAGS);
+
+				if (__field != null)
+					__result.AddUnique(__field);
+			}
+
+			return __result.ToArray();
+		}
+
+		public static FieldInfo[] GetSerializableFields(this Type type, Type baseIgnore)
+		{
+			var __result = new List<FieldInfo>();
+
+			// /**	Get included fields from base classes
+			// */
+			// if (type.GetInterfaces().Contains(typeof(IInclusiveSerializable)))
+			// {
+			// 	var __propertyInfo = type.GetProperty("baseSerializableFieldNames");
+			// 	var __names = (string[])__propertyInfo.GetGetMethod().Invoke(null, null);
+			// 	foreach (var iName in __names)
+			// 	{
+			// 		var __field = type.GetField(iName, SERIALIZABLE_FIELD_FLAGS);
+
+			// 		if (__field != null)
+			// 			__result.AddUnique(__field);
+			// 	}
+			// }
+
+			__result.AddAllUnique(type
+				.GetFields(SERIALIZABLE_FIELD_FLAGS)
+				.Where(i => i.GetCustomAttribute<NonSerializedBySmartObjectAttribute>() == null)
+				.Where(i => i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
+			);
+
+			if (type.IsSubclassOf(baseIgnore))
+			{
+				var __baseFields = type.BaseType.GetSerializableFields(baseIgnore);
+				__result.AddAllUnique(__baseFields);
+			}
+
+			return __result.ToArray();
+		}
+		public static FieldInfo[] GetSerializableFields(this Type type) =>
+			type.GetSerializableFields(typeof(object));
+
+		public static FieldInfo GetSerializableField(this Type type, string name, Type baseIgnore)
+		{
+			var __result = type.GetField(name, SERIALIZABLE_FIELD_FLAGS);
+
+			if (__result != null)
+			{
+				if (!(__result.GetCustomAttribute<NonSerializedBySmartObjectAttribute>() == null))
+					__result = null;
+				else if (!(__result.IsPublic || __result.GetCustomAttribute<SerializeField>() != null))
+					__result = null;
+			}
+
+			if (__result == null && type.IsSubclassOf(baseIgnore))
+			{
+				__result = type.BaseType.GetSerializableField(name, baseIgnore);
+			}
+
+			return __result;
+		}
+		public static FieldInfo GetSerializableField(this Type type, string name) =>
+			type.GetSerializableField(name, typeof(object));
 	}
 
 	#endregion

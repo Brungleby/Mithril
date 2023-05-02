@@ -24,7 +24,7 @@ namespace Mithril
 	///</summary>
 	[System.Serializable]
 
-	public struct Guid : ISerializable
+	public struct Guid
 	{
 		#region Data
 
@@ -40,6 +40,8 @@ namespace Mithril
 
 		#region Constructors
 
+		/**	"Feature 'parameterless struct constructors' is not available in C# 9.0"
+		*/
 		// public Guid()
 		// {
 		// 	this._guid = GUID.Generate().ToString();
@@ -81,9 +83,6 @@ namespace Mithril
 			!a.Equals(b);
 
 		#endregion
-
-		public string GetSerializedString() =>
-			JsonUtility.ToJson(_guid);
 
 		public override bool Equals(object obj) =>
 			_guid.Equals(((Guid)obj)._guid);

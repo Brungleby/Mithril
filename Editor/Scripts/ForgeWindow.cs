@@ -308,6 +308,27 @@ namespace Mithril.Editor
 			isModified = false;
 		}
 
+		protected void NotifyIsModified()
+		{
+			isModified = true;
+		}
+
+		// /// <summary>
+		// /// Updates the given <paramref name="data"/> using the "hot" data inside this window.
+		// ///</summary>
+
+		// protected abstract void PushChangesToObject(ref ForgeObject data);
+		// private void PushChangesToObject() =>
+		// 	PushChangesToObject(ref _editObject);
+
+		// /// <summary>
+		// /// Pulls the given <paramref name="data"/> and initializes this window using its "cold" data.
+		// ///</summary>
+
+		// protected abstract void PullObjectToWindow(ForgeObject data);
+		// private void PullObjectToWindow() =>
+		// 	PullObjectToWindow(_editObject);
+
 		#endregion
 
 		#endregion
