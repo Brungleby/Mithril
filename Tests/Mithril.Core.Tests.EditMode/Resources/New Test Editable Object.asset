@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d876f8c1dcbfefe4aa134ee853975051, type: 3}
-  m_Name: New Test Forge Object
+  m_Script: {fileID: 11500000, guid: 76496f4e83cd05144b2303eae0f96ef1, type: 3}
+  m_Name: New Test Editable Object
   m_EditorClassIdentifier: 
   _mirror:
     _serializedFields:
     - _name: _isAutosaved
-      _json: False
-  _isAutosaved: 0
+      _json: True
+  _isAutosaved: 1

@@ -22,15 +22,15 @@ namespace Mithril.Tests
 {
 	#region ForgeObject_Tests
 
-	public class ForgeObject_Tests
+	public class EditableObject_Tests
 	{
-		private TestForgeObject _testObject;
-		private TestForgeObject testObject
+		private TestEditableObject _testObject;
+		private TestEditableObject testObject
 		{
 			get
 			{
 				if (_testObject == null)
-					_testObject = AssetDatabase.LoadAssetAtPath<TestForgeObject>("Assets/Mithril/Mithril.Core/Tests/Mithril.Core.Tests.EditMode/Resources/New Test Forge Object.asset");
+					_testObject = AssetDatabase.LoadAssetAtPath<TestEditableObject>("Assets/Mithril/Mithril.Core/Tests/Mithril.Core.Tests.EditMode/Resources/New Test Editable Object.asset");
 
 				return _testObject;
 			}
@@ -70,7 +70,7 @@ namespace Mithril.Tests
 		public void TestObject_NameMatchesAssetFile()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
-			var __expected = "New Test Forge Object";
+			var __expected = "New Test Editable Object";
 
 			/** <<==  ACT      ===============================================>> **/
 
@@ -86,7 +86,7 @@ namespace Mithril.Tests
 		public void TestObject_NewIsAutosaved()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
-			var __testObject = ScriptableObject.CreateInstance<TestForgeObject>();
+			var __testObject = ScriptableObject.CreateInstance<TestEditableObject>();
 
 			/** <<==  ACT      ===============================================>> **/
 			// __testObject.isAutosaved = true;
@@ -126,12 +126,12 @@ namespace Mithril.Tests
 	}
 
 	#endregion
-	#region ForgeNodeWindow_Tests
+	#region NodeGraph_Tests
 
-	public class ForgeNodeWindow_Tests
+	public class NodeGraph_Tests
 	{
-		private TestForgeWindow window =>
-			EditorWindow.GetWindow<TestForgeWindow>();
+		private TestNodeGraphWindow window =>
+			EditorWindow.GetWindow<TestNodeGraphWindow>();
 
 		private Node node =>
 			window.graph.GetNode<Node>();
@@ -244,7 +244,7 @@ namespace Mithril.Tests
 		public void NodeData_TitleValueIsDefault()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
-			var __node = (TestForgeNode)node;
+			var __node = (TestNode)node;
 			SmartNodeData __data;
 
 			/** <<==  ACT      ===============================================>> **/
@@ -259,7 +259,7 @@ namespace Mithril.Tests
 		public void NodeData_TestForgeNode_MessageValueExists()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
-			var __node = (TestForgeNode)node;
+			var __node = (TestNode)node;
 			SmartNodeData __data;
 
 			/** <<==  ACT      ===============================================>> **/
@@ -267,7 +267,25 @@ namespace Mithril.Tests
 			__data = new SmartNodeData(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
-			Assert.IsNotNull(__data.GetField("message"));
+			Assert.IsNotNull(__data.GetField("_message"));
+		}
+
+		[Test]
+		public void NodeData_Pass()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __node = (TestNode)node;
+			SmartNodeData __data;
+
+			/** <<==  ACT      ===============================================>> **/
+			__node.OnBeforeSerialize();
+			__data = new SmartNodeData(__node);
+
+			/** <<==  ASSERT   ===============================================>> **/
+
+			Debug.Log(Serialization.Encode(__data, true));
+
+			Assert.Pass();
 		}
 	}
 

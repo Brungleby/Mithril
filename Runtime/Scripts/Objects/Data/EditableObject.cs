@@ -22,10 +22,10 @@ using Mithril.Editor;
 namespace Mithril
 {
 	/// <summary>
-	/// A ForgeObject is a SmartObject that can store its data in a file and be edited using ForgeWindow(s).
+	/// A kind of <see cref="SmartObject"/> (<see cref="ScriptableObject"/>) that can be edited and manipulated using predefined <see cref="usableEditorWindows"/>.
 	///</summary>
 
-	public abstract class ForgeObject : SmartObject
+	public abstract class EditableObject : SmartObject
 	{
 		#region Inners
 
@@ -33,12 +33,12 @@ namespace Mithril
 		/// Simple script that adds buttons to edit this object in compatible editors.
 		///</summary>
 
-		[CustomEditor(typeof(ForgeObject), true)]
+		[CustomEditor(typeof(EditableObject), true)]
 		public class ForgeObjectEditor : SmartObject.SmartObjectEditor
 		{
 			public override void OnInspectorGUI()
 			{
-				var __target = (ForgeObject)target;
+				var __target = (EditableObject)target;
 				var __types = __target.usableEditorWindows;
 
 				if (__types.Length > 0)
@@ -64,7 +64,7 @@ namespace Mithril
 		private bool _isSaving = false;
 		public bool isSaving => _isSaving;
 #if UNITY_EDITOR
-		private ForgeWindow _currentlyOpenEditor;
+		private InstantiableWindow _currentlyOpenEditor;
 
 		[SerializeField]
 		[HideInInspector]
@@ -100,11 +100,11 @@ namespace Mithril
 #if UNITY_EDITOR
 		#region Open
 
-		public ForgeWindow Open(Type type)
+		public InstantiableWindow Open(Type type)
 		{
 			if (_currentlyOpenEditor == null)
 			{
-				_currentlyOpenEditor = ForgeWindow.Instantiate(type, this);
+				_currentlyOpenEditor = InstantiableWindow.Instantiate(type, this);
 				_currentlyOpenEditor.Show();
 			}
 			else
@@ -119,7 +119,7 @@ namespace Mithril
 			return _currentlyOpenEditor;
 		}
 		public T Open<T>()
-		where T : ForgeWindow =>
+		where T : InstantiableWindow =>
 			(T)Open(typeof(T));
 		public void Open() =>
 			Open(usableEditorWindows[0]);
@@ -129,7 +129,7 @@ namespace Mithril
 		{
 			try
 			{
-				var __target = (ForgeObject)EditorUtility.InstanceIDToObject(instanceID);
+				var __target = (EditableObject)EditorUtility.InstanceIDToObject(instanceID);
 				__target.Open();
 			}
 			catch

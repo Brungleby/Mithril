@@ -25,12 +25,13 @@ namespace Mithril
 {
 	#region SmartNodeData
 
+	[Serializable]
 	public sealed class SmartNodeData : object
 	{
 		public SmartNodeField[] fieldValues;
 
-		public PortData[] inputPorts;
-		public PortData[] outputPorts;
+		// public PortData[] inputPorts;
+		// public PortData[] outputPorts;
 
 		public SmartNodeData(Node node)
 		{
@@ -52,6 +53,7 @@ namespace Mithril
 		}
 	}
 
+	[Serializable]
 	public sealed class SmartNodeField : object
 	{
 		public string name;
@@ -78,7 +80,7 @@ namespace Mithril
 	///</summary>
 	[Serializable]
 
-	public abstract class NodeGraphData : ForgeObject
+	public abstract class NodeGraphData : EditableObject
 	{
 		#region Bake Data
 #if UNITY_EDITOR

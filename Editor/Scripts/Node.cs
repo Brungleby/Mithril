@@ -1,5 +1,5 @@
 
-/** CustomNode.cs
+/** Node.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -104,7 +104,7 @@ namespace Mithril.Editor
 			this.SetPositionOnly(data.rect.position);
 		}
 
-		public virtual void InitInGraph(CustomNodeGraphView graph)
+		public virtual void InitInGraph(NodeGraphView graph)
 		{
 			onModified = new UnityEvent();
 			onModified.AddListener(() =>

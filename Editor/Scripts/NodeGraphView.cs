@@ -1,5 +1,5 @@
 
-/** CustomNodeGraphView.cs
+/** NodeGraphView.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -31,7 +31,7 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class CustomNodeGraphView : GraphView
+	public class NodeGraphView : GraphView
 	{
 		#region Inner Classes
 
@@ -75,7 +75,7 @@ namespace Mithril.Editor
 
 		public UnityEvent onModified;
 
-		private NodeSearchWindow _searchWindow;
+		private NodeGraphSearchSubwindow _searchWindow;
 
 		private Vector2 _mousePosition;
 		public Vector2 mousePosition => _mousePosition;
@@ -102,7 +102,7 @@ namespace Mithril.Editor
 
 		#region Construction
 
-		public CustomNodeGraphView()
+		public NodeGraphView()
 		{
 			onModified = new UnityEvent();
 
@@ -176,7 +176,7 @@ namespace Mithril.Editor
 
 		private void AddSearchWindow()
 		{
-			_searchWindow = ScriptableObject.CreateInstance<NodeSearchWindow>();
+			_searchWindow = ScriptableObject.CreateInstance<NodeGraphSearchSubwindow>();
 			nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
 			_searchWindow.InitializeFor(this);
 		}

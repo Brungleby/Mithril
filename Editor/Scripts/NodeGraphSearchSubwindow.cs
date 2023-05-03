@@ -1,5 +1,5 @@
 
-/** NodeSearchWindow.cs
+/** NodeGraphSearchSubwindow.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -26,13 +26,13 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class NodeSearchWindow : ScriptableObject, ISearchWindowProvider
+	public sealed class NodeGraphSearchSubwindow : ScriptableObject, ISearchWindowProvider
 	{
 		#region Data
 
 		#region
 
-		private CustomNodeGraphView _graph;
+		private NodeGraphView _graph;
 
 		#endregion
 
@@ -41,7 +41,7 @@ namespace Mithril.Editor
 
 		#region
 
-		public void InitializeFor(CustomNodeGraphView graph)
+		public void InitializeFor(NodeGraphView graph)
 		{
 			_graph = graph;
 		}

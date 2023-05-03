@@ -1,5 +1,5 @@
 
-/** SmartWindow.cs
+/** InstantiableWindow.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -36,7 +36,7 @@ namespace Mithril.Editor
 		Shift = 4,
 	}
 
-	public abstract class ForgeWindow : EditorWindow
+	public abstract class InstantiableWindow : EditorWindow
 	{
 		#region Inners
 
@@ -116,8 +116,8 @@ namespace Mithril.Editor
 
 		#region
 
-		private ForgeObject _workObject;
-		public ForgeObject workObject => _workObject;
+		private EditableObject _workObject;
+		public EditableObject workObject => _workObject;
 
 		private bool _isModified;
 		public bool isModified
@@ -169,7 +169,7 @@ namespace Mithril.Editor
 		/// Or, if the object is already being edited, it will simply focus that window.
 		///</summary>
 
-		public static ForgeWindow Instantiate(Type type, ForgeObject obj)
+		public static InstantiableWindow Instantiate(Type type, EditableObject obj)
 		{
 			/** <<============================================================>> **/
 			/**	If a window already editing this specific object exists,
@@ -178,7 +178,7 @@ namespace Mithril.Editor
 
 			var __allWindowsOfMatchingType = Resources
 				.FindObjectsOfTypeAll(type)
-				.Cast<ForgeWindow>()
+				.Cast<InstantiableWindow>()
 			;
 
 			foreach (var iWindow in __allWindowsOfMatchingType)
@@ -194,7 +194,7 @@ namespace Mithril.Editor
 			/**	Otherwise, create a new window.
 			*/
 
-			var __window = (ForgeWindow)EditorWindow.CreateInstance(type);
+			var __window = (InstantiableWindow)EditorWindow.CreateInstance(type);
 			__window.Open(obj);
 
 			return __window;
@@ -202,15 +202,15 @@ namespace Mithril.Editor
 
 		/// <inheritdoc cref="Instantiate"/>
 
-		public static T Instantiate<T>(ForgeObject obj)
-		where T : ForgeWindow =>
+		public static T Instantiate<T>(EditableObject obj)
+		where T : InstantiableWindow =>
 			(T)Instantiate(typeof(T), obj);
 
 		/// <summary>
-		/// Loads the given <paramref name="obj"/> into the view(s) of this <see cref="ForgeWindow"/>.
+		/// Loads the given <paramref name="obj"/> into the view(s) of this <see cref="InstantiableWindow"/>.
 		///</summary>
 
-		public void Open(ForgeObject obj)
+		public void Open(EditableObject obj)
 		{
 			AssertObjectWindowCompatible(obj);
 
@@ -224,12 +224,12 @@ namespace Mithril.Editor
 		}
 
 		/// <summary>
-		/// Loads the given <paramref name="filePath"/> as a <see cref="ForgeObject"/> into the view(s) of this <see cref="ForgeWindow"/>.
+		/// Loads the given <paramref name="filePath"/> as a <see cref="EditableObject"/> into the view(s) of this <see cref="InstantiableWindow"/>.
 		///</summary>
 
 		public void Open(string filePath)
 		{
-			var __loadedObject = AssetDatabase.LoadAssetAtPath<ForgeObject>(filePath);
+			var __loadedObject = AssetDatabase.LoadAssetAtPath<EditableObject>(filePath);
 			Open(__loadedObject);
 		}
 
@@ -292,7 +292,7 @@ namespace Mithril.Editor
 			titleContent.text = _workObject.fileName + (isModified ? "*" : "");
 		}
 
-		private void AssertObjectWindowCompatible(ForgeObject obj)
+		private void AssertObjectWindowCompatible(EditableObject obj)
 		{
 			if (!obj.usableEditorWindows.Contains(GetType()))
 				throw new NotSupportedException($"{obj.name} ({obj.GetType()}) cannot be opened with this type of EditorWindow ({GetType()}).");

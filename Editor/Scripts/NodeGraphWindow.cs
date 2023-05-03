@@ -1,5 +1,5 @@
 
-/** ForgeNodeWindow.cs
+/** NodeGraphWindow.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -27,8 +27,8 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class ForgeNodeWindow<TGraphView> : ForgeWindow
-	where TGraphView : CustomNodeGraphView
+	public class NodeGraphWindow<TGraphView> : InstantiableWindow
+	where TGraphView : NodeGraphView
 	{
 		#region Data
 
@@ -135,7 +135,7 @@ namespace Mithril.Editor
 		#endregion
 	}
 
-	public class ForgeNodeWindow : ForgeNodeWindow<CustomNodeGraphView>
+	public class ForgeNodeWindow : NodeGraphWindow<NodeGraphView>
 	{
 
 	}
