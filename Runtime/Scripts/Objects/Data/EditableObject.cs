@@ -91,7 +91,7 @@ namespace Mithril
 
 		public void Save()
 		{
-			SaveMirror();
+			((IMirrorable)this).Save();
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssetIfDirty(this);
@@ -115,7 +115,7 @@ namespace Mithril
 					Mithril.Editor.Utils.PromptConfirmation("A different type of window currently editing this object is still open. Click OK to save the asset, close the existing window, and proceed opening this one.");
 			}
 
-			LoadMirror();
+			((IMirrorable)this).Load();
 			return _currentlyOpenEditor;
 		}
 		public T Open<T>()

@@ -53,8 +53,7 @@ namespace Mithril.Editor
 		[SerializeField]
 		public bool isPredefined = false;
 
-		[NonSerializedBySmartObject]
-		public UnityEvent onModified;
+		private UnityEvent onModified;
 
 		/** <<============================================================>> **/
 

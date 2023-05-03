@@ -4,17 +4,18 @@
 
 #region Includes
 
+using Mithril;
+using Mithril.Editor;
+
+using NUnit.Framework;
+
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 using UnityEngine;
 using UnityEngine.TestTools;
 
 using UnityEditor;
-
-using Mithril;
-using Mithril.Editor;
 
 #endregion
 
@@ -184,7 +185,7 @@ namespace Mithril.Tests
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = node;
-			var __data = new SmartNodeData(__node);
+			var __data = new Mirror(__node);
 
 			/** <<==  ACT      ===============================================>> **/
 
@@ -194,26 +195,11 @@ namespace Mithril.Tests
 		}
 
 		[Test]
-		public void NodeData_BasicFieldValueSlotsAreCreatedFromNode()
-		{
-			/** <<==  ARRANGE  ===============================================>> **/
-			Node __node = node;
-			var __data = new SmartNodeData(__node);
-
-			/** <<==  ACT      ===============================================>> **/
-
-
-			/** <<==  ASSERT   ===============================================>> **/
-
-			Assert.GreaterOrEqual(__data.fieldValues.Length, 2);
-		}
-
-		[Test]
 		public void NodeData_GuidFieldValueMatchesNode()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			Node __node = node;
-			var __data = new SmartNodeData(__node);
+			var __data = new Mirror(__node);
 
 			var __expected = __node.guid;
 
@@ -221,7 +207,7 @@ namespace Mithril.Tests
 
 
 			/** <<==  ASSERT   ===============================================>> **/
-			Assert.AreEqual(__expected, __data.GetField("guid"));
+			Assert.AreEqual(__expected, __data.GetFieldValue("guid"));
 		}
 
 		[Test]
@@ -229,15 +215,14 @@ namespace Mithril.Tests
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			Node __node = node;
-			SmartNodeData __data;
+			Mirror __data;
 
 			/** <<==  ACT      ===============================================>> **/
 			__node.OnBeforeSerialize();
-			__data = new SmartNodeData(__node);
+			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
-			Assert.IsNotNull(__data.GetField("_title"), __data.fieldValues.ContentsToString());
-			// Assert.AreEqual("New Custom Node", __data.GetField("_title"));
+			Assert.IsNotNull(__data.GetFieldValue("_title"), __data.ToString());
 		}
 
 		[Test]
@@ -245,14 +230,14 @@ namespace Mithril.Tests
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = (TestNode)node;
-			SmartNodeData __data;
+			Mirror __data;
 
 			/** <<==  ACT      ===============================================>> **/
 			__node.OnBeforeSerialize();
-			__data = new SmartNodeData(__node);
+			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
-			Assert.AreEqual(__node.defaultName, __data.GetField("_title"));
+			Assert.AreEqual(__node.defaultName, __data.GetFieldValue("_title"));
 		}
 
 		[Test]
@@ -260,14 +245,14 @@ namespace Mithril.Tests
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = (TestNode)node;
-			SmartNodeData __data;
+			Mirror __data;
 
 			/** <<==  ACT      ===============================================>> **/
 			__node.OnBeforeSerialize();
-			__data = new SmartNodeData(__node);
+			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
-			Assert.IsNotNull(__data.GetField("_message"));
+			Assert.IsNotNull(__data.GetFieldValue("_message"));
 		}
 
 		[Test]
@@ -275,11 +260,11 @@ namespace Mithril.Tests
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = (TestNode)node;
-			SmartNodeData __data;
+			Mirror __data;
 
 			/** <<==  ACT      ===============================================>> **/
 			__node.OnBeforeSerialize();
-			__data = new SmartNodeData(__node);
+			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
 

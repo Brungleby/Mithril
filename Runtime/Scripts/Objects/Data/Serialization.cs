@@ -10,27 +10,19 @@
 #region Includes
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 #endregion
 
 namespace Mithril
 {
-	#region IInclusiveSerializable
-
-	public interface IInclusiveSerializable
-	{
-		static string[] baseSerializableFieldNames { get; }
-	}
-
-	#endregion
 	#region Serialization
 
 	/// <summary>
@@ -187,7 +179,7 @@ namespace Mithril
 
 		private string EncodeBool(object value)
 		{
-			return ((bool)value).ToString();
+			return ((bool)value).ToString().ToLower();
 		}
 
 		private string EncodeObjectFields(Type type, object value)
@@ -852,102 +844,66 @@ namespace Mithril
 				list.Add(field);
 		}
 
-		private static FieldInfo[] GetIncludedFields(this Type type, string[] names, Type baseIgnore)
+		private static bool ShouldGetSuperFields(this Type type)
 		{
-			var __result = new List<FieldInfo>();
-			var __missingNames = new List<string>();
+			if (typeof(object) == type)
+				return false;
 
-			foreach (var iName in names)
-			{
-				var __field = type.GetField(iName, SERIALIZABLE_FIELD_FLAGS);
-
-				if (__field == null)
-					__missingNames.Add(iName);
-				else
-					__result.Add(__field);
-			}
-
-			if (type.IsSubclassOf(baseIgnore))
-				__result.AddAllUnique(type.BaseType
-					.GetIncludedFields(__missingNames.ToArray(), baseIgnore));
-
-			return __result.ToArray();
-		}
-
-		public static FieldInfo[] GetIncludedFields(this Type inclusiveType, Type baseIgnore)
-		{
-			var __result = new List<FieldInfo>();
-
-			var __propertyInfo = inclusiveType.GetProperty("baseSerializableFieldNames");
-			var __names = (string[])__propertyInfo.GetGetMethod().Invoke(null, null);
-			foreach (var iName in __names)
-			{
-				var __field = inclusiveType.GetField(iName, SERIALIZABLE_FIELD_FLAGS);
-
-				if (__field != null)
-					__result.AddUnique(__field);
-			}
-
-			return __result.ToArray();
-		}
-
-		public static FieldInfo[] GetSerializableFields(this Type type, Type baseIgnore)
-		{
-			var __result = new List<FieldInfo>();
-
-			// /**	Get included fields from base classes
-			// */
-			// if (type.GetInterfaces().Contains(typeof(IInclusiveSerializable)))
-			// {
-			// 	var __propertyInfo = type.GetProperty("baseSerializableFieldNames");
-			// 	var __names = (string[])__propertyInfo.GetGetMethod().Invoke(null, null);
-			// 	foreach (var iName in __names)
-			// 	{
-			// 		var __field = type.GetField(iName, SERIALIZABLE_FIELD_FLAGS);
-
-			// 		if (__field != null)
-			// 			__result.AddUnique(__field);
-			// 	}
-			// }
-
-			__result.AddAllUnique(type
+			var __mirrorFields = type
 				.GetFields(SERIALIZABLE_FIELD_FLAGS)
-				.Where(i => i.GetCustomAttribute<NonSerializedBySmartObjectAttribute>() == null)
-				.Where(i => i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
-			);
+				.Where(element => element.FieldType == typeof(Mirror))
+				.ToArray()
+			;
 
-			if (type.IsSubclassOf(baseIgnore))
-			{
-				var __baseFields = type.BaseType.GetSerializableFields(baseIgnore);
-				__result.AddAllUnique(__baseFields);
-			}
+			return __mirrorFields.Length == 0;
+		}
+
+		private static IEnumerable<FieldInfo> GetLocalSerializableFields(this Type type)
+		{
+			return type
+				.GetFields(SERIALIZABLE_FIELD_FLAGS)
+				.Where(i =>
+					i.FieldType != typeof(Mirror) &&
+					i.GetCustomAttribute<NonSerializedAttribute>() == null &&
+					(i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
+			);
+		}
+
+		public static FieldInfo[] GetSerializableFields(this Type type)
+		{
+			var __result = new List<FieldInfo>();
+
+			__result.AddAllUnique(type.GetLocalSerializableFields());
+
+			if (type.ShouldGetSuperFields())
+				__result.AddAllUnique(type.BaseType.GetSerializableFields());
 
 			return __result.ToArray();
 		}
-		public static FieldInfo[] GetSerializableFields(this Type type) =>
-			type.GetSerializableFields(typeof(object));
 
-		public static FieldInfo GetSerializableField(this Type type, string name, Type baseIgnore)
+		private static FieldInfo GetLocalSerializableField(this Type type, string name) =>
+			type.GetField(name, SERIALIZABLE_FIELD_FLAGS);
+
+		public static FieldInfo GetSerializableField(this Type type, string name)
 		{
-			var __result = type.GetField(name, SERIALIZABLE_FIELD_FLAGS);
+			var __result = type.GetLocalSerializableField(name);
 
 			if (__result != null)
 			{
-				if (!(__result.GetCustomAttribute<NonSerializedBySmartObjectAttribute>() == null))
+				if (typeof(Mirror) == __result.FieldType)
+					return null;
+
+				if (!(__result.GetCustomAttribute<NonSerializedAttribute>() == null))
 					__result = null;
 				else if (!(__result.IsPublic || __result.GetCustomAttribute<SerializeField>() != null))
 					__result = null;
 			}
 
-			if (__result == null && type.IsSubclassOf(baseIgnore))
-			{
-				__result = type.BaseType.GetSerializableField(name, baseIgnore);
-			}
+			if (__result == null && type.ShouldGetSuperFields())
+				__result = type.BaseType.GetSerializableField(name);
 
 			return __result;
 		}
-		public static FieldInfo GetSerializableField(this Type type, string name) =>
-			type.GetSerializableField(name, typeof(object));
 	}
 
 	#endregion

@@ -25,47 +25,6 @@ namespace Mithril
 {
 	#region SmartNodeData
 
-	[Serializable]
-	public sealed class SmartNodeData : object
-	{
-		public SmartNodeField[] fieldValues;
-
-		// public PortData[] inputPorts;
-		// public PortData[] outputPorts;
-
-		public SmartNodeData(Node node)
-		{
-			var __nodeFields = node.GetType().GetSerializableFields();
-			fieldValues = new SmartNodeField[__nodeFields.Length];
-
-			var i = 0;
-			foreach (var iField in __nodeFields)
-			{
-				fieldValues[i] = new SmartNodeField(iField, iField.GetValue(node));
-
-				i++;
-			}
-		}
-
-		public object GetField(string name)
-		{
-			return fieldValues.First(i => i.name == name).value;
-		}
-	}
-
-	[Serializable]
-	public sealed class SmartNodeField : object
-	{
-		public string name;
-		public object value;
-
-		public SmartNodeField(FieldInfo field, object value)
-		{
-			this.name = field.Name;
-			this.value = value;
-		}
-	}
-
 	public sealed class SmartPortData : object
 	{
 

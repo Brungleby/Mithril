@@ -9,18 +9,18 @@
 
 #region Includes
 
+using Mithril.Editor;
+using Node = Mithril.Editor.Node;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using UnityEngine;
-using UnityEngine.UIElements;
-
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-using Mithril.Editor;
-using Node = Mithril.Editor.Node;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 #endregion
 
@@ -126,7 +126,7 @@ namespace Mithril.Tests
 
 		public TestNode()
 		{
-			Construct("Hi");
+			Construct(string.Empty);
 		}
 
 		private void OnTextFieldValueChanged(ChangeEvent<string> context)
