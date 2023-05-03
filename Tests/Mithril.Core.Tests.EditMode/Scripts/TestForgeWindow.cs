@@ -16,13 +16,13 @@ using Mithril.Editor;
 
 #endregion
 
-namespace Mithril
+namespace Mithril.Tests
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class TestForgeWindow : ForgeNodeWindow
+	public sealed class TestForgeWindow : ForgeNodeWindow<TestNodeGraphView>
 	{
 		#region Data
 

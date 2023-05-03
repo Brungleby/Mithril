@@ -45,12 +45,12 @@ namespace Mithril.Editor
 		private List<Edge> GetEdges() => _graph.edges.ToList();
 		private List<Node> GetPredefinedNodes() => _graph.nodes
 			.Cast<Node>()
-			.Where(i => i.IsPredefined)
+			.Where(i => i.isPredefined)
 			.ToList()
 		;
 		private List<Node> GetNodes() => _graph.nodes
 			.Cast<Node>()
-			.Where(i => !i.IsPredefined)
+			.Where(i => !i.isPredefined)
 			.ToList()
 		;
 		private List<Node> GetAllNodes() => _graph.nodes

@@ -13,11 +13,12 @@ using UnityEngine.TestTools;
 
 using UnityEditor;
 
+using Mithril;
 using Mithril.Editor;
 
 #endregion
 
-namespace Mithril
+namespace Mithril.Tests
 {
 	#region ForgeObject_Tests
 
@@ -153,8 +154,8 @@ namespace Mithril
 		public void Node_TitleValueIs_NewCustomNode()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
-			var __expected = "New Custom Node";
 			var __node = node;
+			var __expected = __node.defaultName;
 
 			/** <<==  ACT      ===============================================>> **/
 
@@ -164,7 +165,7 @@ namespace Mithril
 		}
 
 		[Test]
-		public void Node_TitleProperty_IsSerialized()
+		public void Node_TitleProperty_Exists()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = node;
@@ -174,7 +175,99 @@ namespace Mithril
 
 			/** <<==  ASSERT   ===============================================>> **/
 
+
 			Assert.IsNotNull(__node.GetType().GetProperty("title"));
+		}
+
+		[Test]
+		public void NodeData_IsCreatedFromNode()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __node = node;
+			var __data = new SmartNodeData(__node);
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+			Assert.IsNotNull(__data);
+		}
+
+		[Test]
+		public void NodeData_BasicFieldValueSlotsAreCreatedFromNode()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			Node __node = node;
+			var __data = new SmartNodeData(__node);
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+
+			Assert.GreaterOrEqual(__data.fieldValues.Length, 2);
+		}
+
+		[Test]
+		public void NodeData_GuidFieldValueMatchesNode()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			Node __node = node;
+			var __data = new SmartNodeData(__node);
+
+			var __expected = __node.guid;
+
+			/** <<==  ACT      ===============================================>> **/
+
+
+			/** <<==  ASSERT   ===============================================>> **/
+			Assert.AreEqual(__expected, __data.GetField("guid"));
+		}
+
+		[Test]
+		public void NodeData_TitleFieldExists()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			Node __node = node;
+			SmartNodeData __data;
+
+			/** <<==  ACT      ===============================================>> **/
+			__node.OnBeforeSerialize();
+			__data = new SmartNodeData(__node);
+
+			/** <<==  ASSERT   ===============================================>> **/
+			Assert.IsNotNull(__data.GetField("_title"), __data.fieldValues.ContentsToString());
+			// Assert.AreEqual("New Custom Node", __data.GetField("_title"));
+		}
+
+		[Test]
+		public void NodeData_TitleValueIsDefault()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __node = (TestForgeNode)node;
+			SmartNodeData __data;
+
+			/** <<==  ACT      ===============================================>> **/
+			__node.OnBeforeSerialize();
+			__data = new SmartNodeData(__node);
+
+			/** <<==  ASSERT   ===============================================>> **/
+			Assert.AreEqual(__node.defaultName, __data.GetField("_title"));
+		}
+
+		[Test]
+		public void NodeData_TestForgeNode_MessageValueExists()
+		{
+			/** <<==  ARRANGE  ===============================================>> **/
+			var __node = (TestForgeNode)node;
+			SmartNodeData __data;
+
+			/** <<==  ACT      ===============================================>> **/
+			__node.OnBeforeSerialize();
+			__data = new SmartNodeData(__node);
+
+			/** <<==  ASSERT   ===============================================>> **/
+			Assert.IsNotNull(__data.GetField("message"));
 		}
 	}
 

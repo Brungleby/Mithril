@@ -1,5 +1,5 @@
 
-/** TestForgeObject.cs
+/** TestForgeNode.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -12,6 +12,7 @@
 using UnityEngine;
 
 using Mithril;
+using Mithril.Editor;
 
 #endregion
 
@@ -21,14 +22,16 @@ namespace Mithril.Tests
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	[CreateAssetMenu(menuName = "Test Forge Object")]
-	public sealed class TestForgeObject : ForgeObject
+	public sealed class TestForgeNode : Node
 	{
 		#region Data
 
 		#region
 
+		public string message = "something";
 
+		public override string defaultName =>
+			"Test Forge Node";
 
 		#endregion
 
@@ -37,13 +40,16 @@ namespace Mithril.Tests
 
 		#region
 
-		public override System.Type[] usableEditorWindows =>
-			new System.Type[] {
-				typeof(TestForgeWindow)
-			};
-
 		#endregion
 
 		#endregion
+	}
+
+	public sealed class TestNodeGraphView : CustomNodeGraphView
+	{
+		public TestNodeGraphView() : base()
+		{
+			CreateNewNode<TestForgeNode>();
+		}
 	}
 }

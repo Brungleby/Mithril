@@ -9,6 +9,8 @@
 #region Includes
 
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -21,6 +23,54 @@ using Node = Mithril.Editor.Node;
 
 namespace Mithril
 {
+	#region SmartNodeData
+
+	public sealed class SmartNodeData : object
+	{
+		public SmartNodeField[] fieldValues;
+
+		public PortData[] inputPorts;
+		public PortData[] outputPorts;
+
+		public SmartNodeData(Node node)
+		{
+			var __nodeFields = node.GetType().GetSerializableFields();
+			fieldValues = new SmartNodeField[__nodeFields.Length];
+
+			var i = 0;
+			foreach (var iField in __nodeFields)
+			{
+				fieldValues[i] = new SmartNodeField(iField, iField.GetValue(node));
+
+				i++;
+			}
+		}
+
+		public object GetField(string name)
+		{
+			return fieldValues.First(i => i.name == name).value;
+		}
+	}
+
+	public sealed class SmartNodeField : object
+	{
+		public string name;
+		public object value;
+
+		public SmartNodeField(FieldInfo field, object value)
+		{
+			this.name = field.Name;
+			this.value = value;
+		}
+	}
+
+	public sealed class SmartPortData : object
+	{
+
+	}
+
+	#endregion
+
 	#region NodeGraphData
 
 	/// <summary>
@@ -126,7 +176,7 @@ namespace Mithril
 		{
 			guid = node.guid;
 			title = node.title;
-			isPredefined = node.IsPredefined;
+			isPredefined = node.isPredefined;
 
 			rect = node.GetPosition();
 

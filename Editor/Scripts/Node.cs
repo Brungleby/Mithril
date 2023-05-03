@@ -28,7 +28,7 @@ namespace Mithril.Editor
 	///</summary>
 	[System.Serializable]
 
-	public class Node : UnityEditor.Experimental.GraphView.Node, ISerializable
+	public class Node : UnityEditor.Experimental.GraphView.Node, ISerializationCallbackReceiver
 	{
 		#region Data
 
@@ -44,17 +44,23 @@ namespace Mithril.Editor
 
 		/** <<============================================================>> **/
 
+		[SerializeField]
+		private string _title;
+
+		[SerializeField]
 		public Guid guid;
 
-		public bool IsPredefined = false;
+		[SerializeField]
+		public bool isPredefined = false;
 
-		public UnityEvent OnModified;
+		[NonSerializedBySmartObject]
+		public UnityEvent onModified;
 
 		/** <<============================================================>> **/
 
-		public virtual string DefaultName => "New Custom Node";
-		public virtual Orientation DefaultOrientation => Orientation.Horizontal;
-		public virtual Vector2 DefaultSize => new Vector2(
+		public virtual string defaultName => "New Custom Node";
+		public virtual Orientation defaultOrientation => Orientation.Horizontal;
+		public virtual Vector2 defaultSize => new Vector2(
 			DEFAULT_NODE_WIDTH,
 			NODE_HEADER_HEIGHT + (NODE_PORT_HEIGHT * maxPortCount)
 		);
@@ -88,20 +94,20 @@ namespace Mithril.Editor
 		public Node()
 		{
 			this.guid = Guid.GenerateNew();
-			this.title = DefaultName;
+			this.title = defaultName;
 		}
 
 		public virtual void Init(NodeData data)
 		{
 			guid = data.guid;
-			title = data.title ?? DefaultName;
+			title = data.title ?? defaultName;
 			this.SetPositionOnly(data.rect.position);
 		}
 
 		public virtual void InitInGraph(CustomNodeGraphView graph)
 		{
-			OnModified = new UnityEvent();
-			OnModified.AddListener(() =>
+			onModified = new UnityEvent();
+			onModified.AddListener(() =>
 			{
 				graph.onModified.Invoke();
 			});
@@ -114,10 +120,20 @@ namespace Mithril.Editor
 		public string GetSerializedString() =>
 			JsonUtility.ToJson(NodeData.CreateFrom(this));
 
+		public void OnAfterDeserialize()
+		{
+			title = _title;
+		}
+
+		public void OnBeforeSerialize()
+		{
+			_title = title;
+		}
+
 		#endregion
 
 		public override bool IsCopiable() =>
-			!IsPredefined;
+			!isPredefined;
 
 		public void RefreshAll()
 		{
@@ -128,7 +144,7 @@ namespace Mithril.Editor
 
 		public void RefreshSize()
 		{
-			this.size = DefaultSize;
+			this.size = defaultSize;
 		}
 
 		#region Port Handling
@@ -160,7 +176,7 @@ namespace Mithril.Editor
 		public Port CreatePort(System.Type type, string portName, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null)
 		{
 			var __port = InstantiatePort(
-				orientation ?? DefaultOrientation,
+				orientation ?? defaultOrientation,
 				direction,
 				capacity ?? (direction == Direction.Input ? Port.Capacity.Single : Port.Capacity.Multi),
 				type

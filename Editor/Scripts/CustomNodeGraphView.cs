@@ -381,7 +381,7 @@ namespace Mithril.Editor
 			{
 				if (i is Node iNode)
 				{
-					if (iNode.IsPredefined)
+					if (iNode.isPredefined)
 						continue;
 
 					var __connectedEdges = iNode.GetAllConnectedEdges();
@@ -402,7 +402,7 @@ namespace Mithril.Editor
 			{
 				if (iNode != null)
 				{
-					if (iNode.IsPredefined)
+					if (iNode.isPredefined)
 						continue;
 				}
 
