@@ -846,16 +846,18 @@ namespace Mithril
 
 		private static bool ShouldGetSuperFields(this Type type)
 		{
-			if (typeof(object) == type)
-				return false;
+			return typeof(object) != type && typeof(SmartObject) != type.BaseType;
 
-			var __mirrorFields = type
-				.GetFields(SERIALIZABLE_FIELD_FLAGS)
-				.Where(element => element.FieldType == typeof(Mirror))
-				.ToArray()
-			;
+			// if (typeof(object) == type)
+			// 	return false;
 
-			return __mirrorFields.Length == 0;
+			// var __mirrorFields = type
+			// 	.GetFields(SERIALIZABLE_FIELD_FLAGS)
+			// 	.Where(element => element.FieldType == typeof(Mirror))
+			// 	.ToArray()
+			// ;
+
+			// return __mirrorFields.Length == 0;
 		}
 
 		private static IEnumerable<FieldInfo> GetLocalSerializableFields(this Type type)
@@ -863,7 +865,7 @@ namespace Mithril
 			return type
 				.GetFields(SERIALIZABLE_FIELD_FLAGS)
 				.Where(i =>
-					i.FieldType != typeof(Mirror) &&
+					// i.FieldType != typeof(Mirror) &&
 					i.GetCustomAttribute<NonSerializedAttribute>() == null &&
 					(i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
 			);

@@ -96,6 +96,11 @@ namespace Mithril.Editor
 			this.title = defaultName;
 		}
 
+		public Node(Mirror mirror)
+		{
+
+		}
+
 		public virtual void Init(NodeData data)
 		{
 			guid = data.guid;

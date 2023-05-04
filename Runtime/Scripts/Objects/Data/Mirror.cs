@@ -36,9 +36,14 @@ namespace Mithril
 	}
 
 	#endregion
-	#region ObjectMirror
+	#region Mirror
+
+	/// <summary>
+	/// A serialized copy of an object.
+	///</summary>
 
 	[Serializable]
+
 	public sealed class Mirror
 	{
 		#region Inners
@@ -77,6 +82,7 @@ namespace Mithril
 				// type = __value.GetType();
 
 				var __value = field.GetValue(valueHolder);
+
 				_json = Serialization.Encode(__value);
 			}
 
@@ -90,12 +96,24 @@ namespace Mithril
 
 		[SerializeField]
 		[HideInInspector]
+		private string _type;
+		private Type type
+		{
+			get => Type.GetType(_type);
+			set => _type = value.AssemblyQualifiedName;
+		}
+
+		[SerializeField]
+		[HideInInspector]
 		private Field[] _mirrorFields;
 
 		#endregion
 
 		public Mirror(object realObject)
 		{
+			var __type = realObject.GetType();
+			type = __type;
+
 			var __fields = new List<Field>();
 			foreach (var iField in realObject.GetType().GetSerializableFields())
 				__fields.Add(new Field(iField, realObject));
@@ -127,6 +145,13 @@ namespace Mithril
 				return;
 
 			mirror.ApplyTo(realObject);
+		}
+
+		public static object ConstructFrom(Mirror mirror)
+		{
+			var __result = Activator.CreateInstance(mirror.type);
+			Load(mirror, __result);
+			return __result;
 		}
 
 		public object GetFieldValue(string name)

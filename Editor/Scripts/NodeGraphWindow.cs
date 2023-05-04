@@ -73,6 +73,9 @@ namespace Mithril.Editor
 		protected virtual void InitializeGraphView(TGraphView graph)
 		{
 			graph.name = "Basic Node Graph View";
+
+
+
 			graph.onModified.AddListener(NotifyIsModified);
 		}
 

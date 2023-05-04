@@ -25,6 +25,11 @@ namespace Mithril
 {
 	#region SmartNodeData
 
+	public sealed class SmartNodeData : object
+	{
+
+	}
+
 	public sealed class SmartPortData : object
 	{
 
@@ -53,6 +58,8 @@ namespace Mithril
 		[HideInInspector]
 		public Vector2 viewPosition;
 #endif
+		public Mirror[] nodeMirrors;
+
 		public NodeData[] nodes = new NodeData[0];
 		public EdgeData[] edges = new EdgeData[0];
 
@@ -68,6 +75,19 @@ namespace Mithril
 
 		// 	return that;
 		// }
+
+		public void SaveFromGraphView(NodeGraphView graphView)
+		{
+			var __nodes = graphView.nodes.Cast<Node>();
+
+			var __nodeMirrorList = new List<Mirror>();
+			foreach (var iNode in __nodes)
+			{
+				__nodeMirrorList.Add(new Mirror(iNode));
+			}
+
+			nodeMirrors = __nodeMirrorList.ToArray();
+		}
 
 #if UNITY_EDITOR
 		public void CompileNodes(List<Mithril.Editor.Node> nodes)

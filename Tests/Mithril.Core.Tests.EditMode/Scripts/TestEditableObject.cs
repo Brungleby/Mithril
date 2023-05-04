@@ -27,7 +27,7 @@ using UnityEngine.UIElements;
 namespace Mithril.Tests
 {
 	[CreateAssetMenu(menuName = "Test Editable Object")]
-	public sealed class TestEditableObject : EditableObject
+	public sealed class TestEditableObject : NodeGraphData
 	{
 		#region Data
 
@@ -76,7 +76,7 @@ namespace Mithril.Tests
 	{
 		public TestNodeGraphView() : base()
 		{
-			CreateNewNode<TestNode>();
+
 		}
 	}
 

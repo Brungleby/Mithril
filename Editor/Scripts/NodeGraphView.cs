@@ -134,11 +134,20 @@ namespace Mithril.Editor
 			// FrameAll();
 		}
 
+		public void InitFromGraphData(NodeGraphData data)
+		{
+			/** <<============================================================>> **/
+
+			foreach (var iNodeMirror in data.nodeMirrors)
+			{
+				var __node = (Node)Mirror.ConstructFrom(iNodeMirror);
+				AddNodeToView(__node);
+			}
+		}
+
 		#endregion
 
 		#region Overrides
-
-		protected override bool canPaste => true;
 
 		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
 		{
@@ -189,11 +198,12 @@ namespace Mithril.Editor
 		public virtual void CreatePredefinedNodes() { }
 
 		#endregion
-
 		#region Creation
 
 		private void AddNodeToView(Node node, bool invokeOnModified = true)
 		{
+			node.InitInGraph(this);
+
 			AddElement(node);
 			node.RefreshAll();
 
@@ -205,7 +215,6 @@ namespace Mithril.Editor
 		{
 			var __node = (Node)Activator.CreateInstance(type);
 
-			__node.InitInGraph(this);
 
 			if (title != null)
 				__node.title = title;
@@ -232,7 +241,6 @@ namespace Mithril.Editor
 		where T : Node, new() =>
 			CreateNewNode<T>(Guid.GenerateNew(), title, invokeOnModified);
 
-
 		// public Node CreateNewNode(NodeData data, bool createNewGuid = false) =>
 		// 	CreateNewNode(
 		// 		Type.GetType(data.nodeType),
@@ -240,18 +248,18 @@ namespace Mithril.Editor
 		// 		data.rect, data.title, false
 		// 	)
 		// ;
-		public Node CreateNewNode<T>(T data, bool createNewGUID = false)
-		where T : NodeData
-		{
-			var __node = (Node)Activator.CreateInstance(data.nodeType);
+		// public Node CreateNewNode<T>(T data, bool createNewGUID = false)
+		// where T : NodeData
+		// {
+		// 	var __node = (Node)Activator.CreateInstance(data.nodeType);
 
-			__node.Init(data);
-			__node.InitInGraph(this);
+		// 	__node.Init(data);
+		// 	__node.InitInGraph(this);
 
-			AddNodeToView(__node);
+		// 	AddNodeToView(__node);
 
-			return __node;
-		}
+		// 	return __node;
+		// }
 
 		public Node CreateNewNodeAtCursor(Type type, Guid guid, Vector2 size, string title = null, bool invokeOnModified = true) =>
 			CreateNewNode(type, guid, new Rect(mousePosition, size), title, invokeOnModified);
@@ -259,7 +267,6 @@ namespace Mithril.Editor
 			CreateNewNodeAtCursor(type, guid, Node.DEFAULT_NODE_SIZE);
 		public Node CreateNewNodeAtCursor(Type type) =>
 			CreateNewNodeAtCursor(type, Guid.GenerateNew());
-
 
 		#endregion
 
@@ -276,7 +283,9 @@ namespace Mithril.Editor
 			return null;
 		}
 
-		#region Dupe / Cut / Copy / Paste
+		#region Manipulation
+
+		protected override bool canPaste => true;
 
 		private string OnCopy(IEnumerable<GraphElement> elements)
 		{
@@ -296,83 +305,51 @@ namespace Mithril.Editor
 
 		private void OnPaste(Clipboard clipboard)
 		{
-			/** <<============================================================>> **/
+			// /** <<============================================================>> **/
 
-			var __guidLinks = new MapField<Guid, Guid>();
+			// var __guidLinks = new MapField<Guid, Guid>();
 
-			/** <<============================================================>> **/
+			// /** <<============================================================>> **/
 
-			var __nodes = new List<Node>();
+			// var __nodes = new List<Node>();
 
-			var __deltaPosition = mousePosition - clipboard.averagePosition;
+			// var __deltaPosition = mousePosition - clipboard.averagePosition;
 
-			foreach (var iNodeData in clipboard.nodeData)
-			{
-				var iNode = CreateNewNode(iNodeData, true);
-				iNode.SetPositionOnly(iNodeData.rect.position + __deltaPosition);
+			// foreach (var iNodeData in clipboard.nodeData)
+			// {
+			// 	var iNode = CreateNewNode(iNodeData, true);
+			// 	iNode.SetPositionOnly(iNodeData.rect.position + __deltaPosition);
 
-				__nodes.Add(iNode);
-				__guidLinks.Add((iNodeData.guid, iNode.guid));
-			}
+			// 	__nodes.Add(iNode);
+			// 	__guidLinks.Add((iNodeData.guid, iNode.guid));
+			// }
 
-			/** <<============================================================>> **/
+			// /** <<============================================================>> **/
 
-			var __edges = new List<Edge>();
+			// var __edges = new List<Edge>();
 
-			foreach (var iEdgeData in clipboard.edgeData)
-			{
-				var __linkData = iEdgeData;
+			// foreach (var iEdgeData in clipboard.edgeData)
+			// {
+			// 	var __linkData = iEdgeData;
 
-				__linkData.nPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.nPort.NodeGuid);
-				__linkData.oPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.oPort.NodeGuid);
+			// 	__linkData.nPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.nPort.NodeGuid);
+			// 	__linkData.oPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.oPort.NodeGuid);
 
-				try
-				{ __edges.Add(CreateEdge(__linkData)); }
-				catch
-				{ continue; }
-			}
+			// 	try
+			// 	{ __edges.Add(CreateEdge(__linkData)); }
+			// 	catch
+			// 	{ continue; }
+			// }
 
-			/** <<============================================================>> **/
+			// /** <<============================================================>> **/
 
-			var __newSelection = new List<ISelectable>();
+			// var __newSelection = new List<ISelectable>();
 
-			__newSelection.AddRange(__nodes);
-			__newSelection.AddRange(__edges);
+			// __newSelection.AddRange(__nodes);
+			// __newSelection.AddRange(__edges);
 
-			this.SetSelection(__newSelection);
+			// this.SetSelection(__newSelection);
 		}
-
-		#endregion
-
-		#region Modification
-
-		public Edge CreateEdge(EdgeData edge)
-		{
-			var nPort = FindNode(edge.nPort.NodeGuid).FindPort(edge.nPort.PortName);
-			var oPort = FindNode(edge.oPort.NodeGuid).FindPort(edge.oPort.PortName);
-
-			return ConnectPorts(nPort, oPort);
-		}
-
-		public Edge ConnectPorts(Port input, Port output)
-		{
-			var __edge = new Edge
-			{
-				input = input,
-				output = output
-			};
-
-			__edge?.input.Connect(__edge);
-			__edge?.output.Connect(__edge);
-
-			Add(__edge);
-
-			return __edge;
-		}
-
-		#endregion
-
-		#region Deletion
 
 		private void OnDelete(string operationName, AskUser askUser)
 		{
@@ -420,6 +397,34 @@ namespace Mithril.Editor
 				catch { return; }
 
 			ClearAllNodes();
+		}
+
+		#endregion
+
+		#region Modification
+
+		public Edge CreateEdge(EdgeData edge)
+		{
+			var nPort = FindNode(edge.nPort.NodeGuid).FindPort(edge.nPort.PortName);
+			var oPort = FindNode(edge.oPort.NodeGuid).FindPort(edge.oPort.PortName);
+
+			return ConnectPorts(nPort, oPort);
+		}
+
+		public Edge ConnectPorts(Port input, Port output)
+		{
+			var __edge = new Edge
+			{
+				input = input,
+				output = output
+			};
+
+			__edge?.input.Connect(__edge);
+			__edge?.output.Connect(__edge);
+
+			Add(__edge);
+
+			return __edge;
 		}
 
 		#endregion

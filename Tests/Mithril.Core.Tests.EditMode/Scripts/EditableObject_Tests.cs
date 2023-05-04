@@ -185,10 +185,11 @@ namespace Mithril.Tests
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = node;
-			var __data = new Mirror(__node);
+			Mirror __data;
 
 			/** <<==  ACT      ===============================================>> **/
-
+			__node.OnBeforeSerialize();
+			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
 			Assert.IsNotNull(__data);
@@ -198,13 +199,14 @@ namespace Mithril.Tests
 		public void NodeData_GuidFieldValueMatchesNode()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
-			Node __node = node;
-			var __data = new Mirror(__node);
+			var __node = node;
+			Mirror __data;
 
 			var __expected = __node.guid;
 
 			/** <<==  ACT      ===============================================>> **/
-
+			__node.OnBeforeSerialize();
+			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
 			Assert.AreEqual(__expected, __data.GetFieldValue("guid"));
@@ -256,7 +258,7 @@ namespace Mithril.Tests
 		}
 
 		[Test]
-		public void NodeData_Pass()
+		public void __Template_Pass()
 		{
 			/** <<==  ARRANGE  ===============================================>> **/
 			var __node = (TestNode)node;
@@ -267,9 +269,6 @@ namespace Mithril.Tests
 			__data = new Mirror(__node);
 
 			/** <<==  ASSERT   ===============================================>> **/
-
-			Debug.Log(Serialization.Encode(__data, true));
-
 			Assert.Pass();
 		}
 	}
