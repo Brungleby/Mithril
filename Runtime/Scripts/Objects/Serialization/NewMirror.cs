@@ -26,16 +26,17 @@ namespace Mithril
 		#region
 
 		private string _jsonValue;
+		#endregion
+
+		#endregion
+		#region Methods
 
 #if UNITY_INCLUDE_TESTS
 		public string jsonValue => _jsonValue;
 #endif
 		// public object value => NewSerialize.Decode(_jsonValue);
 
-		#endregion
 
-		#endregion
-		#region Methods
 
 		#region
 

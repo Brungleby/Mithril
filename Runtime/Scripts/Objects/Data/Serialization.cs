@@ -875,10 +875,10 @@ namespace Mithril
 		{
 			var __result = new List<FieldInfo>();
 
-			__result.AddAllUnique(type.GetLocalSerializableFields());
-
 			if (type.ShouldGetSuperFields())
 				__result.AddAllUnique(type.BaseType.GetSerializableFields());
+
+			__result.AddAllUnique(type.GetLocalSerializableFields());
 
 			return __result.ToArray();
 		}
