@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 #endregion
 
-namespace Mithril.Tests.Serialization
+namespace Mithril.Tests.Json
 {
 	#region Objects
 
@@ -102,7 +102,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -118,7 +118,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -134,7 +134,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -151,7 +151,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -168,7 +168,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -185,7 +185,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -202,7 +202,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -219,7 +219,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		#endregion
@@ -245,7 +245,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -262,7 +262,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -279,7 +279,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -296,7 +296,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -313,7 +313,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -330,7 +330,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -350,7 +350,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -359,8 +359,8 @@ namespace Mithril.Tests.Serialization
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = "[" +
-				"{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":14}}," +
-				"{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":10.5}}" +
+				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}," +
+				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":10.5}}" +
 				"]";
 			var __object = new Pizza[]{
 				new Pizza() { diameter = 14f },
@@ -373,7 +373,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -382,9 +382,9 @@ namespace Mithril.Tests.Serialization
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = "[" +
-				"{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":14}}," +
-				"{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(DeepDish).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":10.5,\"greasiness\":7}}," +
-				"{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":12}}" +
+				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}," +
+				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(DeepDish).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":10.5,\"greasiness\":7}}," +
+				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":12}}" +
 				"]";
 			var __object = new Pizza[]{
 				new ThinPizza() { diameter = 14f },
@@ -398,7 +398,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 	}
 	#endregion
@@ -420,7 +420,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 		[Test]
@@ -428,7 +428,7 @@ namespace Mithril.Tests.Serialization
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __expected = "{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":14}}";
+			var __expected = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}";
 			var __object = new Pizza() { diameter = 14f };
 
 			/**	<<==  ACT      ==>>	**/
@@ -437,7 +437,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
 
 
@@ -462,7 +462,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.IsNull(NewSerialize.Decode<object>(__json));
+			Assert.IsNull(Mithril.Json.Decode<object>(__json));
 		}
 
 		[Test]
@@ -478,7 +478,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<bool>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<bool>(__json));
 		}
 
 		[Test]
@@ -495,7 +495,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<int>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<int>(__json));
 		}
 
 		[Test]
@@ -512,7 +512,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<int>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<int>(__json));
 		}
 
 		[Test]
@@ -529,7 +529,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<float>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<float>(__json));
 		}
 
 		[Test]
@@ -545,7 +545,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { NewSerialize.Decode<int>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<int>(__json); });
 		}
 
 		[Test]
@@ -558,7 +558,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ACT      ==>>	**/
 
-			var __result = NewSerialize.Decode<EToppinType>(__json);
+			var __result = Mithril.Json.Decode<EToppinType>(__json);
 
 
 			/**	<<==  ASSERT   ==>>	**/
@@ -581,7 +581,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<string>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<string>(__json));
 		}
 
 		[Test]
@@ -598,7 +598,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<string>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<string>(__json));
 		}
 
 		[Test]
@@ -614,7 +614,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { NewSerialize.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -630,7 +630,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { NewSerialize.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -646,7 +646,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { NewSerialize.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -662,7 +662,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { NewSerialize.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -678,7 +678,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { NewSerialize.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -697,10 +697,10 @@ namespace Mithril.Tests.Serialization
 			/**	<<==  ASSERT   ==>>	**/
 
 			Assert.DoesNotThrow(() =>
-			{
-				__result = NewSerialize.Decode<string>(__json);
-				Assert.AreEqual(__expected, __result);
-			});
+				    {
+					    __result = Mithril.Json.Decode<string>(__json);
+					    Assert.AreEqual(__expected, __result);
+				    });
 		}
 
 		[Test]
@@ -719,10 +719,10 @@ namespace Mithril.Tests.Serialization
 			/**	<<==  ASSERT   ==>>	**/
 
 			Assert.DoesNotThrow(() =>
-			{
-				__result = NewSerialize.Decode<string>(__json);
-				Assert.AreEqual(__expected, __result);
-			});
+				    {
+					    __result = Mithril.Json.Decode<string>(__json);
+					    Assert.AreEqual(__expected, __result);
+				    });
 		}
 
 		[Test]
@@ -739,7 +739,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { __result = NewSerialize.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { __result = Mithril.Json.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -756,7 +756,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
 		}
 
 		[Test]
@@ -773,7 +773,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
 		}
 
 		[Test]
@@ -790,7 +790,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
 		}
 
 		[Test]
@@ -807,7 +807,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
 		}
 
 	}
@@ -831,7 +831,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<object[]>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<object[]>(__json));
 		}
 
 		[Test]
@@ -848,7 +848,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<int[]>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<int[]>(__json));
 		}
 
 		[Test]
@@ -865,7 +865,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<int[]>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<int[]>(__json));
 		}
 
 		[Test]
@@ -882,7 +882,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<List<object>>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<List<object>>(__json));
 		}
 
 		[Test]
@@ -899,7 +899,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<List<int>>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<List<int>>(__json));
 		}
 
 		[Test]
@@ -916,7 +916,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode<HashSet<string>>(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode<HashSet<string>>(__json));
 		}
 
 		[Test]
@@ -932,7 +932,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<NotImplementedException>(() => { NewSerialize.Decode<Hashtable>(__json); });
+			Assert.Throws<NotImplementedException>(() => { Mithril.Json.Decode<Hashtable>(__json); });
 		}
 	}
 
@@ -955,7 +955,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected.GetType(), NewSerialize.Decode(__json).GetType());
+			Assert.AreEqual(__expected.GetType(), Mithril.Json.Decode(__json).GetType());
 		}
 
 		[Test]
@@ -998,7 +998,7 @@ namespace Mithril.Tests.Serialization
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = new Pizza() { diameter = 27f };
-			var __json = "{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":27}}";
+			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":27}}";
 
 			/**	<<==  ACT      ==>>	**/
 
@@ -1006,7 +1006,7 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, NewSerialize.Decode(__json));
+			Assert.AreEqual(__expected, Mithril.Json.Decode(__json));
 		}
 
 		[Test]
@@ -1014,7 +1014,7 @@ namespace Mithril.Tests.Serialization
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __json = "{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":27}," + "\"BACON\":\"GREASE\"" + "}";
+			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":27}," + "\"BACON\":\"GREASE\"" + "}";
 
 			/**	<<==  ACT      ==>>	**/
 
@@ -1022,10 +1022,10 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<NewSerialize.WrapperDecodeException>(() =>
-			{
-				NewSerialize.Decode(__json);
-			});
+			Assert.Throws<Mithril.Json.WrapperDecodeException>(() =>
+				    {
+					    Mithril.Json.Decode(__json);
+				    });
 		}
 
 		[Test]
@@ -1041,10 +1041,10 @@ namespace Mithril.Tests.Serialization
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<NewSerialize.WrapperDecodeException>(() =>
-			{
-				NewSerialize.Decode(__json);
-			});
+			Assert.Throws<Mithril.Json.WrapperDecodeException>(() =>
+				    {
+					    Mithril.Json.Decode(__json);
+				    });
 		}
 
 		[Test]
@@ -1052,7 +1052,7 @@ namespace Mithril.Tests.Serialization
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __json = "{" + $"\"{NewSerialize.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{NewSerialize.DATA_LABEL}\":" + "{\"diameter\":27}}";
+			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":27}}";
 
 
 			/**	<<==  ACT      ==>>	**/
@@ -1062,9 +1062,9 @@ namespace Mithril.Tests.Serialization
 			/**	<<==  ASSERT   ==>>	**/
 
 			Assert.Throws<InvalidCastException>(() =>
-			{
-				NewSerialize.Decode<DeepDish>(__json);
-			});
+				    {
+					    Mithril.Json.Decode<DeepDish>(__json);
+				    });
 		}
 	}
 

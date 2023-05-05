@@ -20,10 +20,10 @@ using System.Reflection;
 namespace Mithril
 {
 	/// <summary>
-	/// __TODO_ANNOTATE__
+	/// Serializes objects into proper JSON format.
 	///</summary>
 
-	public sealed class NewSerialize : object
+	public sealed class Json : object
 	{
 		#region Inners
 
@@ -73,7 +73,7 @@ namespace Mithril
 			Decode(typeof(object), json);
 
 		public static string Encode(object obj) =>
-			(new NewSerialize())._Encode(obj);
+			(new Json())._Encode(obj);
 
 		#endregion
 

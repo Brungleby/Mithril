@@ -42,7 +42,7 @@ namespace Mithril
 
 		public NewMirror(object realObj)
 		{
-			_jsonValue = NewSerialize.Encode(realObj);
+			_jsonValue = Json.Encode(realObj);
 		}
 
 		#endregion
