@@ -1,5 +1,5 @@
 
-/** Mirror.cs
+/** NewMirror.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -10,8 +10,6 @@
 #region Includes
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 using UnityEngine;
 
@@ -19,155 +17,67 @@ using UnityEngine;
 
 namespace Mithril
 {
-	#region IMirrorable
-
-	public interface IMirrorable
-	{
-		Mirror mirror { get; set; }
-	}
-
-	public static class IMirrorableExtensions
-	{
-		public static void Save(this IMirrorable realObj) =>
-			realObj.mirror = new Mirror(realObj);
-
-		public static void Load(this IMirrorable realObj) =>
-			Mirror.Load(realObj.mirror, realObj);
-	}
-
-	#endregion
 	#region Mirror
 
 	/// <summary>
-	/// A serialized copy of an object.
+	/// Stores a string representation of an object.
 	///</summary>
 
 	[Serializable]
-
-	public sealed class Mirror
+	public sealed class Mirror : object
 	{
-		#region Inners
-
-		#region MirrorField
-
-		[Serializable]
-		private sealed class Field
-		{
-			[SerializeField]
-			private string _name;
-			public string name => _name;
-
-			// [SerializeField]
-			// private string _type;
-			// private Type type
-			// {
-			// 	get => Type.GetType(_type);
-			// 	set => _type = value.AssemblyQualifiedName;
-			// }
-
-			[SerializeField]
-			private string _json;
-			public string json => _json;
-
-			public object value =>
-				Serialization.Decode(_json);
-			public T GetValueAs<T>() =>
-				(T)value;
-
-			public Field(FieldInfo field, object valueHolder)
-			{
-				_name = field.Name;
-
-				// var __type = __value.GetType();
-				// type = __value.GetType();
-
-				var __value = field.GetValue(valueHolder);
-
-				_json = Serialization.Encode(__value);
-			}
-
-			public override string ToString() => _json;
-		}
-
-		#endregion
-
-		#endregion
 		#region Data
 
-		[SerializeField]
-		[HideInInspector]
-		private string _type;
-		private Type type
-		{
-			get => Type.GetType(_type);
-			set => _type = value.AssemblyQualifiedName;
-		}
+		#region
 
 		[SerializeField]
 		[HideInInspector]
-		private Field[] _mirrorFields;
+		private string _json;
+#if UNITY_INCLUDE_TESTS
+		public string json => _json;
+#endif
+		#endregion
+
+		#endregion
+		#region Methods
+
+		#region Construction
+
+		public Mirror(object obj) =>
+			SetReflectionFrom(obj);
 
 		#endregion
 
-		public Mirror(object realObject)
+		public object GetReflection() =>
+			Json.Decode(_json);
+		public object GetReflection(Type type) =>
+			Json.Decode(type, _json);
+		public T GetReflection<T>() =>
+			Json.Decode<T>(_json);
+
+		public void SetReflectionFrom(object obj) =>
+			_json = Json.Encode(obj);
+
+		public void ApplyReflectionTo(object obj) =>
+			CopySerializableFieldValues(GetReflection(), obj);
+
+		public static void CopySerializableFieldValues(object source, object target)
 		{
-			var __type = realObject.GetType();
-			type = __type;
-
-			var __fields = new List<Field>();
-			foreach (var iField in realObject.GetType().GetSerializableFields())
-				__fields.Add(new Field(iField, realObject));
-
-			_mirrorFields = __fields.ToArray();
-		}
-
-		private void ApplyTo(object obj)
-		{
-			if (_mirrorFields == null)
-				return;
-
-			foreach (var iMirrorField in _mirrorFields)
+			foreach (var iField in source.GetType().GetSerializableFields())
 			{
-				FieldInfo iField;
-				iField = obj.GetType().GetSerializableField(iMirrorField.name);
-
-				iField.SetValue(obj, iMirrorField.value);
+				var __sourceValue = iField.GetValue(source);
+				iField.SetValue(target, __sourceValue);
 			}
 		}
 
-		public static void Save(out Mirror mirror, object realObject)
-		{
-			mirror = new Mirror(realObject);
-		}
-		public static void Load(Mirror mirror, object realObject)
-		{
-			if (mirror == null)
-				return;
-
-			mirror.ApplyTo(realObject);
-		}
-
-		public static object ConstructFrom(Mirror mirror)
-		{
-			var __result = Activator.CreateInstance(mirror.type);
-			Load(mirror, __result);
-			return __result;
-		}
-
-		public object GetFieldValue(string name)
-		{
-			foreach (var i in _mirrorFields)
-				if (i.name == name)
-					return i.value;
-
-			return null;
-		}
-		public T GetFieldValue<T>(string name) =>
-			(T)GetFieldValue(name);
-
-		public override string ToString() =>
-			_mirrorFields.ContentsToString();
+		#endregion
 	}
+
+	#endregion
+	#region NonMirroredAttribute
+
+	[AttributeUsage(AttributeTargets.Field)]
+	public class NonMirroredAttribute : Attribute { }
 
 	#endregion
 }

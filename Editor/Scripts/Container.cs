@@ -54,7 +54,7 @@ namespace Mithril.Editor
 
 	[Serializable]
 	[CreateAssetMenu(menuName = "Serialization Test (Container)")]
-	public class Container : SmartObject
+	public class Container : EditableObject
 	{
 		[SerializeField]
 		[UnityEngine.Serialization.FormerlySerializedAs("fart")]
@@ -68,7 +68,7 @@ namespace Mithril.Editor
 	}
 
 	[CustomEditor(typeof(Container))]
-	public class ContainerEditor : SmartObject.SmartObjectEditor
+	public class ContainerEditor : EditableObject.EditableObjectEditor
 	{
 		public override void OnInspectorGUI()
 		{

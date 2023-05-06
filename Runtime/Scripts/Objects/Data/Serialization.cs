@@ -846,7 +846,7 @@ namespace Mithril
 
 		private static bool ShouldGetSuperFields(this Type type)
 		{
-			return typeof(object) != type && typeof(SmartObject) != type.BaseType;
+			return typeof(object) != type && typeof(EditableObject) != type.BaseType;
 
 			// if (typeof(object) == type)
 			// 	return false;
@@ -864,11 +864,8 @@ namespace Mithril
 		{
 			return type
 				.GetFields(SERIALIZABLE_FIELD_FLAGS)
-				.Where(i =>
-					// i.FieldType != typeof(Mirror) &&
-					i.GetCustomAttribute<NonSerializedAttribute>() == null &&
-					(i.IsPublic || i.GetCustomAttribute<SerializeField>() != null)
-			);
+				.Where(i => IsSerializableField(i))
+			;
 		}
 
 		public static FieldInfo[] GetSerializableFields(this Type type)
@@ -890,21 +887,22 @@ namespace Mithril
 		{
 			var __result = type.GetLocalSerializableField(name);
 
-			if (__result != null)
-			{
-				if (typeof(Mirror) == __result.FieldType)
-					return null;
-
-				if (!(__result.GetCustomAttribute<NonSerializedAttribute>() == null))
-					__result = null;
-				else if (!(__result.IsPublic || __result.GetCustomAttribute<SerializeField>() != null))
-					__result = null;
-			}
+			if (__result != null && !IsSerializableField(__result))
+				__result = null;
 
 			if (__result == null && type.ShouldGetSuperFields())
 				__result = type.BaseType.GetSerializableField(name);
 
 			return __result;
+		}
+
+		private static bool IsSerializableField(this FieldInfo field)
+		{
+			return
+				field.GetCustomAttribute<NonSerializedAttribute>() == null &&
+				field.GetCustomAttribute<NonMirroredAttribute>() == null &&
+				(field.IsPublic || field.GetCustomAttribute<SerializeField>() != null)
+			;
 		}
 	}
 

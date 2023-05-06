@@ -58,7 +58,6 @@ namespace Mithril
 		[HideInInspector]
 		public Vector2 viewPosition;
 #endif
-		public Mirror[] nodeMirrors;
 
 		public NodeData[] nodes = new NodeData[0];
 		public EdgeData[] edges = new EdgeData[0];
@@ -86,7 +85,7 @@ namespace Mithril
 				__nodeMirrorList.Add(new Mirror(iNode));
 			}
 
-			nodeMirrors = __nodeMirrorList.ToArray();
+			// nodeMirrors = __nodeMirrorList.ToArray();
 		}
 
 #if UNITY_EDITOR

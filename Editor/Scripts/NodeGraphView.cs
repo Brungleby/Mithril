@@ -136,13 +136,13 @@ namespace Mithril.Editor
 
 		public void InitFromGraphData(NodeGraphData data)
 		{
-			/** <<============================================================>> **/
+			// /** <<============================================================>> **/
 
-			foreach (var iNodeMirror in data.nodeMirrors)
-			{
-				var __node = (Node)Mirror.ConstructFrom(iNodeMirror);
-				AddNodeToView(__node);
-			}
+			// foreach (var iNodeMirror in data.nodeMirrors)
+			// {
+			// 	var __node = (Node)Mirror.ConstructFrom(iNodeMirror);
+			// 	AddNodeToView(__node);
+			// }
 		}
 
 		#endregion

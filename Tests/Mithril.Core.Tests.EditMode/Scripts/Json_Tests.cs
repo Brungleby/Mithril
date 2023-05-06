@@ -439,8 +439,6 @@ namespace Mithril.Tests.Json
 
 			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
 		}
-
-
 	}
 
 	#endregion

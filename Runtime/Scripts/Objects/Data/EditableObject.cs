@@ -1,5 +1,5 @@
 
-/** ForgeObject.cs
+/** SaveableObject.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -10,36 +10,75 @@
 #region Includes
 
 using System;
-using System.Collections.Generic;
-
-using UnityEngine;
-using UnityEditor;
 
 using Mithril.Editor;
+
+using UnityEditor;
+using UnityEngine;
+
 
 #endregion
 
 namespace Mithril
 {
+	#region SmartObject
+
 	/// <summary>
-	/// A kind of <see cref="SmartObject"/> (<see cref="ScriptableObject"/>) that can be edited and manipulated using predefined <see cref="usableEditorWindows"/>.
+	/// A more feature-rich implementation of <see cref="ScriptableObject"/> which serializes its contents properly, and is suitable for storing polymorphic data.
 	///</summary>
 
-	public abstract class EditableObject : SmartObject
+	[Serializable]
+	public abstract class EditableObject : ScriptableObject, ISerializationCallbackReceiver
 	{
 		#region Inners
 
+		#region Editor
+
 		/// <summary>
-		/// Simple script that adds buttons to edit this object in compatible editors.
+		/// A special editor designed for use with <see cref="EditableObject"/>s (and any child class).
 		///</summary>
 
 		[CustomEditor(typeof(EditableObject), true)]
-		public class ForgeObjectEditor : SmartObject.SmartObjectEditor
+		public class EditableObjectEditor : UnityEditor.Editor
 		{
+			#region Data
+
+			private static bool _isInspectingDirectValues = false;
+
+			#endregion
+			#region Methods
+
+			/// <summary>
+			/// This implementation of <see cref="UnityEditor.Editor.OnInspectorGUI"/> is unique. Functional GUI elements should be implemented here, but fields that can be modified should be implemented in <see cref="OnInspectorGUI_Fields"/>.
+			///</summary>
+
 			public override void OnInspectorGUI()
 			{
+				/** <<============================================================>> **/
+
 				var __target = (EditableObject)target;
-				var __types = __target.usableEditorWindows;
+
+				// /** <<============================================================>> **/
+				// /**	Display Debug Print Button
+				// */
+
+				// var currentEvent = Event.current;
+				// if (currentEvent.alt)
+				// {
+				// 	if (GUILayout.Button("Copy JSON"))
+				// 		GUIUtility.systemCopyBuffer = __target.mirror.ToString();
+				// }
+				// else
+				// {
+				// 	if (GUILayout.Button("Print JSON"))
+				// 		Debug.Log(__target.mirror.ToString());
+				// }
+
+				/** <<============================================================>> **/
+				/**	Display Editors
+				*/
+
+				var __types = __target.compatibleEditorWindows;
 
 				if (__types.Length > 0)
 				{
@@ -50,19 +89,72 @@ namespace Mithril
 					}
 				}
 				else
-					GUILayout.Label("This ForgeObject does not support any editors.");
+				{
+					GUILayout.Label(
+						$"No EditorWindows support editing this type of EditableObject.\nTo add one or more, override the {nameof(EditableObject.compatibleEditorWindows)} property for this class.",
+						GUILayout.ExpandHeight(true)
+					);
+				}
 
+				/** <<============================================================>> **/
+				/**	Display Fields
+				*/
+
+				_isInspectingDirectValues = !EditorGUILayout.Toggle(
+					new GUIContent("Lock Inspector", "If unlocked, this object can still be modified using the EditorWindows listed above."),
+					!_isInspectingDirectValues
+				);
+
+				if (_isInspectingDirectValues)
+					EditorGUI.BeginChangeCheck();
+				else
+					EditorGUI.BeginDisabledGroup(true);
+
+				OnInspectorGUI_Fields();
+
+				if (_isInspectingDirectValues)
+				{
+					if (EditorGUI.EndChangeCheck())
+						__target._isBeingModifiedInInspector = true;
+				}
+				else
+					EditorGUI.EndDisabledGroup();
+			}
+
+			/// <summary>
+			/// Custom implementation of <see cref="OnInspectorGUI"/>. <see cref="EditableObject.OnAfterDeserialize"/> is postponed until after this method has completed to allow values to be edited properly.
+			///</summary>
+
+			public virtual void OnInspectorGUI_Fields()
+			{
 				base.OnInspectorGUI();
 			}
+
+			#endregion
 		}
 
 		#endregion
+
+		#endregion
+
 		#region Data
 
-		#region
+		/// <summary>
+		/// Mirror of this object; stores json information for each field (not including this one).
+		///</summary>
 
-		private bool _isSaving = false;
-		public bool isSaving => _isSaving;
+		[NonMirrored]
+		[SerializeField]
+		[HideInInspector]
+		private Mirror _mirror;
+		public Mirror mirror { get => _mirror; set => _mirror = value; }
+
+		/// <summary>
+		/// Updated by <see cref="EditableObject.EditableObjectEditor"/>; indicates whether or not it is being directly edited in the inspector.
+		///</summary>
+
+		private bool _isBeingModifiedInInspector = false;
+
 #if UNITY_EDITOR
 		private InstantiableWindow _currentlyOpenEditor;
 
@@ -75,7 +167,6 @@ namespace Mithril
 			set => _isAutosaved = value;
 		}
 #endif
-		#endregion
 
 		#endregion
 		#region Properties
@@ -84,19 +175,53 @@ namespace Mithril
 #if UNITY_EDITOR
 		public string fileName => name;
 
-		public abstract Type[] usableEditorWindows { get; }
+		public virtual Type[] compatibleEditorWindows =>
+			new Type[0];
 #endif
 		#endregion
 		#region Methods
 
-		public void Save()
+		#region ISerializationCallbackReceiver
+
+		public virtual void OnAfterDeserialize()
 		{
-			((IMirrorable)this).Save();
+			if (!_isBeingModifiedInInspector)
+				LoadMirror();
+
+			_isBeingModifiedInInspector = false;
+		}
+
+		public virtual void OnBeforeSerialize()
+		{
+			if (!_isBeingModifiedInInspector)
+				SaveMirror();
+		}
+
+		#endregion
+		#region Serialization / Mirroring
+
+		public virtual void Save()
+		{
+			SaveMirror();
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssetIfDirty(this);
 			AssetDatabase.Refresh();
 		}
+
+		public virtual void LoadMirror()
+		{
+			if (_mirror != null)
+				_mirror.ApplyReflectionTo(this);
+		}
+
+		public virtual void SaveMirror()
+		{
+			_mirror.SetReflectionFrom(this);
+		}
+
+		#endregion
+		#region EditorWindow
 #if UNITY_EDITOR
 		#region Open
 
@@ -104,6 +229,8 @@ namespace Mithril
 		{
 			if (_currentlyOpenEditor == null)
 			{
+				LoadMirror();
+
 				_currentlyOpenEditor = InstantiableWindow.Instantiate(type, this);
 				_currentlyOpenEditor.Show();
 			}
@@ -112,17 +239,21 @@ namespace Mithril
 				if (_currentlyOpenEditor.GetType() == type)
 					_currentlyOpenEditor.Focus();
 				else
+				{
 					Mithril.Editor.Utils.PromptConfirmation("A different type of window currently editing this object is still open. Click OK to save the asset, close the existing window, and proceed opening this one.");
+
+					/**	__TODO_IMPLEMENT__
+					*/
+				}
 			}
 
-			((IMirrorable)this).Load();
 			return _currentlyOpenEditor;
 		}
 		public T Open<T>()
 		where T : InstantiableWindow =>
 			(T)Open(typeof(T));
 		public void Open() =>
-			Open(usableEditorWindows[0]);
+			Open(compatibleEditorWindows[0]);
 
 		[UnityEditor.Callbacks.OnOpenAsset]
 		public static bool OnOpenAsset(int instanceID, int line)
@@ -147,12 +278,11 @@ namespace Mithril
 			_currentlyOpenEditor.Close();
 			_currentlyOpenEditor = null;
 		}
-
 #endif
-		#region
-
 		#endregion
 
 		#endregion
 	}
+
+	#endregion
 }

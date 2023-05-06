@@ -283,7 +283,6 @@ namespace Mithril.Editor
 			_workObject.isAutosaved = _autosaveToggleElement.value;
 
 			_saveButtonElement.isUnlocked = !_workObject.isAutosaved;
-			_saveButtonElement.isSaving = _workObject.isSaving;
 
 		}
 
@@ -294,7 +293,7 @@ namespace Mithril.Editor
 
 		private void AssertObjectWindowCompatible(EditableObject obj)
 		{
-			if (!obj.usableEditorWindows.Contains(GetType()))
+			if (!obj.compatibleEditorWindows.Contains(GetType()))
 				throw new NotSupportedException($"{obj.name} ({obj.GetType()}) cannot be opened with this type of EditorWindow ({GetType()}).");
 		}
 
@@ -303,7 +302,7 @@ namespace Mithril.Editor
 
 		public void Save()
 		{
-			_workObject.Save();
+			_workObject.SaveMirror();
 
 			isModified = false;
 		}
