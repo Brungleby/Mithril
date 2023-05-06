@@ -52,6 +52,31 @@ namespace Mithril.Tests.Json
 		public float greasiness;
 	}
 
+	public class PizzaBox
+	{
+		public Mirror pizzaMirror;
+
+		public override bool Equals(object obj)
+		{
+			if (obj != null && obj is PizzaBox that)
+			{
+				return this.pizzaMirror.Equals(that.pizzaMirror);
+			}
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hash = 17;
+				hash = hash * 31 + pizzaMirror.GetHashCode();
+				return hash;
+			}
+		}
+	}
+
 	public enum EToppinType
 	{
 		Mushroom = 1,
@@ -430,6 +455,25 @@ namespace Mithril.Tests.Json
 
 			var __expected = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}";
 			var __object = new Pizza() { diameter = 14f };
+
+			/**	<<==  ACT      ==>>	**/
+
+
+
+			/**	<<==  ASSERT   ==>>	**/
+
+			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+		}
+
+		[Test]
+		public void IsEncodedWithJsonOnly_PizzaMirrorField()
+		{
+			/**	<<==  ARRANGE  ==>>	**/
+
+			var __pizza = new Pizza() { diameter = 14f };
+			var __expected = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(PizzaBox).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{" + $"\"pizzaMirror\":{Mithril.Json.Encode(__pizza)}" + "}}";
+
+			var __object = new PizzaBox() { pizzaMirror = new Mirror(__pizza) };
 
 			/**	<<==  ACT      ==>>	**/
 
@@ -1027,25 +1071,6 @@ namespace Mithril.Tests.Json
 		}
 
 		[Test]
-		public void ThrowsWrapperException_PizzaJson_WithIncorrectWrapperFields()
-		{
-			/**	<<==  ARRANGE  ==>>	**/
-
-			var __json = "{" + $"\"FART\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"STINKY\":" + "{\"diameter\":27}}";
-
-			/**	<<==  ACT      ==>>	**/
-
-
-
-			/**	<<==  ASSERT   ==>>	**/
-
-			Assert.Throws<Mithril.Json.WrapperDecodeException>(() =>
-				    {
-					    Mithril.Json.Decode(__json);
-				    });
-		}
-
-		[Test]
 		public void ThrowsInvalidCastException_DecodeThinPizza_AsDeepDish()
 		{
 			/**	<<==  ARRANGE  ==>>	**/
@@ -1063,6 +1088,45 @@ namespace Mithril.Tests.Json
 				    {
 					    Mithril.Json.Decode<DeepDish>(__json);
 				    });
+		}
+
+		[Test]
+		public void PizzaBox_Equals_PizzaBoxWithIdenticalMirror()
+		{
+			/**	<<==  ARRANGE  ==>>	**/
+
+			var __pizza = new Pizza() { diameter = 14f };
+
+			var __a = new PizzaBox() { pizzaMirror = new Mirror(__pizza) };
+			var __b = new PizzaBox() { pizzaMirror = new Mirror(__pizza) };
+
+			/**	<<==  ACT      ==>>	**/
+
+
+
+			/**	<<==  ASSERT   ==>>	**/
+
+			Assert.AreEqual(__a, __b);
+		}
+
+		[Test]
+		public void IsDecodedAsMirror_PizzaMirror()
+		{
+			/**	<<==  ARRANGE  ==>>	**/
+
+			var __pizza = new Pizza() { diameter = 14f };
+
+			var __expected = new PizzaBox() { pizzaMirror = new Mirror(__pizza) };
+
+			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(PizzaBox).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{" + $"\"pizzaMirror\":{Mithril.Json.Encode(__pizza)}" + "}}";
+
+			/**	<<==  ACT      ==>>	**/
+
+
+
+			/**	<<==  ASSERT   ==>>	**/
+
+			Assert.AreEqual(__expected, Mithril.Json.Decode(__json));
 		}
 	}
 

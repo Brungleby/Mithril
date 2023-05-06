@@ -156,7 +156,13 @@ namespace Mithril
 		private bool _isBeingModifiedInInspector = false;
 
 #if UNITY_EDITOR
+#if !UNITY_INCLUDE_TESTS
 		private InstantiableWindow _currentlyOpenEditor;
+#else
+		[NonMirrored]
+		[HideInInspector]
+		public InstantiableWindow _currentlyOpenEditor;
+#endif
 
 		[SerializeField]
 		[HideInInspector]

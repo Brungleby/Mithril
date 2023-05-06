@@ -278,8 +278,6 @@ namespace Mithril.Editor
 				if (typeof(T).IsAssignableFrom(i.GetType()))
 					return (T)i;
 			}
-
-
 			return null;
 		}
 

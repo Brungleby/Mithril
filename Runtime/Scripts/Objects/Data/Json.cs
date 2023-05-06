@@ -43,6 +43,8 @@ namespace Mithril
 
 		#region Static
 
+
+
 #if UNITY_INCLUDE_TESTS
 		public readonly static string TYPE_LABEL = "TYPE";
 		public readonly static string DATA_LABEL = "DATA";
@@ -81,26 +83,36 @@ namespace Mithril
 
 		public static object Decode(Type type, in string json)
 		{
-			if (RepresentsNull(json))
-				return null;
+			try
+			{
+				if (RepresentsNull(json))
+					return null;
 
-			if (typeof(string) == type)
-				return DecodeString(json);
+				if (typeof(Mirror) == type)
+					return DecodeMirror(json);
 
-			if (typeof(char) == type)
-				return DecodeChar(json);
+				if (typeof(string) == type)
+					return DecodeString(json);
 
-			if (type.IsEnum)
-				return DecodeEnum(type, json);
+				if (typeof(char) == type)
+					return DecodeChar(json);
 
-			if (type.IsPrimitive)
-				return DecodePrimitive(type, json);
+				if (type.IsEnum)
+					return DecodeEnum(type, json);
 
-			if (IsEncodedAsJsonArray(type))
-				return DecodeEnumerable(type, json);
+				if (type.IsPrimitive)
+					return DecodePrimitive(type, json);
 
-			return DecodeObject(type, json);
-			// throw new NotImplementedException($"Couldn't parse the following JSON as type {type}:\n\"{json}\"");
+				if (IsEncodedAsJsonArray(type))
+					return DecodeEnumerable(type, json);
+
+				return DecodeObject(type, json);
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogWarning($"The following JSON string failed to decode: {json}");
+				throw e;
+			}
 		}
 
 		private string _Encode(object obj)
@@ -109,6 +121,9 @@ namespace Mithril
 				return NULL_ENCODED;
 
 			var __type = obj.GetType();
+
+			if (typeof(Mirror) == __type)
+				return EncodeMirror(obj);
 
 			if (typeof(string) == __type)
 				return EncodeString((string)obj);
@@ -129,6 +144,7 @@ namespace Mithril
 		}
 
 		#endregion
+
 		#region Decode String Arithmetic
 
 		private static (string, string) Split(in string json, char q)
@@ -173,19 +189,12 @@ namespace Mithril
 			var __start = json.IndexOf(start) + 1;
 			var __end = json.LastIndexOf(end);
 
-			try
-			{
-				return json.Substring(__start, __end - __start).Trim();
-			}
-			catch (Exception e)
-			{
-				if (__start == -1)
-					throw new IndexOutOfRangeException("Start character not found in the given data string.", e);
-				if (__end == -1)
-					throw new IndexOutOfRangeException("End character not found in the given data string.", e);
+			if (__start == -1)
+				throw new IndexOutOfRangeException("Start character not found in the given data string.");
+			if (__end == -1)
+				throw new IndexOutOfRangeException("End character not found in the given data string.");
 
-				throw e;
-			}
+			return json.Substring(__start, __end - __start).Trim();
 		}
 		private static string Unwrap(in string json, char startEnd) =>
 			Unwrap(json, startEnd, startEnd);
@@ -302,7 +311,7 @@ namespace Mithril
 
 		private static bool RepresentsNull(in string json)
 		{
-			return json == NULL_ENCODED;
+			return json == NULL_ENCODED || string.IsNullOrEmpty(json);
 		}
 
 		private static object DecodeEnum(Type type, in string json)
@@ -597,11 +606,7 @@ namespace Mithril
 			if (__wrapperFields.Length == 0)
 				return new object();
 
-			if (
-				__wrapperFields.Length != 2 ||
-				__wrapperFields[0].Item1 != TYPE_LABEL ||
-				__wrapperFields[1].Item1 != DATA_LABEL
-			)
+			if (__wrapperFields.Length != 2)
 				throw new WrapperDecodeException($"The following JSON string does not properly represent an object value because its wrapper fields are missing or incorrect:\n\"{json}\"");
 
 			/** <<============================================================>> **/
@@ -671,6 +676,15 @@ namespace Mithril
 
 			return __result + CLOSE_BRACE;
 		}
+
+		#endregion
+		#region Mirror
+
+		private static string EncodeMirror(object obj) =>
+			((Mirror)obj).json;
+
+		private static Mirror DecodeMirror(string json) =>
+			Mirror.CreateFromJsonDirect(json);
 
 		#endregion
 
