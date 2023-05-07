@@ -65,7 +65,7 @@ namespace Mithril
 				if (obj is Mirror that_Mirror)
 					return GetReflection().Equals(that_Mirror.GetReflection());
 				if (obj is string that_String)
-					return GetReflection().Equals(Json.Decode(that_String));
+					return GetReflection().Equals(JsonTranslator.Decode(that_String));
 			}
 			return false;
 		}
@@ -95,14 +95,14 @@ namespace Mithril
 		#endregion
 
 		public object GetReflection() =>
-			Json.Decode(_json);
+			JsonTranslator.Decode(_json);
 		public object GetReflection(Type type) =>
-			Json.Decode(type, _json);
+			JsonTranslator.Decode(type, _json);
 		public T GetReflection<T>() =>
-			Json.Decode<T>(_json);
+			JsonTranslator.Decode<T>(_json);
 
 		public void SetReflectionFrom(object obj) =>
-			_json = Json.Encode(obj);
+			_json = JsonTranslator.Encode(obj);
 
 		public void ApplyReflectionTo(object obj) =>
 			CopySerializableFieldValues(GetReflection(), obj);

@@ -116,12 +116,12 @@ namespace Mithril.Editor
 				// var __v = Serialization.Decode<Vector2>(data);
 				// Debug.Log(__v.ToString());
 
-				var __vector = new Vector2(3, 5);
-				var __vectorEncoded = Serialization.Encode(__vector);
-				Debug.Log(__vectorEncoded);
+				// var __vector = new Vector2(3, 5);
+				// var __vectorEncoded = new JsonTranslator().Encode(__vector);
+				// Debug.Log(__vectorEncoded);
 
-				__vector = Serialization.Decode<Vector2>(__vectorEncoded);
-				Debug.Log(__vector);
+				// __vector = new JsonTranslator().Decode<Vector2>(__vectorEncoded);
+				// Debug.Log(__vector);
 			}
 		}
 	}

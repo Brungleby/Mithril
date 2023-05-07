@@ -45,7 +45,10 @@ namespace Mithril.Tests.Graph
 
 			/**	<<==  ACT      ==>>	**/
 
-			Debug.Log(Mithril.Json.Encode(_testNode));
+			Debug.Log(Mithril.JsonTranslator.Encode(_testObject));
+			Debug.Log(Mithril.JsonTranslator.Encode(_testWindow));
+			Debug.Log(Mithril.JsonTranslator.Encode(_testGraph));
+			Debug.Log(Mithril.JsonTranslator.Encode(_testNode));
 
 			/**	<<==  ASSERT   ==>>	**/
 

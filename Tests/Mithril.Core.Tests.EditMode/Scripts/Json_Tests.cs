@@ -127,7 +127,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -143,7 +143,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -159,7 +159,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -176,7 +176,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -193,7 +193,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -210,7 +210,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -227,7 +227,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -244,7 +244,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		#endregion
@@ -270,7 +270,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -287,7 +287,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -304,7 +304,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -321,7 +321,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -338,7 +338,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -355,7 +355,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -375,7 +375,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -384,8 +384,8 @@ namespace Mithril.Tests.Json
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = "[" +
-				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}," +
-				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":10.5}}" +
+				"{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":14}}," +
+				"{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":10.5}}" +
 				"]";
 			var __object = new Pizza[]{
 				new Pizza() { diameter = 14f },
@@ -398,7 +398,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -407,9 +407,9 @@ namespace Mithril.Tests.Json
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = "[" +
-				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}," +
-				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(DeepDish).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":10.5,\"greasiness\":7}}," +
-				"{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":12}}" +
+				"{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":14}}," +
+				"{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(DeepDish).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":10.5,\"greasiness\":7}}," +
+				"{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":12}}" +
 				"]";
 			var __object = new Pizza[]{
 				new ThinPizza() { diameter = 14f },
@@ -423,7 +423,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 	}
 	#endregion
@@ -445,7 +445,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -453,7 +453,7 @@ namespace Mithril.Tests.Json
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __expected = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":14}}";
+			var __expected = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":14}}";
 			var __object = new Pizza() { diameter = 14f };
 
 			/**	<<==  ACT      ==>>	**/
@@ -462,7 +462,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 
 		[Test]
@@ -471,7 +471,7 @@ namespace Mithril.Tests.Json
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __pizza = new Pizza() { diameter = 14f };
-			var __expected = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(PizzaBox).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{" + $"\"pizzaMirror\":{Mithril.Json.Encode(__pizza)}" + "}}";
+			var __expected = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(PizzaBox).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{" + $"\"pizzaMirror\":{Mithril.JsonTranslator.Encode(__pizza)}" + "}}";
 
 			var __object = new PizzaBox() { pizzaMirror = new Mirror(__pizza) };
 
@@ -481,7 +481,24 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Encode(__object));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
+		}
+
+		[Test]
+		public void IsEncodedWithCustomDictionary_Rect()
+		{
+			/**	<<==  ARRANGE  ==>>	**/
+
+			var __expected = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(UnityEngine.Rect).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"x\":10,\"y\":20,\"w\":30,\"h\":40}}";
+			var __object = new UnityEngine.Rect(10, 20, 30, 40);
+
+			/**	<<==  ACT      ==>>	**/
+
+
+
+			/**	<<==  ASSERT   ==>>	**/
+
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Encode(__object));
 		}
 	}
 
@@ -504,7 +521,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.IsNull(Mithril.Json.Decode<object>(__json));
+			Assert.IsNull(Mithril.JsonTranslator.Decode<object>(__json));
 		}
 
 		[Test]
@@ -520,7 +537,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<bool>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<bool>(__json));
 		}
 
 		[Test]
@@ -537,7 +554,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<int>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<int>(__json));
 		}
 
 		[Test]
@@ -554,7 +571,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<int>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<int>(__json));
 		}
 
 		[Test]
@@ -571,7 +588,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<float>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<float>(__json));
 		}
 
 		[Test]
@@ -587,7 +604,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<int>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.JsonTranslator.Decode<int>(__json); });
 		}
 
 		[Test]
@@ -600,7 +617,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ACT      ==>>	**/
 
-			var __result = Mithril.Json.Decode<EToppinType>(__json);
+			var __result = Mithril.JsonTranslator.Decode<EToppinType>(__json);
 
 
 			/**	<<==  ASSERT   ==>>	**/
@@ -623,7 +640,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<string>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<string>(__json));
 		}
 
 		[Test]
@@ -640,7 +657,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<string>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<string>(__json));
 		}
 
 		[Test]
@@ -656,7 +673,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.JsonTranslator.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -672,7 +689,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.JsonTranslator.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -688,7 +705,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.JsonTranslator.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -704,7 +721,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.JsonTranslator.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -720,7 +737,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { Mithril.Json.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { Mithril.JsonTranslator.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -740,7 +757,7 @@ namespace Mithril.Tests.Json
 
 			Assert.DoesNotThrow(() =>
 				    {
-					    __result = Mithril.Json.Decode<string>(__json);
+					    __result = Mithril.JsonTranslator.Decode<string>(__json);
 					    Assert.AreEqual(__expected, __result);
 				    });
 		}
@@ -762,7 +779,7 @@ namespace Mithril.Tests.Json
 
 			Assert.DoesNotThrow(() =>
 				    {
-					    __result = Mithril.Json.Decode<string>(__json);
+					    __result = Mithril.JsonTranslator.Decode<string>(__json);
 					    Assert.AreEqual(__expected, __result);
 				    });
 		}
@@ -781,7 +798,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<FormatException>(() => { __result = Mithril.Json.Decode<string>(__json); });
+			Assert.Throws<FormatException>(() => { __result = Mithril.JsonTranslator.Decode<string>(__json); });
 		}
 
 		[Test]
@@ -798,7 +815,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<char>(__json));
 		}
 
 		[Test]
@@ -815,7 +832,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<char>(__json));
 		}
 
 		[Test]
@@ -832,7 +849,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<char>(__json));
 		}
 
 		[Test]
@@ -849,7 +866,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<char>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<char>(__json));
 		}
 
 	}
@@ -873,7 +890,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<object[]>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<object[]>(__json));
 		}
 
 		[Test]
@@ -890,7 +907,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<int[]>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<int[]>(__json));
 		}
 
 		[Test]
@@ -907,7 +924,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<int[]>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<int[]>(__json));
 		}
 
 		[Test]
@@ -924,7 +941,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<List<object>>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<List<object>>(__json));
 		}
 
 		[Test]
@@ -941,7 +958,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<List<int>>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<List<int>>(__json));
 		}
 
 		[Test]
@@ -958,7 +975,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode<HashSet<string>>(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<HashSet<string>>(__json));
 		}
 
 		[Test]
@@ -974,7 +991,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<NotImplementedException>(() => { Mithril.Json.Decode<Hashtable>(__json); });
+			Assert.Throws<NotImplementedException>(() => { Mithril.JsonTranslator.Decode<Hashtable>(__json); });
 		}
 	}
 
@@ -997,7 +1014,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected.GetType(), Mithril.Json.Decode(__json).GetType());
+			Assert.AreEqual(__expected.GetType(), Mithril.JsonTranslator.Decode(__json).GetType());
 		}
 
 		[Test]
@@ -1040,7 +1057,7 @@ namespace Mithril.Tests.Json
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = new Pizza() { diameter = 27f };
-			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":27}}";
+			var __json = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":27}}";
 
 			/**	<<==  ACT      ==>>	**/
 
@@ -1048,7 +1065,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode(__json));
 		}
 
 		[Test]
@@ -1056,7 +1073,7 @@ namespace Mithril.Tests.Json
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":27}," + "\"BACON\":\"GREASE\"" + "}";
+			var __json = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(Pizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":27}," + "\"BACON\":\"GREASE\"" + "}";
 
 			/**	<<==  ACT      ==>>	**/
 
@@ -1064,9 +1081,9 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<Mithril.Json.WrapperDecodeException>(() =>
+			Assert.Throws<Mithril.JsonTranslator.WrapperDecodeException>(() =>
 				    {
-					    Mithril.Json.Decode(__json);
+					    Mithril.JsonTranslator.Decode(__json);
 				    });
 		}
 
@@ -1075,7 +1092,7 @@ namespace Mithril.Tests.Json
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{\"diameter\":27}}";
+			var __json = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(ThinPizza).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"diameter\":27}}";
 
 
 			/**	<<==  ACT      ==>>	**/
@@ -1086,7 +1103,7 @@ namespace Mithril.Tests.Json
 
 			Assert.Throws<InvalidCastException>(() =>
 				    {
-					    Mithril.Json.Decode<DeepDish>(__json);
+					    Mithril.JsonTranslator.Decode<DeepDish>(__json);
 				    });
 		}
 
@@ -1118,7 +1135,7 @@ namespace Mithril.Tests.Json
 
 			var __expected = new PizzaBox() { pizzaMirror = new Mirror(__pizza) };
 
-			var __json = "{" + $"\"{Mithril.Json.TYPE_LABEL}\":\"{typeof(PizzaBox).AssemblyQualifiedName}\",\"{Mithril.Json.DATA_LABEL}\":" + "{" + $"\"pizzaMirror\":{Mithril.Json.Encode(__pizza)}" + "}}";
+			var __json = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(PizzaBox).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{" + $"\"pizzaMirror\":{Mithril.JsonTranslator.Encode(__pizza)}" + "}}";
 
 			/**	<<==  ACT      ==>>	**/
 
@@ -1126,7 +1143,24 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.AreEqual(__expected, Mithril.Json.Decode(__json));
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode(__json));
+		}
+
+		[Test]
+		public void IsDecodedAsRect_CustomJson()
+		{
+			/**	<<==  ARRANGE  ==>>	**/
+
+			var __expected = new UnityEngine.Rect(10, 20, 30, 40);
+			var __json = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(UnityEngine.Rect).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"x\":10,\"y\":20,\"w\":30,\"h\":40}}";
+
+			/**	<<==  ACT      ==>>	**/
+
+
+
+			/**	<<==  ASSERT   ==>>	**/
+
+			Assert.AreEqual(__expected, Mithril.JsonTranslator.Decode<UnityEngine.Rect>(__json));
 		}
 	}
 

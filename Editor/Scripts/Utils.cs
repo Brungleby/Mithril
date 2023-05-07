@@ -148,14 +148,6 @@ namespace Mithril.Editor
 			AssetDatabase.Refresh();
 		}
 
-		public static void SaveAssetSerialized<T>(T obj)
-		where T : ScriptableObject
-		{
-			SaveAsset(obj);
-
-			Serialization.EncodeToFile(obj, false);
-		}
-
 		// public static void SaveAssetAtFilePath(UnityEngine.Object obj, string path, bool warnIfExisting = true)
 		// {
 		// 	var __path = AssetDatabase.GetAssetPath(obj);
