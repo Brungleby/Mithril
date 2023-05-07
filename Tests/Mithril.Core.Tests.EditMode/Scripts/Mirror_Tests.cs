@@ -19,7 +19,7 @@ namespace Mithril.Tests.Graph
 
 	public class Mirror_Tests
 	{
-		private static readonly string TEST_OBJECT_PATH = "Assets/Mithril/Mithril.Core/Tests/Mithril.Core.Tests.EditMode/Resources/Something.asset";
+		private static readonly string TEST_OBJECT_PATH = "Assets/Mithril/Mithril.Core/Tests/Mithril.Core.Tests.EditMode/Resources/New Test Editable Object.asset";
 
 		private TestEditableObject _testObject;
 		private TestNodeGraphWindow _testWindow;

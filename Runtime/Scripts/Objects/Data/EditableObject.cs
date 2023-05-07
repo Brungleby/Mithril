@@ -58,21 +58,21 @@ namespace Mithril
 
 				var __target = (EditableObject)target;
 
-				// /** <<============================================================>> **/
-				// /**	Display Debug Print Button
-				// */
+				/** <<============================================================>> **/
+				/**	Display Debug Print Button
+				*/
 
-				// var currentEvent = Event.current;
-				// if (currentEvent.alt)
-				// {
-				// 	if (GUILayout.Button("Copy JSON"))
-				// 		GUIUtility.systemCopyBuffer = __target.mirror.ToString();
-				// }
-				// else
-				// {
-				// 	if (GUILayout.Button("Print JSON"))
-				// 		Debug.Log(__target.mirror.ToString());
-				// }
+				var currentEvent = Event.current;
+				if (currentEvent.alt)
+				{
+					if (GUILayout.Button("Copy JSON"))
+						GUIUtility.systemCopyBuffer = __target.mirror.ToString();
+				}
+				else
+				{
+					if (GUILayout.Button("Print JSON"))
+						Debug.Log(__target.mirror.ToString());
+				}
 
 				/** <<============================================================>> **/
 				/**	Display Editors
@@ -155,6 +155,8 @@ namespace Mithril
 
 		private bool _isBeingModifiedInInspector = false;
 
+		private bool _isEnabled = false;
+
 #if UNITY_EDITOR
 #if !UNITY_INCLUDE_TESTS
 		private InstantiableWindow _currentlyOpenEditor;
@@ -187,11 +189,26 @@ namespace Mithril
 		#endregion
 		#region Methods
 
+		#region Construction
+
+		protected virtual void OnEnable()
+		{
+			_isEnabled = true;
+
+			LoadMirror();
+		}
+
+		protected virtual void OnDisable()
+		{
+			_isEnabled = false;
+		}
+
+		#endregion
 		#region ISerializationCallbackReceiver
 
 		public virtual void OnAfterDeserialize()
 		{
-			if (!_isBeingModifiedInInspector)
+			if (_isEnabled && !_isBeingModifiedInInspector)
 				LoadMirror();
 
 			_isBeingModifiedInInspector = false;
@@ -199,7 +216,7 @@ namespace Mithril
 
 		public virtual void OnBeforeSerialize()
 		{
-			if (!_isBeingModifiedInInspector)
+			if (_isEnabled && !_isBeingModifiedInInspector)
 				SaveMirror();
 		}
 

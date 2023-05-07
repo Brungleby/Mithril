@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: New Test Editable Object
   m_EditorClassIdentifier: 
   _mirror:
-    _mirrorFields:
-    - _name: _isAutosaved
-      _json: false
-  _isAutosaved: 0
+    _json: '{"TYPE":"Mithril.Tests.TestEditableObject, Mithril.Core.Tests.EditMode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":{"TYPE":"UnityEngine.Vector2,
+      UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"x":0,"y":0}},"nodes":[],"edges":[]}}'
+  _currentlyOpenEditor: {fileID: 0}
+  _isAutosaved: 1
+  viewPosition: {x: 0, y: 0}
+  nodes: []
+  edges: []

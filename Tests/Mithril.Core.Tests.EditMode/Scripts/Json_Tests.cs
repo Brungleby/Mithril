@@ -1081,7 +1081,7 @@ namespace Mithril.Tests.Json
 
 			/**	<<==  ASSERT   ==>>	**/
 
-			Assert.Throws<Mithril.JsonTranslator.WrapperDecodeException>(() =>
+			Assert.Throws<Mithril.JsonTranslator.DecodeWrapperException>(() =>
 				    {
 					    Mithril.JsonTranslator.Decode(__json);
 				    });

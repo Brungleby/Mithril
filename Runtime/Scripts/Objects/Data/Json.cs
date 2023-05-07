@@ -31,23 +31,50 @@ namespace Mithril
 	public sealed class JsonTranslator : object
 	{
 		#region Inners
+		#region Exceptions
+
+		#region TranslationException
 
 		[System.Serializable]
-		public class WrapperDecodeException : TranslationException
+		public class TranslationException : System.Exception
 		{
-			public WrapperDecodeException() { }
-			public WrapperDecodeException(string message) : base(message) { }
-			public WrapperDecodeException(string message, System.Exception inner) : base(message, inner) { }
-			private WrapperDecodeException(
+			public TranslationException() { }
+			public TranslationException(string message) : base(message) { }
+			public TranslationException(string message, System.Exception inner) : base(message, inner) { }
+			protected TranslationException(
 				System.Runtime.Serialization.SerializationInfo info,
 				System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 		}
+
+		[System.Serializable]
+		public class DecodeException : TranslationException
+		{
+			public DecodeException(string json) : base($"The following JSON string failed to decode:\n{json}") { }
+
+			// public DecodeException() { }
+			// public DecodeException(string message) : base(message) { }
+			// public DecodeException(string message, System.Exception inner) : base(message, inner) { }
+			// protected DecodeException(
+			// 	System.Runtime.Serialization.SerializationInfo info,
+			// 	System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+		}
+
+		[System.Serializable]
+		public class DecodeWrapperException : DecodeException
+		{
+			public DecodeWrapperException(string json) : base($"The following JSON string does not properly represent an object value because its wrapper fields are missing or incorrect:\n{json}") { }
+		}
+
+		#endregion
+
+		#endregion
 
 		#endregion
 		#region Data
 
 		#region Static
 
+		public readonly static string NULL = "null";
 #if UNITY_INCLUDE_TESTS
 		public readonly static string TYPE_LABEL = "TYPE";
 		public readonly static string DATA_LABEL = "DATA";
@@ -55,7 +82,6 @@ namespace Mithril
 		private readonly static string TYPE_LABEL = "TYPE";
 		private readonly static string DATA_LABEL = "DATA";
 #endif
-		private readonly static string NULL_ENCODED = "null";
 
 		private readonly static char[] JSON_ESCAPE_CHARS = new char[] { '\"', '\\', /*'\0',*/ /*'\a',*/ '\b', '\f', '\n', '\r', '\t', /*'\v'*/ };
 
@@ -110,44 +136,34 @@ namespace Mithril
 
 		private object DecodeInternal(Type type, in string json)
 		{
-			try
-			{
-				if (RepresentsNull(json))
-					return null;
+			if (RepresentsNull(json))
+				return null;
 
-				if (typeof(Mirror) == type)
-					return DecodeMirror(json);
+			if (typeof(Mirror) == type)
+				return DecodeMirror(json);
 
-				if (typeof(string) == type)
-					return DecodeString(json);
+			if (typeof(string) == type)
+				return DecodeString(json);
 
-				if (typeof(char) == type)
-					return DecodeChar(json);
+			if (typeof(char) == type)
+				return DecodeChar(json);
 
-				if (type.IsEnum)
-					return DecodeEnum(type, json);
+			if (type.IsEnum)
+				return DecodeEnum(type, json);
 
-				if (type.IsPrimitive)
-					return DecodePrimitive(type, json);
+			if (type.IsPrimitive)
+				return DecodePrimitive(type, json);
 
-				if (IsEncodedAsJsonArray(type))
-					return DecodeEnumerable(type, json);
+			if (IsEncodedAsJsonArray(type))
+				return DecodeEnumerable(type, json);
 
-				return DecodeObject(type, json);
-			}
-			catch (Exception e)
-			{
-#if !UNITY_INCLUDE_TESTS
-				UnityEngine.Debug.LogWarning($"The following JSON string failed to decode: {json}");
-#endif
-				throw e;
-			}
+			return DecodeObject(type, json);
 		}
 
 		private string EncodeInternal(object obj)
 		{
 			if (obj == null)
-				return NULL_ENCODED;
+				return NULL;
 
 			var __type = obj.GetType();
 
@@ -340,7 +356,7 @@ namespace Mithril
 
 		private static bool RepresentsNull(in string json)
 		{
-			return json == NULL_ENCODED || string.IsNullOrEmpty(json);
+			return json == NULL || string.IsNullOrEmpty(json);
 		}
 
 		private static object DecodeEnum(Type type, in string json)
@@ -636,7 +652,7 @@ namespace Mithril
 				return new object();
 
 			if (__wrapperFields.Length != 2)
-				throw new WrapperDecodeException($"The following JSON string does not properly represent an object value because its wrapper fields are missing or incorrect:\n\"{json}\"");
+				throw new DecodeWrapperException(json);
 
 			/** <<============================================================>> **/
 
@@ -652,7 +668,7 @@ namespace Mithril
 
 			foreach (var iPair in __objectFieldPairs)
 			{
-				var iField = __objectType.GetField(iPair.Item1);
+				var iField = __objectType.GetSerializableField(iPair.Item1);
 				var iValue = DecodeInternal(iField.FieldType, iPair.Item2);
 
 				iField.SetValue(__result, iValue);
@@ -683,7 +699,6 @@ namespace Mithril
 
 			return EncodeObject(obj, EncodeFields(obj));
 		}
-
 
 		private string EncodeObject(object obj, in string json)
 		{
@@ -780,24 +795,6 @@ namespace Mithril
 
 		#endregion
 	}
-	#endregion
-	#region Exceptions
-
-	#region TranslationException
-
-	[System.Serializable]
-	public class TranslationException : System.Exception
-	{
-		public TranslationException() { }
-		public TranslationException(string message) : base(message) { }
-		public TranslationException(string message, System.Exception inner) : base(message, inner) { }
-		protected TranslationException(
-			System.Runtime.Serialization.SerializationInfo info,
-			System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-	}
-
-	#endregion
-
 	#endregion
 	#region Extensions
 
