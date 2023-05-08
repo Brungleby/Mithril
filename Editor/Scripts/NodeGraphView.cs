@@ -156,6 +156,43 @@ namespace Mithril.Editor
 				}
 		}
 
+		// protected override void PullObjectToWindow(EditableObject data)
+		// {
+		// 	var __data = (NodeGraphData)data;
+
+		// 	/** <<============================================================>> **/
+
+		// 	_graph.SetViewPosition(__data.viewPosition);
+		// 	_graph.CreatePredefinedNodes();
+
+		// 	/** <<============================================================>> **/
+
+		// 	var __nodes = __data.nodes.ToList();
+		// 	var __predefinedNodes = GetPredefinedNodes();
+
+		// 	/** <<============================================================>> **/
+
+		// 	if (__nodes.Any())
+		// 		foreach (var iPredefinedNode in __predefinedNodes)
+		// 		{
+		// 			var iMatchingPredefinedNodeData = __nodes
+		// 				.Where(i => i.isPredefined && i.title == iPredefinedNode.title)
+		// 				.First()
+		// 			;
+
+		// 			iPredefinedNode.guid = iMatchingPredefinedNodeData.guid;
+		// 			iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.rect);
+		// 		}
+
+		// 	foreach (var iNode in __nodes.Where(i => !i.isPredefined))
+		// 		_graph.CreateNewNode(iNode);
+
+		// 	/** <<============================================================>> **/
+
+		// 	foreach (var iEdge in __data.edges)
+		// 		_graph.CreateEdge(iEdge);
+		// }
+
 		#endregion
 		#region Overrides
 

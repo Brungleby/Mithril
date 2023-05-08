@@ -88,6 +88,31 @@ namespace Mithril.Editor
 		}
 
 		#endregion
+		#region UIElements
+
+		public static readonly Color SEPARATOR_COLOR = new Color(0.15f, 0.15f, 0.15f);
+		public static readonly float SEPARATOR_MARGIN = 3f;
+
+		/// <summary>
+		/// Creates and returns a new Toolbar separator element.
+		///</summary>
+
+		public static VisualElement newToolbarSeparator
+		{
+			get
+			{
+				var __result = new Box();
+
+				// __result.style.width = 1f;
+				__result.style.height = new StyleLength(StyleKeyword.Auto);
+				__result.style.backgroundColor = SEPARATOR_COLOR;
+				__result.style.marginLeft = __result.style.marginRight = SEPARATOR_MARGIN;
+
+				return __result;
+			}
+		}
+
+		#endregion
 
 		public static void AssertObject(object o, string message)
 		{

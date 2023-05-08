@@ -58,23 +58,38 @@ namespace Mithril.Editor
 			.ToList()
 		;
 
-		#region Setup
+		/** <<============================================================>> **/
 
-		protected override void CreateVisualElements()
+		protected override void SetupVisualElements()
 		{
 			_graph = System.Activator.CreateInstance<TGraphView>();
 			_graph.name = "New Custom Node Graph View";
 			rootVisualElement.Add(_graph);
 
-			base.CreateVisualElements();
+			base.SetupVisualElements();
 		}
 
-		public override void InitializeForWorkObject()
+		protected override void TeardownVisualElements()
 		{
-			InitializeGraphView(_graph);
+			if (_graph != null)
+				rootVisualElement.Remove(_graph);
 		}
 
-		protected virtual void InitializeGraphView(TGraphView graph)
+		/** <<============================================================>> **/
+
+		public override void OnSetupForWorkObject()
+		{
+			SetupGraphView(_graph);
+		}
+
+		protected override void OnBeforeSaveWorkObject()
+		{
+			((NodeGraphData)workObject).UpdateFromGraphView(graph);
+		}
+
+		/** <<============================================================>> **/
+
+		protected virtual void SetupGraphView(TGraphView graph)
 		{
 			graph.name = "Basic Node Graph View";
 
@@ -83,63 +98,7 @@ namespace Mithril.Editor
 			graph.onModified.AddListener(NotifyIsModified);
 		}
 
-		protected override void DisposeVisualElements()
-		{
-			if (_graph != null)
-				rootVisualElement.Remove(_graph);
-		}
-
+		/** <<============================================================>> **/
 		#endregion
-
-		public override void SoftSave()
-		{
-			((NodeGraphData)workObject).UpdateFromGraphView(graph);
-
-			base.SoftSave();
-		}
-
-		// protected override void PullObjectToWindow(EditableObject data)
-		// {
-		// 	var __data = (NodeGraphData)data;
-
-		// 	/** <<============================================================>> **/
-
-		// 	_graph.SetViewPosition(__data.viewPosition);
-		// 	_graph.CreatePredefinedNodes();
-
-		// 	/** <<============================================================>> **/
-
-		// 	var __nodes = __data.nodes.ToList();
-		// 	var __predefinedNodes = GetPredefinedNodes();
-
-		// 	/** <<============================================================>> **/
-
-		// 	if (__nodes.Any())
-		// 		foreach (var iPredefinedNode in __predefinedNodes)
-		// 		{
-		// 			var iMatchingPredefinedNodeData = __nodes
-		// 				.Where(i => i.isPredefined && i.title == iPredefinedNode.title)
-		// 				.First()
-		// 			;
-
-		// 			iPredefinedNode.guid = iMatchingPredefinedNodeData.guid;
-		// 			iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.rect);
-		// 		}
-
-		// 	foreach (var iNode in __nodes.Where(i => !i.isPredefined))
-		// 		_graph.CreateNewNode(iNode);
-
-		// 	/** <<============================================================>> **/
-
-		// 	foreach (var iEdge in __data.edges)
-		// 		_graph.CreateEdge(iEdge);
-		// }
-
-		#endregion
-	}
-
-	public class ForgeNodeWindow : NodeGraphWindow<NodeGraphView>
-	{
-
 	}
 }

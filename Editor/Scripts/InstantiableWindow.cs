@@ -26,15 +26,9 @@ using UnityEditor.UIElements;
 namespace Mithril.Editor
 {
 	/// <summary>
-	/// __TODO_ANNOTATE__
+	/// EditorWindow used for modifying <see cref="EditableObject"/>s.
+	/// Each instance of this window is assigned to a corresponding <see cref="workObject"/>.
 	///</summary>
-
-	public enum ModifierKeys
-	{
-		Control = 1,
-		Alt = 2,
-		Shift = 4,
-	}
 
 	public abstract class InstantiableWindow : EditorWindow
 	{
@@ -109,18 +103,30 @@ namespace Mithril.Editor
 		#endregion
 		#region Data
 
-		readonly static public string DEFAULT_ICON_PATH =
+		public readonly static string DEFAULT_ICON_PATH =
 			"Assets/Mithril/Mithril.Core/Editor/Resources/Textures/Icon_Diamond.png";
 
-		readonly static public float TOOLBAR_TOGGLE_PADDING_TOP =
+		public readonly static float TOOLBAR_TOGGLE_PADDING_TOP =
 			1f;
-		readonly static public float TOOLBAR_PADDING_LEFT =
+		public readonly static float TOOLBAR_PADDING_LEFT =
 			3f;
 
 		#region
 
+		/// <summary>
+		/// Object which is currently being worked on in this window.
+		///</summary>
+
 		private EditableObject _workObject;
+
+		/// <inheritdoc cref="_workObject"/>
+
 		public EditableObject workObject => _workObject;
+
+		/// <summary>
+		/// Slightly more involved representation of <see cref="hasUnsavedChanges"/>.
+		/// Setting this value to true if <see cref="workObject"/> has autosaving enabled will automaticaly save the object and reset the value to false.
+		///</summary>
 
 		public bool isModified
 		{
@@ -135,7 +141,6 @@ namespace Mithril.Editor
 				}
 
 				hasUnsavedChanges = value;
-				base.hasUnsavedChanges = value;
 			}
 		}
 
@@ -150,26 +155,33 @@ namespace Mithril.Editor
 		#endregion
 		#region Properties
 
+		/// <summary>
+		/// The path of the icon image to display at the top of the file.
+		///</summary>
+
 		public virtual string iconPath =>
 			DEFAULT_ICON_PATH;
 
+		/// <summary>
+		/// Short-hand for whether or not the current <see cref="workObject"/> has autosaving enabled.
+		///</summary>
+
 		public bool isAutosaved =>
 			_workObject.isAutosaved;
-
 
 		#endregion
 		#region Methods
 
 		protected virtual void OnEnable()
 		{
-			CreateVisualElements();
+			SetupVisualElements();
 		}
 
 		protected virtual void OnDisable()
 		{
-			DisposeVisualElements();
+			TeardownVisualElements();
 
-			/**	Ensures the workObject's file/mirror is saved properly.
+			/**	Ensures the workObject's file is saved.
 			*/
 			if (isAutosaved)
 				HardSave();
@@ -225,10 +237,10 @@ namespace Mithril.Editor
 
 		private void Initialize(EditableObject obj)
 		{
-			AssertObjectWindowCompatible(obj);
+			AssertCompatibleWith(obj);
 
 			_workObject = obj;
-			InitializeForWorkObject();
+			OnSetupForWorkObject();
 
 			Utils.InitializeWindowHeader(this, obj.fileName, iconPath);
 			isModified = false;
@@ -239,7 +251,11 @@ namespace Mithril.Editor
 			OnGUI();
 		}
 
-		public virtual void InitializeForWorkObject() { }
+		/// <summary>
+		/// Override this method to set up this object. Called during <see cref="Initialize"/>.
+		///</summary>
+
+		public virtual void OnSetupForWorkObject() { }
 
 		/// <summary>
 		/// Loads the given <paramref name="filePath"/> as a <see cref="EditableObject"/> into the view(s) of this <see cref="InstantiableWindow"/>.
@@ -254,23 +270,31 @@ namespace Mithril.Editor
 		#endregion
 		#region Setup
 
-		protected virtual void CreateVisualElements()
+		/// <summary>
+		/// Initializes editor-only visual elements including the toolbar and working area.
+		///</summary>
+
+		protected virtual void SetupVisualElements()
 		{
 			_toolbar = new Toolbar();
-			InitializeToolbar(_toolbar);
+			SetupToolbar(_toolbar);
 			rootVisualElement.Add(_toolbar);
 
 			rootVisualElement.style.paddingTop = _toolbar.style.height;
 		}
 
-		protected virtual void InitializeToolbar(Toolbar toolbar)
+		/// <summary>
+		/// Initializes the toolbar. Called during <see cref="SetupVisualElements"/>.
+		///</summary>
+
+		protected virtual void SetupToolbar(Toolbar toolbar)
 		{
 			toolbar.style.paddingLeft = TOOLBAR_PADDING_LEFT;
 
 			/** <<============================================================>> **/
 
 			_saveButtonElement = new SaveButton(
-				() => SoftSave()
+				() => SaveChanges()
 			)
 			{
 				text = "Save Asset"
@@ -287,11 +311,28 @@ namespace Mithril.Editor
 				_autosaveToggleElement.value = _workObject.isAutosaved;
 
 			toolbar.Add(_autosaveToggleElement);
+
+			/** <<============================================================>> **/
+
+			toolbar.Add(Utils.newToolbarSeparator);
+
+			/** <<============================================================>> **/
 		}
 
-		protected virtual void DisposeVisualElements() { }
+		/// <summary>
+		/// Discard any editor-only visual elements.
+		///</summary>
+
+		protected virtual void TeardownVisualElements() { }
+
+		/** <<============================================================>> **/
 
 		protected virtual void OnGUI()
+		{
+			RefreshToolbar();
+		}
+
+		protected virtual void RefreshToolbar()
 		{
 			RefreshSaveElements();
 		}
@@ -303,13 +344,13 @@ namespace Mithril.Editor
 			_saveButtonElement.isUnlocked = !_workObject.isAutosaved;
 
 			if (_autosaveToggleElement.value && __shouldSaveOnToggleValueChange)
-				SoftSave();
+				HardSave();
 		}
 
-		private void AssertObjectWindowCompatible(EditableObject obj)
+		private void AssertCompatibleWith(EditableObject obj)
 		{
 			if (!obj.compatibleEditorWindows.Contains(GetType()))
-				throw new NotSupportedException($"{obj.name} ({obj.GetType()}) cannot be opened with this type of EditorWindow ({GetType()}).");
+				throw new NotSupportedException($"{obj.name} ({obj.GetType()}) cannot be opened with this type of EditorWindow ({GetType()}). To edit this object here, add this window type to {obj.GetType()}'s {nameof(obj.compatibleEditorWindows)}.");
 		}
 
 		#endregion
@@ -320,35 +361,53 @@ namespace Mithril.Editor
 			HardSave();
 		}
 
+		/// <summary>
+		/// Saves the <see cref="workObject"/>'s mirror and file. Suitable for occasional calls, i.e. when closing the window.
+		///</summary>
+
 		public void HardSave()
 		{
+			OnBeforeSaveWorkObject();
+
 			_workObject.Save();
 
 			isModified = false;
 		}
 
-		public virtual void SoftSave()
+		/// <summary>
+		/// Saves the <see cref="workObject"/>'s mirror ONLY. Suitable for frequent calls, i.e. while autosaving.
+		///</summary>
+
+		public void SoftSave()
 		{
+			OnBeforeSaveWorkObject();
+
 			/**	SaveMirror() is faster than Save() because it doesn't refresh the database.
 			*	Save() must be called before closing Unity, or the mirror won't persist.
 			*/
-			if (_workObject.isAutosaved)
-				_workObject.SaveMirror();
-			else
-				_workObject.Save();
+			_workObject.SaveMirror();
 
 			isModified = false;
 		}
 
+		/// <summary>
+		/// Override this method to finish preparing the <see cref="workObject"/> for saving. Called before both <see cref="HardSave"/> and <see cref="SoftSave"/>.
+		///</summary>
+
+		protected virtual void OnBeforeSaveWorkObject() { }
+
+		/// <summary>
+		/// Call this function any time a significant action is performed. If autosaving is enabled, it will perform a <see cref="SoftSave"/>. If it is disabled, it will update the header to display that.
+		///</summary>
+
 		protected void NotifyIsModified()
 		{
-			Debug.Log("OnModified triggered");
-
+			// Debug.Log("OnModified triggered");
 			isModified = true;
 		}
 
 		private string GetSaveChangesMessage(EditableObject obj) =>
-			$"{obj.name} has unsaved changes. What would you like to do?";
+			$"{obj.name} has unsaved changes.";
 
 		#endregion
 
