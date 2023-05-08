@@ -79,6 +79,7 @@ namespace Mithril.Editor
 				}
 			}
 
+
 			public override bool isUnlocked
 			{
 				get => base.isUnlocked && !_isSaving;
@@ -96,10 +97,12 @@ namespace Mithril.Editor
 
 			private void RefreshText()
 			{
-				text = _isSaving ? TEXT_INPROGRESS :
-					isUnlocked ? TEXT_MANUAL :
-					TEXT_AUTOMATIC
-				;
+				if (_isSaving)
+					text = TEXT_INPROGRESS;
+				else if (!isUnlocked)
+					text = TEXT_AUTOMATIC;
+				else
+					text = TEXT_MANUAL;
 			}
 		}
 
@@ -119,21 +122,20 @@ namespace Mithril.Editor
 		private EditableObject _workObject;
 		public EditableObject workObject => _workObject;
 
-		private bool _isModified;
 		public bool isModified
 		{
 			get =>
-				_isModified && !_workObject.isAutosaved;
+				hasUnsavedChanges && !_workObject.isAutosaved;
 			private set
 			{
 				if (value && _workObject.isAutosaved)
 				{
-					Save();
+					SoftSave();
 					return;
 				}
 
-				_isModified = value;
-				RefreshTitleText();
+				hasUnsavedChanges = value;
+				base.hasUnsavedChanges = value;
 			}
 		}
 
@@ -154,6 +156,7 @@ namespace Mithril.Editor
 		public bool isAutosaved =>
 			_workObject.isAutosaved;
 
+
 		#endregion
 		#region Methods
 
@@ -165,6 +168,11 @@ namespace Mithril.Editor
 		protected virtual void OnDisable()
 		{
 			DisposeVisualElements();
+
+			/**	Ensures the workObject's file/mirror is saved properly.
+			*/
+			if (isAutosaved)
+				HardSave();
 		}
 
 		#region Instantiation
@@ -226,6 +234,8 @@ namespace Mithril.Editor
 			isModified = false;
 
 			_autosaveToggleElement.value = _workObject.isAutosaved;
+			saveChangesMessage = GetSaveChangesMessage(obj);
+
 			OnGUI();
 		}
 
@@ -260,7 +270,7 @@ namespace Mithril.Editor
 			/** <<============================================================>> **/
 
 			_saveButtonElement = new SaveButton(
-				() => Save()
+				() => SoftSave()
 			)
 			{
 				text = "Save Asset"
@@ -288,15 +298,12 @@ namespace Mithril.Editor
 
 		private void RefreshSaveElements()
 		{
+			var __shouldSaveOnToggleValueChange = _workObject.isAutosaved != _autosaveToggleElement.value;
 			_workObject.isAutosaved = _autosaveToggleElement.value;
-
 			_saveButtonElement.isUnlocked = !_workObject.isAutosaved;
 
-		}
-
-		private void RefreshTitleText()
-		{
-			titleContent.text = _workObject.fileName + (isModified ? "*" : "");
+			if (_autosaveToggleElement.value && __shouldSaveOnToggleValueChange)
+				SoftSave();
 		}
 
 		private void AssertObjectWindowCompatible(EditableObject obj)
@@ -308,33 +315,40 @@ namespace Mithril.Editor
 		#endregion
 		#region Save/Load
 
-		public virtual void Save()
+		public override void SaveChanges()
+		{
+			HardSave();
+		}
+
+		public void HardSave()
 		{
 			_workObject.Save();
 
 			isModified = false;
 		}
 
+		public virtual void SoftSave()
+		{
+			/**	SaveMirror() is faster than Save() because it doesn't refresh the database.
+			*	Save() must be called before closing Unity, or the mirror won't persist.
+			*/
+			if (_workObject.isAutosaved)
+				_workObject.SaveMirror();
+			else
+				_workObject.Save();
+
+			isModified = false;
+		}
+
 		protected void NotifyIsModified()
 		{
+			Debug.Log("OnModified triggered");
+
 			isModified = true;
 		}
 
-		// /// <summary>
-		// /// Updates the given <paramref name="data"/> using the "hot" data inside this window.
-		// ///</summary>
-
-		// protected abstract void PushChangesToObject(ref ForgeObject data);
-		// private void PushChangesToObject() =>
-		// 	PushChangesToObject(ref _editObject);
-
-		// /// <summary>
-		// /// Pulls the given <paramref name="data"/> and initializes this window using its "cold" data.
-		// ///</summary>
-
-		// protected abstract void PullObjectToWindow(ForgeObject data);
-		// private void PullObjectToWindow() =>
-		// 	PullObjectToWindow(_editObject);
+		private string GetSaveChangesMessage(EditableObject obj) =>
+			$"{obj.name} has unsaved changes. What would you like to do?";
 
 		#endregion
 

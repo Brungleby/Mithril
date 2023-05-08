@@ -91,11 +91,11 @@ namespace Mithril.Editor
 
 		#endregion
 
-		public override void Save()
+		public override void SoftSave()
 		{
 			((NodeGraphData)workObject).UpdateFromGraphView(graph);
 
-			base.Save();
+			base.SoftSave();
 		}
 
 		// protected override void PullObjectToWindow(EditableObject data)

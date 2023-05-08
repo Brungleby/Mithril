@@ -68,6 +68,9 @@ namespace Mithril.Editor
 		/**	Local Data
 		*/
 
+		private bool _isBeingHandledByUser = false;
+		public bool isBeingHandledByUser => _isBeingHandledByUser;
+
 		/** <<============================================================>> **/
 		/**	Properties
 		*/
@@ -109,11 +112,8 @@ namespace Mithril.Editor
 		{
 			this.guid = Guid.GenerateNew();
 			this.title = defaultName;
-		}
 
-		public Node(Mirror mirror)
-		{
-
+			RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
 		}
 
 		public virtual void Init(NodeData data)
@@ -154,7 +154,7 @@ namespace Mithril.Editor
 		#endregion
 		#region Notifies
 
-
+		protected virtual void OnGeometryChangedEvent(GeometryChangedEvent context) { }
 
 		#endregion
 

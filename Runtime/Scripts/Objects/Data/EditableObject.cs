@@ -173,6 +173,9 @@ namespace Mithril
 			get => _isAutosaved;
 			set => _isAutosaved = value;
 		}
+
+		private double _whenSaved;
+		public double whenSaved => _whenSaved;
 #endif
 
 		#endregion
@@ -239,6 +242,7 @@ namespace Mithril
 
 		public virtual void SaveMirror()
 		{
+			_whenSaved = EditorApplication.timeSinceStartup;
 			_mirror = new Mirror(this);
 		}
 

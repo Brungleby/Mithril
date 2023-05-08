@@ -116,6 +116,7 @@ namespace Mithril.Editor
 			// this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
 
 			nodeCreationRequest += OnNodeCreation;
+			graphViewChanged += OnGraphViewChanged;
 
 			deleteSelection += OnDelete;
 			unserializeAndPaste += OnPaste;
@@ -184,9 +185,13 @@ namespace Mithril.Editor
 
 		}
 
-		private void OnNodeGeometryChanged(GeometryChangedEvent context)
+		private GraphViewChange OnGraphViewChanged(GraphViewChange context)
 		{
-			Debug.Log($"{((Node)context.target).title} geometry changed.");
+			// Debug.Log($"Graph view changed;");
+
+			onModified.Invoke();
+
+			return context;
 		}
 
 		#endregion
@@ -229,8 +234,6 @@ namespace Mithril.Editor
 
 			AddElement(node);
 			node.RefreshAll();
-
-			node.RegisterCallback<GeometryChangedEvent>(OnNodeGeometryChanged);
 
 			if (invokeOnModified)
 				onModified.Invoke();
@@ -339,7 +342,7 @@ namespace Mithril.Editor
 
 			// foreach (var iNodeData in clipboard.nodeData)
 			// {
-			// 	var iNode = CreateNewNode(iNodeData, true);
+			// 	var iNode = CreateNewNode(iNodeData, false);
 			// 	iNode.SetPositionOnly(iNodeData.rect.position + __deltaPosition);
 
 			// 	__nodes.Add(iNode);
@@ -371,6 +374,10 @@ namespace Mithril.Editor
 			// __newSelection.AddRange(__edges);
 
 			// this.SetSelection(__newSelection);
+
+			bool anythingHappened = false;
+			if (anythingHappened)
+				onModified.Invoke();
 		}
 
 		private void OnDelete(string operationName, AskUser askUser)
@@ -392,11 +399,15 @@ namespace Mithril.Editor
 			}
 
 			DeleteElements(__toRemove);
+
+			// var __anythingHappened = __toRemove.Count > 0;
+			// if (__anythingHappened)
+			// 	onModified.Invoke();
 		}
 
 		public void ClearAllNodes()
 		{
-			var __nodes = nodes.Cast<Node>();
+			var __nodes = nodes.Cast<Node>().ToList();
 			foreach (var iNode in __nodes)
 			{
 				if (iNode != null)
@@ -410,6 +421,10 @@ namespace Mithril.Editor
 
 				RemoveElement(iNode);
 			}
+
+			var __anythingHappened = __nodes.Count > 0;
+			if (__anythingHappened)
+				onModified.Invoke();
 		}
 
 		public void ClearAllNodes_WithPrompt()
