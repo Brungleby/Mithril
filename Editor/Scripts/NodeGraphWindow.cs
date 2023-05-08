@@ -64,17 +64,21 @@ namespace Mithril.Editor
 		{
 			_graph = System.Activator.CreateInstance<TGraphView>();
 			_graph.name = "New Custom Node Graph View";
-			InitializeGraphView(_graph);
 			rootVisualElement.Add(_graph);
 
 			base.CreateVisualElements();
+		}
+
+		public override void InitializeForWorkObject()
+		{
+			InitializeGraphView(_graph);
 		}
 
 		protected virtual void InitializeGraphView(TGraphView graph)
 		{
 			graph.name = "Basic Node Graph View";
 
-
+			graph.InitFromGraphData((NodeGraphData)workObject);
 
 			graph.onModified.AddListener(NotifyIsModified);
 		}
@@ -87,16 +91,12 @@ namespace Mithril.Editor
 
 		#endregion
 
-		// protected override void PushChangesToObject(ref EditableObject data)
-		// {
-		// 	var __data = (NodeGraphData)data;
+		public override void Save()
+		{
+			((NodeGraphData)workObject).UpdateFromGraphView(graph);
 
-		// 	__data.viewPosition = _graph.viewTransform.position;
-		// 	__data.CompileNodes(GetAllNodes());
-		// 	__data.CompileEdges(GetEdges());
-
-		// 	data = __data;
-		// }
+			base.Save();
+		}
 
 		// protected override void PullObjectToWindow(EditableObject data)
 		// {

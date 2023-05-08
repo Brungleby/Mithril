@@ -115,6 +115,8 @@ namespace Mithril.Editor
 			this.AddManipulator(new RectangleSelector());
 			// this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
 
+			nodeCreationRequest += OnNodeCreation;
+
 			deleteSelection += OnDelete;
 			unserializeAndPaste += OnPaste;
 			serializeGraphElements += OnCopy;
@@ -136,17 +138,24 @@ namespace Mithril.Editor
 
 		public void InitFromGraphData(NodeGraphData data)
 		{
-			// /** <<============================================================>> **/
+			/** <<============================================================>> **/
+			//
+			SetViewPosition(data.viewPosition);
 
-			// foreach (var iNodeMirror in data.nodeMirrors)
-			// {
-			// 	var __node = (Node)Mirror.ConstructFrom(iNodeMirror);
-			// 	AddNodeToView(__node);
-			// }
+			/** <<============================================================>> **/
+			/**	Nodes
+			*/
+
+			if (data != null)
+				foreach (var iNodeMirror in data.nodeMirrors)
+				{
+					var __node = iNodeMirror.GetReflection<Node>();
+					__node.OnAfterDeserialize();
+					AddNodeToView(__node);
+				}
 		}
 
 		#endregion
-
 		#region Overrides
 
 		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -168,6 +177,20 @@ namespace Mithril.Editor
 		}
 
 		#endregion
+		#region Notifies
+
+		private void OnNodeCreation(NodeCreationContext context)
+		{
+
+		}
+
+		private void OnNodeGeometryChanged(GeometryChangedEvent context)
+		{
+			Debug.Log($"{((Node)context.target).title} geometry changed.");
+		}
+
+		#endregion
+
 		#region Context Menu
 
 		private void _CreateContextMenu(ContextualMenuPopulateEvent context)
@@ -207,6 +230,8 @@ namespace Mithril.Editor
 			AddElement(node);
 			node.RefreshAll();
 
+			node.RegisterCallback<GeometryChangedEvent>(OnNodeGeometryChanged);
+
 			if (invokeOnModified)
 				onModified.Invoke();
 		}
@@ -215,12 +240,11 @@ namespace Mithril.Editor
 		{
 			var __node = (Node)Activator.CreateInstance(type);
 
-
 			if (title != null)
 				__node.title = title;
 
 			__node.guid = guid;
-			__node.SetPositionOnly(rect.position);
+			__node.SetPosition(rect);
 
 			AddNodeToView(__node);
 

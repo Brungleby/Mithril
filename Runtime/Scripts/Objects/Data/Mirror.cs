@@ -43,7 +43,7 @@ namespace Mithril
 		#region Construction
 
 		private Mirror(string json) =>
-			_json = json ?? JsonTranslator.NULL;
+			_json = json;
 		public Mirror(object obj) =>
 			SetReflectionFrom(obj);
 
@@ -105,7 +105,7 @@ namespace Mithril
 			JsonTranslator.Decode<T>(_json);
 
 		public void SetReflectionFrom(object obj) =>
-			_json = JsonTranslator.Encode(obj) ?? JsonTranslator.NULL;
+			_json = JsonTranslator.Encode(obj);
 
 		public void ApplyReflectionTo(object obj) =>
 			CopySerializableFieldValues(GetReflection(), obj);

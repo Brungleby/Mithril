@@ -165,7 +165,6 @@ namespace Mithril
 		[HideInInspector]
 		public InstantiableWindow _currentlyOpenEditor;
 #endif
-
 		[SerializeField]
 		[HideInInspector]
 		private bool _isAutosaved = true;
@@ -240,7 +239,7 @@ namespace Mithril
 
 		public virtual void SaveMirror()
 		{
-			_mirror.SetReflectionFrom(this);
+			_mirror = new Mirror(this);
 		}
 
 		#endregion

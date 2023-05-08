@@ -32,6 +32,10 @@ namespace Mithril.Editor
 	{
 		#region Data
 
+		/** <<============================================================>> **/
+		/**	Static Data
+		*/
+
 		public static readonly float DEFAULT_NODE_WIDTH = 150f;
 		public static readonly float NODE_HEADER_HEIGHT = 50f;
 		public static readonly float NODE_PORT_HEIGHT = 25f;
@@ -43,9 +47,14 @@ namespace Mithril.Editor
 		);
 
 		/** <<============================================================>> **/
+		/**	Mirrored Data
+		*/
 
 		[SerializeField]
 		private string _title;
+
+		[SerializeField]
+		private Rect _rect;
 
 		[SerializeField]
 		public Guid guid;
@@ -56,6 +65,12 @@ namespace Mithril.Editor
 		private UnityEvent onModified;
 
 		/** <<============================================================>> **/
+		/**	Local Data
+		*/
+
+		/** <<============================================================>> **/
+		/**	Properties
+		*/
 
 		public virtual string defaultName => "New Custom Node";
 		public virtual Orientation defaultOrientation => Orientation.Horizontal;
@@ -127,12 +142,19 @@ namespace Mithril.Editor
 		public void OnAfterDeserialize()
 		{
 			title = _title;
+			SetPosition(_rect);
 		}
 
 		public void OnBeforeSerialize()
 		{
 			_title = title;
+			_rect = GetPosition();
 		}
+
+		#endregion
+		#region Notifies
+
+
 
 		#endregion
 

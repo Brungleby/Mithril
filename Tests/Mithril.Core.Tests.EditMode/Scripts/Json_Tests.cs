@@ -489,7 +489,7 @@ namespace Mithril.Tests.Json
 		{
 			/**	<<==  ARRANGE  ==>>	**/
 
-			var __expected = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(UnityEngine.Rect).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"x\":10,\"y\":20,\"w\":30,\"h\":40}}";
+			var __expected = "{\"x\":10,\"y\":20,\"w\":30,\"h\":40}";
 			var __object = new UnityEngine.Rect(10, 20, 30, 40);
 
 			/**	<<==  ACT      ==>>	**/
@@ -1152,7 +1152,7 @@ namespace Mithril.Tests.Json
 			/**	<<==  ARRANGE  ==>>	**/
 
 			var __expected = new UnityEngine.Rect(10, 20, 30, 40);
-			var __json = "{" + $"\"{Mithril.JsonTranslator.TYPE_LABEL}\":\"{typeof(UnityEngine.Rect).AssemblyQualifiedName}\",\"{Mithril.JsonTranslator.DATA_LABEL}\":" + "{\"x\":10,\"y\":20,\"w\":30,\"h\":40}}";
+			var __json = "{\"x\":10,\"y\":20,\"w\":30,\"h\":40}";
 
 			/**	<<==  ACT      ==>>	**/
 

@@ -126,8 +126,13 @@ namespace Mithril.Editor
 				_isModified && !_workObject.isAutosaved;
 			private set
 			{
-				_isModified = value;
+				if (value && _workObject.isAutosaved)
+				{
+					Save();
+					return;
+				}
 
+				_isModified = value;
 				RefreshTitleText();
 			}
 		}
@@ -195,7 +200,7 @@ namespace Mithril.Editor
 			*/
 
 			var __window = (InstantiableWindow)EditorWindow.CreateInstance(type);
-			__window.Open(obj);
+			__window.Initialize(obj);
 
 			return __window;
 		}
@@ -210,11 +215,12 @@ namespace Mithril.Editor
 		/// Loads the given <paramref name="obj"/> into the view(s) of this <see cref="InstantiableWindow"/>.
 		///</summary>
 
-		public void Open(EditableObject obj)
+		private void Initialize(EditableObject obj)
 		{
 			AssertObjectWindowCompatible(obj);
 
 			_workObject = obj;
+			InitializeForWorkObject();
 
 			Utils.InitializeWindowHeader(this, obj.fileName, iconPath);
 			isModified = false;
@@ -223,6 +229,8 @@ namespace Mithril.Editor
 			OnGUI();
 		}
 
+		public virtual void InitializeForWorkObject() { }
+
 		/// <summary>
 		/// Loads the given <paramref name="filePath"/> as a <see cref="EditableObject"/> into the view(s) of this <see cref="InstantiableWindow"/>.
 		///</summary>
@@ -230,7 +238,7 @@ namespace Mithril.Editor
 		public void Open(string filePath)
 		{
 			var __loadedObject = AssetDatabase.LoadAssetAtPath<EditableObject>(filePath);
-			Open(__loadedObject);
+			Initialize(__loadedObject);
 		}
 
 		#endregion
@@ -300,9 +308,9 @@ namespace Mithril.Editor
 		#endregion
 		#region Save/Load
 
-		public void Save()
+		public virtual void Save()
 		{
-			_workObject.SaveMirror();
+			_workObject.Save();
 
 			isModified = false;
 		}

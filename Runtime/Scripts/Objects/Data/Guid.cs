@@ -9,9 +9,6 @@
 
 #region Includes
 
-using System.Collections;
-using System.Collections.Generic;
-
 using UnityEngine;
 using UnityEditor;
 
@@ -32,6 +29,7 @@ namespace Mithril
 
 		[SerializeField]
 		private string _guid;
+		public string guid => _guid;
 
 		#endregion
 
@@ -83,6 +81,7 @@ namespace Mithril
 			!a.Equals(b);
 
 		#endregion
+		#region Fundamentals
 
 		public override bool Equals(object obj) =>
 			_guid.Equals(((Guid)obj)._guid);
@@ -92,6 +91,8 @@ namespace Mithril
 
 		public override string ToString() =>
 			_guid.ToString();
+
+		#endregion
 
 		#endregion
 	}

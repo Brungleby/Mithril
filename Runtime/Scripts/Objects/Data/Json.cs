@@ -85,8 +85,8 @@ namespace Mithril
 
 		private readonly static char[] JSON_ESCAPE_CHARS = new char[] { '\"', '\\', /*'\0',*/ /*'\a',*/ '\b', '\f', '\n', '\r', '\t', /*'\v'*/ };
 
-		private readonly ReadOnlyDictionary<Type, Func<Type, string, object>> DECODE_METHODS_BY_TYPE;
-		private readonly ReadOnlyDictionary<Type, Func<Type, object, string>> ENCODE_METHODS_BY_TYPE;
+		private readonly ReadOnlyDictionary<Type, Func<string, object>> DECODE_METHODS_BY_TYPE;
+		private readonly ReadOnlyDictionary<Type, Func<object, string>> ENCODE_METHODS_BY_TYPE;
 
 		#endregion
 		#region Members
@@ -103,13 +103,21 @@ namespace Mithril
 
 		private JsonTranslator()
 		{
-			DECODE_METHODS_BY_TYPE = new ReadOnlyDictionary<Type, Func<Type, string, object>>(new Dictionary<Type, Func<Type, string, object>>
+			DECODE_METHODS_BY_TYPE = new ReadOnlyDictionary<Type, Func<string, object>>(new Dictionary<Type, Func<string, object>>
 			{
-				{ typeof(Rect), DecodeRect }
+				{ typeof(Vector2), DecodeVector2 },
+				{ typeof(Vector3), DecodeVector3 },
+				{ typeof(Rect), DecodeRect },
+				{ typeof(Guid), DecodeGuid },
+				{ typeof(Mirror), DecodeMirror }
 			});
-			ENCODE_METHODS_BY_TYPE = new ReadOnlyDictionary<Type, Func<Type, object, string>>(new Dictionary<Type, Func<Type, object, string>>
+			ENCODE_METHODS_BY_TYPE = new ReadOnlyDictionary<Type, Func<object, string>>(new Dictionary<Type, Func<object, string>>
 			{
-				{ typeof(Rect), EncodeRect }
+				{ typeof(Vector2), EncodeVector2 },
+				{ typeof(Vector3), EncodeVector3 },
+				{ typeof(Rect), EncodeRect },
+				{ typeof(Guid), EncodeGuid },
+				{ typeof(Mirror), EncodeMirror }
 			});
 		}
 
@@ -122,25 +130,25 @@ namespace Mithril
 		#region Public
 
 		public static object Decode(in string json) =>
-			new JsonTranslator().DecodeInternal(typeof(object), json);
+			new JsonTranslator().DecodeAny(typeof(object), json);
 		public static object Decode(Type type, in string json) =>
-			new JsonTranslator().DecodeInternal(type, json);
+			new JsonTranslator().DecodeAny(type, json);
 		public static T Decode<T>(in string json) =>
-			(T)new JsonTranslator().DecodeInternal(typeof(T), json);
+			(T)new JsonTranslator().DecodeAny(typeof(T), json);
 
 		public static string Encode(object obj) =>
-			new JsonTranslator().EncodeInternal(obj);
+			new JsonTranslator().EncodeAny(obj);
 
 		#endregion
 		#region Macro
 
-		private object DecodeInternal(Type type, in string json)
+		public object DecodeAny(Type type, in string json)
 		{
 			if (RepresentsNull(json))
 				return null;
 
-			if (typeof(Mirror) == type)
-				return DecodeMirror(json);
+			if (DECODE_METHODS_BY_TYPE.TryGetValue(type, out var __m_decodeCustom))
+				return __m_decodeCustom.Invoke(json);
 
 			if (typeof(string) == type)
 				return DecodeString(json);
@@ -159,16 +167,18 @@ namespace Mithril
 
 			return DecodeObject(type, json);
 		}
+		public T DecodeAny<T>(in string json) =>
+			(T)DecodeAny(typeof(T), json);
 
-		private string EncodeInternal(object obj)
+		public string EncodeAny(object obj)
 		{
 			if (obj == null)
 				return NULL;
 
 			var __type = obj.GetType();
 
-			if (typeof(Mirror) == __type)
-				return EncodeMirror(obj);
+			if (ENCODE_METHODS_BY_TYPE.TryGetValue(__type, out var __m_encodeCustom))
+				return __m_encodeCustom.Invoke(obj);
 
 			if (typeof(string) == __type)
 				return EncodeString((string)obj);
@@ -295,16 +305,16 @@ namespace Mithril
 		#endregion
 		#region Encode String Arithmetic
 
-		private string SPACE =>
+		public string SPACE =>
 			_prettyPrint ? " " : string.Empty;
 
-		private string BLANKLINE =>
+		public string BLANKLINE =>
 			_prettyPrint ? "\n" : string.Empty;
 
-		private string NEWLINE =>
+		public string NEWLINE =>
 			_prettyPrint ? BLANKLINE + TAB : string.Empty;
 
-		private string TAB
+		public string TAB
 		{
 			get
 			{
@@ -317,7 +327,7 @@ namespace Mithril
 			}
 		}
 
-		private string INDENT_LINE
+		public string INDENT_LINE
 		{
 			get
 			{
@@ -326,7 +336,7 @@ namespace Mithril
 			}
 		}
 
-		private string OUTDENT_LINE
+		public string OUTDENT_LINE
 		{
 			get
 			{
@@ -335,19 +345,19 @@ namespace Mithril
 			}
 		}
 
-		private string OPEN_BRACE =>
+		public string OPEN_BRACE =>
 			"{" + INDENT_LINE;
 
-		private string CLOSE_BRACE =>
+		public string CLOSE_BRACE =>
 			OUTDENT_LINE + "}";
 
-		private string OPEN_BRACKET =>
+		public string OPEN_BRACKET =>
 			"[" + INDENT_LINE;
 
-		private string CLOSE_BRACKET =>
+		public string CLOSE_BRACKET =>
 			OUTDENT_LINE + "]";
 
-		private string ITERATE =>
+		public string ITERATE =>
 			"," + NEWLINE;
 
 		#endregion
@@ -600,7 +610,7 @@ namespace Mithril
 			var __result = Array.CreateInstance(elementType, __elementStrings.Length);
 
 			for (var i = 0; i < __result.Length; i++)
-				__result.SetValue(DecodeInternal(elementType, __elementStrings[i]), i);
+				__result.SetValue(DecodeAny(elementType, __elementStrings[i]), i);
 
 			return __result;
 		}
@@ -633,7 +643,7 @@ namespace Mithril
 				else
 					__isFirstIteration = false;
 
-				__result += EncodeInternal(i);
+				__result += EncodeAny(i);
 			}
 
 			return __result + CLOSE_BRACKET;
@@ -659,9 +669,6 @@ namespace Mithril
 			var __objectType = DecodeType(__wrapperFields[0].Item2);
 			var __objectData = __wrapperFields[1].Item2;
 
-			if (DECODE_METHODS_BY_TYPE.TryGetValue(__objectType, out var __m_decodeCustom))
-				return __m_decodeCustom.Invoke(__objectType, __objectData);
-
 			var __objectFieldPairs = UnwrapFieldPairs(__objectData);
 
 			var __result = CreateInstance(__objectType);
@@ -669,7 +676,7 @@ namespace Mithril
 			foreach (var iPair in __objectFieldPairs)
 			{
 				var iField = __objectType.GetSerializableField(iPair.Item1);
-				var iValue = DecodeInternal(iField.FieldType, iPair.Item2);
+				var iValue = DecodeAny(iField.FieldType, iPair.Item2);
 
 				iField.SetValue(__result, iValue);
 			}
@@ -682,8 +689,8 @@ namespace Mithril
 			return Type.GetType(Unwrap(json, '\"'));
 		}
 
-		private object DecodeCustom(Type type, in string json, Func<Type, string, object> __m_decodeMethod) =>
-			__m_decodeMethod.Invoke(type, json);
+		private object DecodeCustom(in string json, Func<string, object> __m_decodeMethod) =>
+			__m_decodeMethod.Invoke(json);
 
 		private object CreateInstance(Type type)
 		{
@@ -694,9 +701,6 @@ namespace Mithril
 
 		private string EncodeObject(object obj)
 		{
-			if (ENCODE_METHODS_BY_TYPE.TryGetValue(obj.GetType(), out var __m_encodeCustom))
-				return EncodeCustom(obj.GetType(), obj, __m_encodeCustom);
-
 			return EncodeObject(obj, EncodeFields(obj));
 		}
 
@@ -739,55 +743,110 @@ namespace Mithril
 
 				var __fieldName = iField.Name;
 				var __fieldValue = iField.GetValue(obj);
-				__result += $"\"{__fieldName}\":{SPACE}{EncodeInternal(__fieldValue)}";
+				__result += $"\"{__fieldName}\":{SPACE}{EncodeAny(__fieldValue)}";
 			}
 
 			return __result + CLOSE_BRACE;
 		}
 
-		private string EncodeCustom(Type type, object obj, Func<Type, object, string> __m_encodeMethod) =>
-			EncodeObject(obj, __m_encodeMethod.Invoke(type, obj));
-
-		#endregion
-		#region Mirror
-
-		private static string EncodeMirror(object obj) =>
-			((Mirror)obj).json;
-
-		private static Mirror DecodeMirror(string json) =>
-			Mirror.CreateFromJsonDirect(json);
+		private string EncodeCustom(object obj, Func<object, string> __m_encodeMethod) =>
+			__m_encodeMethod.Invoke(obj);
 
 		#endregion
 
 		#region Miscellaneous
 
-		#region Rect
+		#region Guid
 
-		private object DecodeRect(Type type, string json)
+		public object DecodeGuid(string json) =>
+			new Guid(DecodeString(json));
+
+		public string EncodeGuid(object obj) =>
+			EncodeString(((Guid)obj).guid);
+
+		#endregion
+		#region Vector, Rect
+
+		private object DecodeVector2(string json)
 		{
-			var __objectFieldPairs = UnwrapFieldPairs(json);
+			var __elements = UnwrapArray(json);
 
-			var x = Decode<float>(__objectFieldPairs[0].Item2);
-			var y = Decode<float>(__objectFieldPairs[1].Item2);
-			var w = Decode<float>(__objectFieldPairs[2].Item2);
-			var h = Decode<float>(__objectFieldPairs[3].Item2);
+			var x = Decode<float>(__elements[0]);
+			var y = Decode<float>(__elements[1]);
+
+			return new Vector2(x, y);
+		}
+
+		private string EncodeVector2(object obj)
+		{
+			var __vector = (Vector2)obj;
+
+			var __result = OPEN_BRACKET;
+
+			__result += Encode(__vector.x) + ITERATE;
+			__result += Encode(__vector.y);
+
+			return __result + CLOSE_BRACKET;
+		}
+
+		private object DecodeVector3(string json)
+		{
+			var __elements = UnwrapArray(json);
+
+			var x = Decode<float>(__elements[0]);
+			var y = Decode<float>(__elements[1]);
+			var z = Decode<float>(__elements[2]);
+
+			return new Vector3(x, y, z);
+		}
+
+		private string EncodeVector3(object obj)
+		{
+			var __vector = (Vector3)obj;
+
+			var __result = OPEN_BRACKET;
+
+			__result += Encode(__vector.x) + ITERATE;
+			__result += Encode(__vector.y) + ITERATE;
+			__result += Encode(__vector.z);
+
+			return __result + CLOSE_BRACKET;
+		}
+
+		private object DecodeRect(string json)
+		{
+			var __elements = UnwrapArray(json);
+
+			var x = Decode<float>(__elements[0]);
+			var y = Decode<float>(__elements[1]);
+			var w = Decode<float>(__elements[2]);
+			var h = Decode<float>(__elements[3]);
 
 			return new Rect(x, y, w, h);
 		}
 
-		private string EncodeRect(Type type, object obj)
+		private string EncodeRect(object obj)
 		{
 			var __rect = (Rect)obj;
 
-			var __result = OPEN_BRACE;
+			var __result = OPEN_BRACKET;
 
-			__result += $"\"x\":{Encode(__rect.x)}" + ITERATE;
-			__result += $"\"y\":{Encode(__rect.y)}" + ITERATE;
-			__result += $"\"w\":{Encode(__rect.width)}" + ITERATE;
-			__result += $"\"h\":{Encode(__rect.height)}";
+			__result += Encode(__rect.x) + ITERATE;
+			__result += Encode(__rect.y) + ITERATE;
+			__result += Encode(__rect.width) + ITERATE;
+			__result += Encode(__rect.height);
 
-			return __result + CLOSE_BRACE;
+			return __result + CLOSE_BRACKET;
 		}
+
+		#endregion
+		#region Mirror
+
+		private static Mirror DecodeMirror(string json) =>
+			Mirror.CreateFromJsonDirect(json);
+
+		private static string EncodeMirror(object obj) =>
+			((Mirror)obj).json;
 
 		#endregion
 

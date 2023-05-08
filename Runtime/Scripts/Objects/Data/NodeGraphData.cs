@@ -55,15 +55,46 @@ namespace Mithril
 		*	or none at all.
 		*/
 
+		[SerializeField]
 		[HideInInspector]
 		public Vector2 viewPosition;
 #endif
+		[SerializeField]
+		[HideInInspector]
+		private Mirror[] _nodeMirrors = new Mirror[0];
+		public Mirror[] nodeMirrors => _nodeMirrors;
 
 		public NodeData[] nodes = new NodeData[0];
 		public EdgeData[] edges = new EdgeData[0];
 
 		#endregion
 		#region Methods
+
+		#region Setup / Teardown
+
+		public void UpdateFromGraphView(NodeGraphView graphView)
+		{
+			/** <<============================================================>> **/
+
+			viewPosition = graphView.viewTransform.position;
+
+			/** <<============================================================>> **/
+			/**	Nodes
+			*/
+
+			var __nodes = graphView.nodes.Cast<Node>();
+
+			var __nodeMirrorList = new List<Mirror>();
+			foreach (var iNode in __nodes)
+			{
+				iNode.OnBeforeSerialize();
+				__nodeMirrorList.Add(new Mirror(iNode));
+			}
+
+			_nodeMirrors = __nodeMirrorList.ToArray();
+		}
+
+		#endregion
 
 		// public override object Clone()
 		// {
@@ -75,17 +106,12 @@ namespace Mithril
 		// 	return that;
 		// }
 
-		public void SaveFromGraphView(NodeGraphView graphView)
+		public override void Save()
 		{
-			var __nodes = graphView.nodes.Cast<Node>();
+			// if (_currentlyOpenEditor is NodeGraphWindow<NodeGraphView> __window)
+			// 	UpdateFromGraphView(__window.graph);
 
-			var __nodeMirrorList = new List<Mirror>();
-			foreach (var iNode in __nodes)
-			{
-				__nodeMirrorList.Add(new Mirror(iNode));
-			}
-
-			// nodeMirrors = __nodeMirrorList.ToArray();
+			base.Save();
 		}
 
 #if UNITY_EDITOR
