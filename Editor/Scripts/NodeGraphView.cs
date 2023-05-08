@@ -79,7 +79,7 @@ namespace Mithril.Editor
 			this.AddManipulator(new RectangleSelector());
 			// this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
 
-			nodeCreationRequest += OnNodeCreation;
+			// nodeCreationRequest += OnNodeCreation;
 			graphViewChanged += OnGraphViewChanged;
 
 			deleteSelection += OnDelete;
@@ -139,10 +139,10 @@ namespace Mithril.Editor
 		#endregion
 		#region Notifies
 
-		private void OnNodeCreation(NodeCreationContext context)
-		{
+		// private void OnNodeCreation(NodeCreationContext context)
+		// {
 
-		}
+		// }
 
 		private GraphViewChange OnGraphViewChanged(GraphViewChange context)
 		{
@@ -164,7 +164,7 @@ namespace Mithril.Editor
 		{
 			context.menu.InsertAction(0, "Create Node", (_) =>
 			{
-				// CreateNewNode<CustomNode>("New Node");
+				CreateNewNode<Node>();
 			});
 		}
 
@@ -208,6 +208,9 @@ namespace Mithril.Editor
 
 			return __node;
 		}
+		public T CreateNewNode<T>(Vector2? position = null, bool invokeOnModified = true)
+		where T : Node =>
+			(T)CreateNewNode(typeof(T), position, invokeOnModified);
 
 		public Node CreateNewNodeAtCursor(Type type) =>
 			CreateNewNode(type, mousePosition);
