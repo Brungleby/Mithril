@@ -681,6 +681,9 @@ namespace Mithril
 				iField.SetValue(__result, iValue);
 			}
 
+			if (__result is ISerializationCallbackReceiver __receiver)
+				__receiver.OnAfterDeserialize();
+
 			return __result;
 		}
 
@@ -732,6 +735,9 @@ namespace Mithril
 		{
 			var __result = OPEN_BRACE;
 			var __type = obj.GetType();
+
+			if (obj is ISerializationCallbackReceiver __receiver)
+				__receiver.OnBeforeSerialize();
 
 			var __isFirstIteration = true;
 			foreach (var iField in __type.GetSerializableFields())

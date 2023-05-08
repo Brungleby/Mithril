@@ -154,7 +154,6 @@ namespace Mithril
 		///</summary>
 
 		private bool _isBeingModifiedInInspector = false;
-
 		private bool _isEnabled = false;
 
 #if UNITY_EDITOR
@@ -243,7 +242,10 @@ namespace Mithril
 		public virtual void SaveMirror()
 		{
 			_whenSaved = EditorApplication.timeSinceStartup;
+
+			_isBeingModifiedInInspector = true;
 			_mirror = new Mirror(this);
+			_isBeingModifiedInInspector = false;
 		}
 
 		#endregion

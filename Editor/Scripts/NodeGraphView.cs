@@ -33,42 +33,6 @@ namespace Mithril.Editor
 
 	public class NodeGraphView : GraphView
 	{
-		#region Inner Classes
-
-		[Serializable]
-
-		private struct Clipboard : ISerializable
-		{
-			[SerializeField]
-			public NodeData[] nodeData;
-
-			[SerializeField]
-			public EdgeData[] edgeData;
-
-			[SerializeField]
-			public Vector2 averagePosition;
-
-			public Clipboard(IEnumerable<GraphElement> elements)
-			{
-				var __nodes = new List<NodeData>();
-				var __edges = new List<EdgeData>();
-
-				foreach (var iElement in elements)
-				{
-					if (iElement is Node iNode)
-						__nodes.Add(NodeData.CreateFrom(iNode));
-					else if (iElement is Edge iEdge)
-						__edges.Add(iEdge);
-				}
-
-				nodeData = __nodes.ToArray();
-				edgeData = __edges.ToArray();
-
-				averagePosition = __nodes.Select(i => i.rect.position).Average();
-			}
-		}
-
-		#endregion
 		#region Data
 
 		#region
@@ -131,16 +95,12 @@ namespace Mithril.Editor
 			AddSearchWindow();
 
 			this.StretchToParentSize();
-
-			/**	Didn't work when I tried it
-			*/
-			// FrameAll();
 		}
 
 		public void InitFromGraphData(NodeGraphData data)
 		{
 			/** <<============================================================>> **/
-			//
+
 			SetViewPosition(data.viewPosition);
 
 			/** <<============================================================>> **/
@@ -151,47 +111,9 @@ namespace Mithril.Editor
 				foreach (var iNodeMirror in data.nodeMirrors)
 				{
 					var __node = iNodeMirror.GetReflection<Node>();
-					__node.OnAfterDeserialize();
-					AddNodeToView(__node);
+					SetupNewNode(__node);
 				}
 		}
-
-		// protected override void PullObjectToWindow(EditableObject data)
-		// {
-		// 	var __data = (NodeGraphData)data;
-
-		// 	/** <<============================================================>> **/
-
-		// 	_graph.SetViewPosition(__data.viewPosition);
-		// 	_graph.CreatePredefinedNodes();
-
-		// 	/** <<============================================================>> **/
-
-		// 	var __nodes = __data.nodes.ToList();
-		// 	var __predefinedNodes = GetPredefinedNodes();
-
-		// 	/** <<============================================================>> **/
-
-		// 	if (__nodes.Any())
-		// 		foreach (var iPredefinedNode in __predefinedNodes)
-		// 		{
-		// 			var iMatchingPredefinedNodeData = __nodes
-		// 				.Where(i => i.isPredefined && i.title == iPredefinedNode.title)
-		// 				.First()
-		// 			;
-
-		// 			iPredefinedNode.guid = iMatchingPredefinedNodeData.guid;
-		// 			iPredefinedNode.SetPosition(iMatchingPredefinedNodeData.rect);
-		// 		}
-
-		// 	foreach (var iNode in __nodes.Where(i => !i.isPredefined))
-		// 		_graph.CreateNewNode(iNode);
-
-		// 	/** <<============================================================>> **/
-
-		// 	foreach (var iEdge in __data.edges)
-		// 		_graph.CreateEdge(iEdge);
-		// }
 
 		#endregion
 		#region Overrides
@@ -224,8 +146,6 @@ namespace Mithril.Editor
 
 		private GraphViewChange OnGraphViewChanged(GraphViewChange context)
 		{
-			// Debug.Log($"Graph view changed;");
-
 			onModified.Invoke();
 
 			return context;
@@ -237,8 +157,8 @@ namespace Mithril.Editor
 
 		private void _CreateContextMenu(ContextualMenuPopulateEvent context)
 		{
-			// CreateContextMenu(context);
-			// context.menu.InsertSeparator("/", 1);
+			CreateContextMenu(context);
+			context.menu.InsertSeparator("/", 1);
 		}
 		protected virtual void CreateContextMenu(ContextualMenuPopulateEvent context)
 		{
@@ -265,72 +185,32 @@ namespace Mithril.Editor
 		#endregion
 		#region Creation
 
-		private void AddNodeToView(Node node, bool invokeOnModified = true)
+		private void SetupNewNode(Node node, bool invokeOnModified = true)
 		{
 			node.InitInGraph(this);
 
 			AddElement(node);
+
 			node.RefreshAll();
 
 			if (invokeOnModified)
 				onModified.Invoke();
 		}
 
-		public Node CreateNewNode(Type type, Guid guid, Rect rect, string title = null, bool invokeOnModified = true)
+		public Node CreateNewNode(Type type, Vector2? position = null, bool invokeOnModified = true)
 		{
 			var __node = (Node)Activator.CreateInstance(type);
 
-			if (title != null)
-				__node.title = title;
+			if (position.HasValue)
+				__node.position = position.Value;
 
-			__node.guid = guid;
-			__node.SetPosition(rect);
-
-			AddNodeToView(__node);
+			SetupNewNode(__node, invokeOnModified);
 
 			return __node;
 		}
-		public Node CreateNewNode(Type type, Guid guid) =>
-			CreateNewNode(type, guid, new Rect(Vector2.zero, Node.DEFAULT_NODE_SIZE));
-		public Node CreateNewNode(Type type) =>
-			CreateNewNode(type, Guid.GenerateNew());
 
-		public T CreateNewNode<T>(Guid guid, Rect rect, string title = null, bool invokeOnModified = true)
-		where T : Node, new() =>
-			(T)CreateNewNode(typeof(T), guid, rect, title, invokeOnModified);
-		public T CreateNewNode<T>(Guid guid, string title = null, bool invokeOnModified = true)
-		where T : Node, new() =>
-			CreateNewNode<T>(guid, new Rect(Vector2.zero, Node.DEFAULT_NODE_SIZE), title, invokeOnModified);
-		public T CreateNewNode<T>(string title = null, bool invokeOnModified = true)
-		where T : Node, new() =>
-			CreateNewNode<T>(Guid.GenerateNew(), title, invokeOnModified);
-
-		// public Node CreateNewNode(NodeData data, bool createNewGuid = false) =>
-		// 	CreateNewNode(
-		// 		Type.GetType(data.nodeType),
-		// 		createNewGuid ? Guid.GenerateNew() : data.guid,
-		// 		data.rect, data.title, false
-		// 	)
-		// ;
-		// public Node CreateNewNode<T>(T data, bool createNewGUID = false)
-		// where T : NodeData
-		// {
-		// 	var __node = (Node)Activator.CreateInstance(data.nodeType);
-
-		// 	__node.Init(data);
-		// 	__node.InitInGraph(this);
-
-		// 	AddNodeToView(__node);
-
-		// 	return __node;
-		// }
-
-		public Node CreateNewNodeAtCursor(Type type, Guid guid, Vector2 size, string title = null, bool invokeOnModified = true) =>
-			CreateNewNode(type, guid, new Rect(mousePosition, size), title, invokeOnModified);
-		public Node CreateNewNodeAtCursor(Type type, Guid guid) =>
-			CreateNewNodeAtCursor(type, guid, Node.DEFAULT_NODE_SIZE);
 		public Node CreateNewNodeAtCursor(Type type) =>
-			CreateNewNodeAtCursor(type, Guid.GenerateNew());
+			CreateNewNode(type, mousePosition);
 
 		#endregion
 
@@ -349,44 +229,44 @@ namespace Mithril.Editor
 
 		protected override bool canPaste => true;
 
-		private string OnCopy(IEnumerable<GraphElement> elements)
-		{
-			ISerializable __clipboard = new Clipboard(elements);
-
-			Editor.Clipboard.Copy(__clipboard);
-
-			return GUIUtility.systemCopyBuffer;
-		}
+		private string OnCopy(IEnumerable<GraphElement> elements) =>
+			GUIUtility.systemCopyBuffer = JsonTranslator.Encode(elements);
 
 		private void OnPaste(string operationName, string data)
 		{
-			var __clipboard = Editor.Clipboard.PasteText<Clipboard>(data);
+			GraphElement[] __elements;
 
-			OnPaste(__clipboard);
-		}
+			try
+			{ __elements = JsonTranslator.Decode<GraphElement[]>(data); }
+			catch
+			{ return; }
 
-		private void OnPaste(Clipboard clipboard)
-		{
-			// /** <<============================================================>> **/
+			if (!__elements.Any())
+				return;
 
-			// var __guidLinks = new MapField<Guid, Guid>();
+			/** <<============================================================>> **/
 
-			// /** <<============================================================>> **/
+			var __links = new Dictionary<Guid, Guid>();
 
-			// var __nodes = new List<Node>();
+			/** <<============================================================>> **/
 
-			// var __deltaPosition = mousePosition - clipboard.averagePosition;
+			var __nodes = __elements.Cast<Node>();
 
-			// foreach (var iNodeData in clipboard.nodeData)
-			// {
-			// 	var iNode = CreateNewNode(iNodeData, false);
-			// 	iNode.SetPositionOnly(iNodeData.rect.position + __deltaPosition);
+			var __averagePosition = __nodes.Select(i => i.position).Average();
+			var __deltaMousePosition = mousePosition - __averagePosition;
 
-			// 	__nodes.Add(iNode);
-			// 	__guidLinks.Add((iNodeData.guid, iNode.guid));
-			// }
+			foreach (var iNode in __nodes)
+			{
+				var __guid = Guid.GenerateNew();
+				__links.Add(iNode.guid, __guid);
 
-			// /** <<============================================================>> **/
+				iNode.guid = __guid;
+				iNode.position = iNode.position + __deltaMousePosition;
+
+				SetupNewNode(iNode);
+			}
+
+			/** <<============================================================>> **/
 
 			// var __edges = new List<Edge>();
 
@@ -403,18 +283,16 @@ namespace Mithril.Editor
 			// 	{ continue; }
 			// }
 
-			// /** <<============================================================>> **/
+			/** <<============================================================>> **/
 
-			// var __newSelection = new List<ISelectable>();
+			var __newSelection = new List<ISelectable>();
 
-			// __newSelection.AddRange(__nodes);
+			__newSelection.AddRange(__nodes);
 			// __newSelection.AddRange(__edges);
 
-			// this.SetSelection(__newSelection);
+			this.SetSelection(__newSelection);
 
-			bool anythingHappened = false;
-			if (anythingHappened)
-				onModified.Invoke();
+			onModified.Invoke();
 		}
 
 		private void OnDelete(string operationName, AskUser askUser)
@@ -435,15 +313,17 @@ namespace Mithril.Editor
 				__toRemove.Add(i);
 			}
 
+			if (!__toRemove.Any())
+				return;
+
 			DeleteElements(__toRemove);
 
-			// var __anythingHappened = __toRemove.Count > 0;
-			// if (__anythingHappened)
-			// 	onModified.Invoke();
+			onModified.Invoke();
 		}
 
 		public void ClearAllNodes()
 		{
+			var __toRemove = new List<GraphElement>();
 			var __nodes = nodes.Cast<Node>().ToList();
 			foreach (var iNode in __nodes)
 			{
@@ -454,14 +334,17 @@ namespace Mithril.Editor
 				}
 
 				edges.Where(i => i.input.node == iNode).ToList()
-					.ForEach(iEdge => { RemoveElement(iEdge); });
+					.ForEach(iEdge => { __toRemove.Add(iEdge); });
 
-				RemoveElement(iNode);
+				__toRemove.Add(iNode);
 			}
 
-			var __anythingHappened = __nodes.Count > 0;
-			if (__anythingHappened)
-				onModified.Invoke();
+			if (!__toRemove.Any())
+				return;
+
+			DeleteElements(__toRemove);
+
+			onModified.Invoke();
 		}
 
 		public void ClearAllNodes_WithPrompt()

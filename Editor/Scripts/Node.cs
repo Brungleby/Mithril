@@ -83,10 +83,28 @@ namespace Mithril.Editor
 		);
 		public virtual System.Type DataType => typeof(NodeData);
 
+		public Rect rect
+		{
+			// get => this.GetPosition();
+			// set => this.SetPosition(value);
+			get => new Rect(position, size);
+			set
+			{
+				position = value.position;
+				size = value.size;
+			}
+		}
+
 		public Vector2 position
 		{
-			get => this.GetPositionOnly();
-			set => this.SetPositionOnly(value);
+			// get => this.GetPositionOnly();
+			// set => this.SetPositionOnly(value);
+			get => new Vector2(style.left.value.value, style.top.value.value);
+			set
+			{
+				style.left = value.x;
+				style.top = value.y;
+			}
 		}
 		public Vector2 size
 		{
@@ -110,7 +128,7 @@ namespace Mithril.Editor
 
 		public Node()
 		{
-			this.guid = Guid.GenerateNew();
+			AssignNewGuid();
 			this.title = defaultName;
 
 			RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
@@ -118,9 +136,9 @@ namespace Mithril.Editor
 
 		public virtual void Init(NodeData data)
 		{
-			guid = data.guid;
-			title = data.title ?? defaultName;
-			this.SetPositionOnly(data.rect.position);
+			// guid = data.guid;
+			// title = data.title ?? defaultName;
+			// this.SetPositionOnly(data.rect.position);
 		}
 
 		public virtual void InitInGraph(NodeGraphView graph)
@@ -132,6 +150,15 @@ namespace Mithril.Editor
 			});
 		}
 
+		public void AssignNewGuid() =>
+			guid = Guid.GenerateNew();
+
+		#endregion
+		#region Fundamentals
+
+		public override string ToString() =>
+			$"{title} [{GetType().Name}] : {position}";
+
 		#endregion
 
 		#region ISerializable
@@ -142,13 +169,13 @@ namespace Mithril.Editor
 		public void OnAfterDeserialize()
 		{
 			title = _title;
-			SetPosition(_rect);
+			rect = _rect;
 		}
 
 		public void OnBeforeSerialize()
 		{
 			_title = title;
-			_rect = GetPosition();
+			_rect = rect;
 		}
 
 		#endregion
