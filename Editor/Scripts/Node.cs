@@ -144,10 +144,7 @@ namespace Mithril.Editor
 		public virtual void InitInGraph(NodeGraphView graph)
 		{
 			onModified = new UnityEvent();
-			onModified.AddListener(() =>
-			{
-				graph.onModified.Invoke();
-			});
+			onModified.AddListener(() => { graph.onModified.Invoke(); });
 		}
 
 		public void AssignNewGuid() =>
@@ -166,13 +163,13 @@ namespace Mithril.Editor
 		public string GetSerializedString() =>
 			JsonUtility.ToJson(NodeData.CreateFrom(this));
 
-		public void OnAfterDeserialize()
+		public virtual void OnAfterDeserialize()
 		{
 			title = _title;
 			rect = _rect;
 		}
 
-		public void OnBeforeSerialize()
+		public virtual void OnBeforeSerialize()
 		{
 			_title = title;
 			_rect = rect;
@@ -182,6 +179,9 @@ namespace Mithril.Editor
 		#region Notifies
 
 		protected virtual void OnGeometryChangedEvent(GeometryChangedEvent context) { }
+
+		protected void NotifyIsModified() =>
+			onModified.Invoke();
 
 		#endregion
 

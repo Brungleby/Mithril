@@ -63,8 +63,9 @@ namespace Mithril.Editor
 		protected override void SetupVisualElements()
 		{
 			_graph = System.Activator.CreateInstance<TGraphView>();
-			_graph.name = "New Custom Node Graph View";
-			rootVisualElement.Add(_graph);
+			_graph.onModified.AddListener(NotifyIsModified);
+
+			rootVisualElement.Add(graph);
 
 			base.SetupVisualElements();
 		}
@@ -92,10 +93,7 @@ namespace Mithril.Editor
 		protected virtual void SetupGraphView(TGraphView graph)
 		{
 			graph.name = "Basic Node Graph View";
-
 			graph.InitFromGraphData((NodeGraphData)workObject);
-
-			graph.onModified.AddListener(NotifyIsModified);
 		}
 
 		/** <<============================================================>> **/

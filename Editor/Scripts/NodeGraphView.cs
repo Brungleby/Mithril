@@ -255,6 +255,7 @@ namespace Mithril.Editor
 
 			var __nodes = __elements.Cast<Node>();
 
+
 			var __averagePosition = __nodes.Select(i => i.position).Average();
 			var __deltaMousePosition = mousePosition - __averagePosition;
 

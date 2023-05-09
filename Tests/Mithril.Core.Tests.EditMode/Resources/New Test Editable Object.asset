@@ -14,18 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mirror:
     _json: '{"TYPE":"Mithril.Tests.TestEditableObject, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[6,187],"_nodeMirrors":[{"TYPE":"Mithril.Editor.Node,
-      Mithril.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"New
-      Custom Node","_rect":[75,37,150,50],"guid":"5879d2a76d95fe5479752f0f5edab9e3","isPredefined":false}},{"TYPE":"Mithril.Editor.Node,
-      Mithril.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"New
-      Custom Node","_rect":[337,3,150,50],"guid":"5c47d5852c67f2444a6047366a432476","isPredefined":false}}],"nodes":[],"edges":[]}}'
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":false,"viewPosition":[0,0],"_nodeMirrors":[],"nodes":[],"edges":[]}}'
   _currentlyOpenEditor: {fileID: 0}
-  _isAutosaved: 1
-  viewPosition: {x: 6, y: 187}
-  _nodeMirrors:
-  - _json: '{"TYPE":"Mithril.Editor.Node, Mithril.Core, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null","DATA":{"_title":"New Custom Node","_rect":[75,37,150,50],"guid":"5879d2a76d95fe5479752f0f5edab9e3","isPredefined":false}}'
-  - _json: '{"TYPE":"Mithril.Editor.Node, Mithril.Core, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null","DATA":{"_title":"New Custom Node","_rect":[337,3,150,50],"guid":"5c47d5852c67f2444a6047366a432476","isPredefined":false}}'
+  _isAutosaved: 0
+  viewPosition: {x: 0, y: 0}
+  _nodeMirrors: []
   nodes: []
   edges: []

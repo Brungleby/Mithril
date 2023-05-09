@@ -74,9 +74,17 @@ namespace Mithril.Tests
 
 	public sealed class TestNodeGraphView : NodeGraphView
 	{
-		public TestNodeGraphView() : base()
+		public override List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
 		{
+			var __result = new List<SearchTreeEntry>
+			{
+				new SearchTreeGroupEntry(new GUIContent("Available Nodes"), 0),
 
+				new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(Node) },
+				new SearchTreeEntry(new GUIContent("Test Node")) { level = 1, userData = typeof(TestNode) },
+			};
+
+			return __result;
 		}
 	}
 
@@ -89,16 +97,11 @@ namespace Mithril.Tests
 		public override string defaultName =>
 			"Test Node";
 
-		[SerializeField]
-		private string _message = string.Empty;
-		public string message
-		{
-			get => _message;
-			set => _message = value;
-		}
-
-
 		private TextField _textField;
+
+		[SerializeField]
+		private string _message;
+
 
 		#endregion
 
@@ -107,34 +110,53 @@ namespace Mithril.Tests
 
 		#region
 
-		private void Construct(string message)
+		public TestNode() : base()
 		{
-			_message = message;
+			_message = string.Empty;
 
 			_textField = new TextField(string.Empty);
-			_textField.SetValueWithoutNotify(message);
 			_textField.multiline = true;
+			_textField.SetValueWithoutNotify(string.Empty);
 			_textField.RegisterCallback<ChangeEvent<string>>(OnTextFieldValueChanged);
+			_textField.RegisterCallback<BlurEvent>(OnBlurEvent);
 
 			contentContainer.Add(_textField);
 		}
 
-		public TestNode(string message) : base()
+		public override void OnAfterDeserialize()
 		{
-			Construct(message);
-		}
+			base.OnAfterDeserialize();
 
-		public TestNode()
-		{
-			Construct(string.Empty);
+			if (_textField.text != _message)
+				RefreshMessage();
 		}
 
 		private void OnTextFieldValueChanged(ChangeEvent<string> context)
 		{
-			_message = context.newValue;
-
 			RefreshSize();
 		}
+
+		private void OnBlurEvent(BlurEvent context)
+		{
+			if (_textField.text == _message)
+				return;
+
+			_message = _textField.text;
+
+			NotifyIsModified();
+		}
+
+		public void SetMessage(string message)
+		{
+			_message = message;
+			_textField.SetValueWithoutNotify(message);
+		}
+
+		private void RefreshMessage() =>
+			SetMessage(_message);
+
+		public override string ToString() =>
+			$"{base.ToString()}: \"{_message}\"";
 
 		#endregion
 
