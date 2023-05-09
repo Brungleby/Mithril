@@ -102,6 +102,15 @@ namespace Mithril.Tests
 		[SerializeField]
 		private string _message;
 
+		public string message
+		{
+			get => _textField.text;
+			set
+			{
+				_message = value;
+				_textField.SetValueWithoutNotify(value);
+			}
+		}
 
 		#endregion
 
@@ -127,7 +136,7 @@ namespace Mithril.Tests
 		{
 			base.OnAfterDeserialize();
 
-			if (_textField.text != _message)
+			if (message != _message)
 				RefreshMessage();
 		}
 
@@ -138,22 +147,16 @@ namespace Mithril.Tests
 
 		private void OnBlurEvent(BlurEvent context)
 		{
-			if (_textField.text == _message)
+			if (message == _message)
 				return;
 
-			_message = _textField.text;
+			_message = message;
 
 			NotifyIsModified();
 		}
 
-		public void SetMessage(string message)
-		{
-			_message = message;
-			_textField.SetValueWithoutNotify(message);
-		}
-
 		private void RefreshMessage() =>
-			SetMessage(_message);
+			message = _message;
 
 		public override string ToString() =>
 			$"{base.ToString()}: \"{_message}\"";
