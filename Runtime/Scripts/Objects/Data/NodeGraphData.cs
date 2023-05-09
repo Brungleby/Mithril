@@ -23,20 +23,6 @@ using Node = Mithril.Editor.Node;
 
 namespace Mithril
 {
-	#region SmartNodeData
-
-	public sealed class SmartNodeData : object
-	{
-
-	}
-
-	public sealed class SmartPortData : object
-	{
-
-	}
-
-	#endregion
-
 	#region NodeGraphData
 
 	/// <summary>
@@ -63,9 +49,6 @@ namespace Mithril
 		[HideInInspector]
 		private Mirror[] _nodeMirrors = new Mirror[0];
 		public Mirror[] nodeMirrors => _nodeMirrors;
-
-		public NodeData[] nodes = new NodeData[0];
-		public EdgeData[] edges = new EdgeData[0];
 
 		#endregion
 		#region Methods
@@ -96,47 +79,13 @@ namespace Mithril
 
 		#endregion
 
-		// public override object Clone()
-		// {
-		// 	var that = (NodeGraphData)ScriptableObject.CreateInstance(GetType());
-
-		// 	that.nodes = this.nodes;
-		// 	that.edges = this.edges;
-
-		// 	return that;
-		// }
-
 		public override void Save()
 		{
-			// if (_currentlyOpenEditor is NodeGraphWindow<NodeGraphView> __window)
-			// 	UpdateFromGraphView(__window.graph);
+			if (_currentlyOpenEditor is NodeGraphWindow __window)
+				UpdateFromGraphView(__window.graph);
 
 			base.Save();
 		}
-
-#if UNITY_EDITOR
-		public void CompileNodes(List<Mithril.Editor.Node> nodes)
-		{
-			this.nodes = new NodeData[nodes.Count];
-
-			for (int i = 0; i < this.nodes.Length; i++)
-			{
-				var iNode = nodes[i];
-				this.nodes[i] = NodeData.CreateFrom(iNode);
-			}
-		}
-
-		public void CompileEdges(List<Edge> edges)
-		{
-			this.edges = new EdgeData[edges.Count];
-
-			for (int i = 0; i < this.edges.Length; i++)
-			{
-				var iEdge = edges[i];
-				this.edges[i] = iEdge;
-			}
-		}
-#endif
 
 		#endregion
 	}

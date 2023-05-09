@@ -27,15 +27,15 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class NodeGraphWindow<TGraphView> : InstantiableWindow
-	where TGraphView : NodeGraphView
+	public class NodeGraphWindow : InstantiableWindow
+	// where NodeGraphView : NodeGraphView
 	{
 		#region Data
 
 		#region
 
-		private TGraphView _graph;
-		public TGraphView graph => _graph;
+		private NodeGraphView _graph;
+		public NodeGraphView graph => _graph;
 
 		#endregion
 
@@ -62,7 +62,7 @@ namespace Mithril.Editor
 
 		protected override void SetupVisualElements()
 		{
-			_graph = System.Activator.CreateInstance<TGraphView>();
+			_graph = System.Activator.CreateInstance<NodeGraphView>();
 			_graph.onModified.AddListener(NotifyIsModified);
 
 			rootVisualElement.Add(graph);
@@ -90,7 +90,7 @@ namespace Mithril.Editor
 
 		/** <<============================================================>> **/
 
-		protected virtual void SetupGraphView(TGraphView graph)
+		protected virtual void SetupGraphView(NodeGraphView graph)
 		{
 			graph.name = "Basic Node Graph View";
 			graph.InitFromGraphData((NodeGraphData)workObject);

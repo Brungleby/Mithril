@@ -52,7 +52,7 @@ namespace Mithril.Tests
 		#endregion
 	}
 
-	public sealed class TestNodeGraphWindow : NodeGraphWindow<TestNodeGraphView>
+	public sealed class TestNodeGraphWindow : NodeGraphWindow
 	{
 		#region Data
 

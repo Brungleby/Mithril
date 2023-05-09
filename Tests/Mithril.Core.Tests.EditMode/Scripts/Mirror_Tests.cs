@@ -23,7 +23,7 @@ namespace Mithril.Tests.Graph
 
 		private TestEditableObject _testObject;
 		private TestNodeGraphWindow _testWindow;
-		private TestNodeGraphView _testGraph;
+		private Mithril.Editor.NodeGraphView _testGraph;
 		private Mithril.Editor.Node _testNode;
 
 		[SetUp]
