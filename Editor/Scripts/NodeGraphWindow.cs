@@ -110,7 +110,6 @@ namespace Mithril.Editor
 		{
 			Debug.Log(workObject.mirror);
 
-
 			SetupGraphView(_graph);
 		}
 
@@ -123,7 +122,6 @@ namespace Mithril.Editor
 
 		protected virtual void SetupGraphView(NodeGraphView graph)
 		{
-			graph.name = "Basic Node Graph View";
 			graph.InitFromGraphData((NodeGraphData)workObject);
 		}
 

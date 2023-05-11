@@ -342,7 +342,7 @@ namespace Mithril.Editor
 
 			foreach (var iPort in __ports)
 			{
-				// __result.AddRange(iPort.connections);
+				__result.AddRange(iPort.connections);
 			}
 
 			return __result;

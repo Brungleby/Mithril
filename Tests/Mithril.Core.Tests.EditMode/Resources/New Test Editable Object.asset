@@ -14,19 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mirror:
     _json: '{"TYPE":"Mithril.Tests.TestEditableObject, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[10,119],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringEntryNode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[79,102],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringReceiverNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[78,119,150,75],"guid":"1c555dfc980815b419fb63415319db72","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
+      Receiver Node","_rect":[305,295,150,100],"guid":"987a17e101cd03347a525ff7c2fc9e55","isPredefined":false}},{"TYPE":"Mithril.Tests.TestStringEntryNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[343,-22,150,100],"guid":"a369eba57d1d1aa409cb4cfcad7b93d0","isPredefined":false}}],"_edgeMirrors":[]}}'
+      Entry Node","_rect":[32.8,207,150,75],"guid":"1150d85ca309f5e43afd4cca4e391382","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
+      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
+      Receiver Node","_rect":[305,30,150,100],"guid":"b754bee587e5e724fb7b60a027a7ce03","isPredefined":false}}],"_edgeMirrors":[["1150d85ca309f5e43afd4cca4e391382","Text","987a17e101cd03347a525ff7c2fc9e55","Text"],["1150d85ca309f5e43afd4cca4e391382","Text","b754bee587e5e724fb7b60a027a7ce03","Text"]]}}'
   _currentlyOpenEditor: {fileID: 0}
   _isAutosaved: 1
-  viewPosition: {x: 10, y: 119}
+  viewPosition: {x: 79, y: 102}
   _nodeMirrors:
-  - _json: '{"TYPE":"Mithril.Tests.TestStringEntryNode, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[78,119,150,75],"guid":"1c555dfc980815b419fb63415319db72","isPredefined":false,"_message":""}}'
   - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[343,-22,150,100],"guid":"a369eba57d1d1aa409cb4cfcad7b93d0","isPredefined":false}}'
-  _edgeMirrors: []
+      Receiver Node","_rect":[305,295,150,100],"guid":"987a17e101cd03347a525ff7c2fc9e55","isPredefined":false}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestStringEntryNode, Mithril.Core.Tests.EditMode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
+      Entry Node","_rect":[32.8,207,150,75],"guid":"1150d85ca309f5e43afd4cca4e391382","isPredefined":false,"_message":""}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
+      Receiver Node","_rect":[305,30,150,100],"guid":"b754bee587e5e724fb7b60a027a7ce03","isPredefined":false}}'
+  _edgeMirrors:
+  - _json: '["1150d85ca309f5e43afd4cca4e391382","Text","987a17e101cd03347a525ff7c2fc9e55","Text"]'
+  - _json: '["1150d85ca309f5e43afd4cca4e391382","Text","b754bee587e5e724fb7b60a027a7ce03","Text"]'

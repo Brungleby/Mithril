@@ -212,7 +212,6 @@ namespace Mithril
 			// if (_isEnabled && !_isBeingModifiedInInspector)
 			// 	LoadMirror();
 
-
 			_isBeingModifiedInInspector = false;
 		}
 

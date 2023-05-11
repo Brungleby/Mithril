@@ -140,6 +140,8 @@ namespace Mithril
 			new JsonTranslator().DecodeAny(type, json);
 		public static T Decode<T>(in string json) =>
 			(T)new JsonTranslator().DecodeAny(typeof(T), json);
+		public static TResult Decode<T, TResult>(in string json) =>
+			(TResult)new JsonTranslator().DecodeAny(typeof(T), json);
 
 		public static string Encode(object obj) =>
 			new JsonTranslator().EncodeAny(obj);

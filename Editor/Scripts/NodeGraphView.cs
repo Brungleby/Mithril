@@ -44,6 +44,8 @@ namespace Mithril.Editor
 		private Node _hoveredNode;
 		public Node hoveredNode => _hoveredNode;
 
+		private bool _isNotifiable = false;
+
 		#endregion
 
 		#endregion
@@ -104,9 +106,13 @@ namespace Mithril.Editor
 			if (data == null)
 				return;
 
+			_isNotifiable = false;
+			ClearAllNodes();
+
 			/** <<============================================================>> **/
 
 			SetViewPosition(data.viewPosition);
+
 
 			/** <<============================================================>> **/
 			/**	Nodes
@@ -124,7 +130,7 @@ namespace Mithril.Editor
 
 			foreach (var iEdgeMirror in data.edgeMirrors)
 			{
-				var __edgeTuple = (Tuple<Guid, string, Guid, string>)iEdgeMirror.GetReflection(typeof(Edge));
+				var __edgeTuple = iEdgeMirror.GetReflection<Edge, Tuple<Guid, string, Guid, string>>();
 
 				var __nodeOut = FindNode(__edgeTuple.Item1);
 				var __portOut = __nodeOut.GetPortByName(__edgeTuple.Item2);
@@ -135,6 +141,8 @@ namespace Mithril.Editor
 
 				AddElement(__edge);
 			}
+
+			_isNotifiable = true;
 		}
 
 		#endregion
@@ -168,9 +176,15 @@ namespace Mithril.Editor
 
 		private GraphViewChange OnGraphViewChanged(GraphViewChange context)
 		{
-			onModified.Invoke();
+			NotifyIsModified();
 
 			return context;
+		}
+
+		protected void NotifyIsModified()
+		{
+			if (_isNotifiable)
+				onModified.Invoke();
 		}
 
 		#endregion
@@ -215,8 +229,7 @@ namespace Mithril.Editor
 
 			node.RefreshAll();
 
-			if (invokeOnModified)
-				onModified.Invoke();
+			NotifyIsModified();
 		}
 
 		public Node CreateNewNode(Type type, Vector2? position = null, bool invokeOnModified = true)
@@ -318,7 +331,7 @@ namespace Mithril.Editor
 
 			this.SetSelection(__newSelection);
 
-			onModified.Invoke();
+			NotifyIsModified();
 		}
 
 		private void OnDelete(string operationName, AskUser askUser)
@@ -344,7 +357,7 @@ namespace Mithril.Editor
 
 			DeleteElements(__toRemove);
 
-			onModified.Invoke();
+			NotifyIsModified();
 		}
 
 		public void ClearAllNodes()
@@ -370,7 +383,7 @@ namespace Mithril.Editor
 
 			DeleteElements(__toRemove);
 
-			onModified.Invoke();
+			NotifyIsModified();
 		}
 
 		public void ClearAllNodes_WithPrompt()

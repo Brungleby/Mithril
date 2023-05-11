@@ -103,6 +103,8 @@ namespace Mithril
 			JsonTranslator.Decode(type, _json);
 		public T GetReflection<T>() =>
 			JsonTranslator.Decode<T>(_json);
+		public TResult GetReflection<T, TResult>() =>
+			JsonTranslator.Decode<T, TResult>(_json);
 
 		public void SetReflectionFrom(object obj) =>
 			_json = JsonTranslator.Encode(obj);
