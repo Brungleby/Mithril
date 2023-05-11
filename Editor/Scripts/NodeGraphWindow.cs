@@ -46,6 +46,8 @@ namespace Mithril.Editor
 			protected set => _graph = (TGraphView)value;
 		}
 
+		private Label _hoveredGuidLabel;
+
 		#endregion
 
 		#endregion
@@ -67,6 +69,16 @@ namespace Mithril.Editor
 			.ToList()
 		;
 
+		protected override void OnGUI()
+		{
+			base.OnGUI();
+
+			if (_graph.hoveredNode is Node __hoveredNode)
+				_hoveredGuidLabel.text = __hoveredNode.guid;
+			else
+				_hoveredGuidLabel.text = string.Empty;
+		}
+
 		/** <<============================================================>> **/
 
 		protected override void SetupVisualElements()
@@ -75,6 +87,13 @@ namespace Mithril.Editor
 			_graph.onModified.AddListener(NotifyIsModified);
 
 			rootVisualElement.Add(graph);
+
+			_hoveredGuidLabel = new Label();
+			_hoveredGuidLabel.style.color = new StyleColor(new Color(1f, 1f, 1f, 0.25f));
+			_hoveredGuidLabel.style.position = Position.Absolute;
+			_hoveredGuidLabel.style.right = 0f;
+			_hoveredGuidLabel.style.bottom = 0f;
+			rootVisualElement.Add(_hoveredGuidLabel);
 
 			base.SetupVisualElements();
 		}
@@ -89,6 +108,9 @@ namespace Mithril.Editor
 
 		public override void OnSetupForWorkObject()
 		{
+			Debug.Log(workObject.mirror);
+
+
 			SetupGraphView(_graph);
 		}
 

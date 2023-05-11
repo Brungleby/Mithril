@@ -14,20 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mirror:
     _json: '{"TYPE":"Mithril.Tests.TestEditableObject, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[0,0],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringEntryNode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[10,119],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringEntryNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[72,156,150,75],"guid":"67fce2e7e797c70498b9e07dfbbf2cbc","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
+      Entry Node","_rect":[78,119,150,75],"guid":"1c555dfc980815b419fb63415319db72","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[367,231,150,100],"guid":"26b5d757b89911e488c8d83d529ff56a","isPredefined":false}}],"_edgeMirrors":[["67fce2e7e797c70498b9e07dfbbf2cbc","Text","26b5d757b89911e488c8d83d529ff56a","Text"]]}}'
+      Receiver Node","_rect":[343,-22,150,100],"guid":"a369eba57d1d1aa409cb4cfcad7b93d0","isPredefined":false}}],"_edgeMirrors":[]}}'
   _currentlyOpenEditor: {fileID: 0}
   _isAutosaved: 1
-  viewPosition: {x: 0, y: 0}
+  viewPosition: {x: 10, y: 119}
   _nodeMirrors:
   - _json: '{"TYPE":"Mithril.Tests.TestStringEntryNode, Mithril.Core.Tests.EditMode,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[72,156,150,75],"guid":"67fce2e7e797c70498b9e07dfbbf2cbc","isPredefined":false,"_message":""}}'
+      Entry Node","_rect":[78,119,150,75],"guid":"1c555dfc980815b419fb63415319db72","isPredefined":false,"_message":""}}'
   - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[367,231,150,100],"guid":"26b5d757b89911e488c8d83d529ff56a","isPredefined":false}}'
-  _edgeMirrors:
-  - _json: '["67fce2e7e797c70498b9e07dfbbf2cbc","Text","26b5d757b89911e488c8d83d529ff56a","Text"]'
+      Receiver Node","_rect":[343,-22,150,100],"guid":"a369eba57d1d1aa409cb4cfcad7b93d0","isPredefined":false}}'
+  _edgeMirrors: []

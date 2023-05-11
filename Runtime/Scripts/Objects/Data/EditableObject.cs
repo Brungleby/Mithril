@@ -209,8 +209,9 @@ namespace Mithril
 
 		public virtual void OnAfterDeserialize()
 		{
-			if (_isEnabled && !_isBeingModifiedInInspector)
-				LoadMirror();
+			// if (_isEnabled && !_isBeingModifiedInInspector)
+			// 	LoadMirror();
+
 
 			_isBeingModifiedInInspector = false;
 		}
@@ -219,6 +220,8 @@ namespace Mithril
 		{
 			if (_isEnabled && !_isBeingModifiedInInspector)
 				SaveMirror();
+
+			_isEnabled = false;
 		}
 
 		#endregion

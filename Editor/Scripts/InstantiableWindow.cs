@@ -30,7 +30,7 @@ namespace Mithril.Editor
 	/// Each instance of this window is assigned to a corresponding <see cref="workObject"/>.
 	///</summary>
 
-	public abstract class InstantiableWindow : EditorWindow
+	public abstract class InstantiableWindow : EditorWindow, ISerializationCallbackReceiver
 	{
 		#region Inners
 
@@ -101,6 +101,7 @@ namespace Mithril.Editor
 		}
 
 		#endregion
+
 		#region Data
 
 		public readonly static string DEFAULT_ICON_PATH =
@@ -122,6 +123,8 @@ namespace Mithril.Editor
 		/// <inheritdoc cref="_workObject"/>
 
 		public EditableObject workObject => _workObject;
+
+		private Mirror _workCache;
 
 		/// <summary>
 		/// Slightly more involved representation of <see cref="hasUnsavedChanges"/>.
@@ -177,6 +180,7 @@ namespace Mithril.Editor
 		protected virtual void OnEnable()
 		{
 			SetupVisualElements();
+			CacheLoad();
 		}
 
 		protected virtual void OnDisable()
@@ -187,6 +191,16 @@ namespace Mithril.Editor
 			*/
 			if (isAutosaved)
 				HardSave();
+		}
+
+		public virtual void OnAfterDeserialize()
+		{
+			// RefreshWorkObject();
+		}
+
+		public virtual void OnBeforeSerialize()
+		{
+			CacheSave();
 		}
 
 		#region Instantiation
@@ -252,6 +266,14 @@ namespace Mithril.Editor
 
 			OnGUI();
 			_isLoaded = true;
+		}
+
+		protected void RefreshWorkObject()
+		{
+			if (_workObject == null)
+				return;
+
+			Initialize(_workObject);
 		}
 
 		/// <summary>
@@ -397,6 +419,24 @@ namespace Mithril.Editor
 			_workObject.SaveMirror();
 
 			isModified = false;
+		}
+
+		public void CacheSave()
+		{
+			_workCache = _workObject.mirror;
+
+			SoftSave();
+		}
+
+		public void CacheLoad()
+		{
+			if (_workCache == null)
+				return;
+
+			RefreshWorkObject();
+
+			_workObject.mirror = _workCache;
+			_workCache = null;
 		}
 
 		/// <summary>

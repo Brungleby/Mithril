@@ -112,6 +112,9 @@ namespace Mithril
 
 		public static void CopySerializableFieldValues(object source, object target)
 		{
+			if (source == null || target == null)
+				return;
+
 			foreach (var iField in source.GetType().GetSerializableFields())
 			{
 				var __sourceValue = iField.GetValue(source);

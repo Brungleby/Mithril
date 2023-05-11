@@ -41,6 +41,9 @@ namespace Mithril.Editor
 		private Vector2 _mousePosition;
 		public Vector2 mousePosition => _mousePosition;
 
+		private Node _hoveredNode;
+		public Node hoveredNode => _hoveredNode;
+
 		#endregion
 
 		#endregion
@@ -436,6 +439,7 @@ namespace Mithril.Editor
 		private void OnMouseMove(MouseMoveEvent context)
 		{
 			_mousePosition = viewTransform.matrix.inverse.MultiplyPoint(context.localMousePosition);
+			_hoveredNode = panel.Pick(context.mousePosition).FindRootElement<Node>();
 		}
 
 		#endregion
