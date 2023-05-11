@@ -18,6 +18,9 @@ using System.Reflection;
 
 using UnityEngine;
 
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
+
 #endregion
 
 namespace Mithril
@@ -109,6 +112,7 @@ namespace Mithril
 				{ typeof(Vector3), DecodeVector3 },
 				{ typeof(Rect), DecodeRect },
 				{ typeof(Guid), DecodeGuid },
+				{ typeof(Edge), DecodeGraphViewEdge },
 				{ typeof(Mirror), DecodeMirror }
 			});
 			ENCODE_METHODS_BY_TYPE = new ReadOnlyDictionary<Type, Func<object, string>>(new Dictionary<Type, Func<object, string>>
@@ -117,6 +121,7 @@ namespace Mithril
 				{ typeof(Vector3), EncodeVector3 },
 				{ typeof(Rect), EncodeRect },
 				{ typeof(Guid), EncodeGuid },
+				{ typeof(Edge), EncodeGraphViewEdge },
 				{ typeof(Mirror), EncodeMirror }
 			});
 		}
@@ -147,25 +152,33 @@ namespace Mithril
 			if (RepresentsNull(json))
 				return null;
 
+			object __result;
+
 			if (DECODE_METHODS_BY_TYPE.TryGetValue(type, out var __m_decodeCustom))
-				return __m_decodeCustom.Invoke(json);
+				__result = __m_decodeCustom.Invoke(json);
 
-			if (typeof(string) == type)
-				return DecodeString(json);
+			else if (typeof(string) == type)
+				__result = DecodeString(json);
 
-			if (typeof(char) == type)
-				return DecodeChar(json);
+			else if (typeof(char) == type)
+				__result = DecodeChar(json);
 
-			if (type.IsEnum)
-				return DecodeEnum(type, json);
+			else if (type.IsEnum)
+				__result = DecodeEnum(type, json);
 
-			if (type.IsPrimitive)
-				return DecodePrimitive(type, json);
+			else if (type.IsPrimitive)
+				__result = DecodePrimitive(type, json);
 
-			if (IsEncodedAsJsonArray(type))
-				return DecodeEnumerable(type, json);
+			else if (IsEncodedAsJsonArray(type))
+				__result = DecodeEnumerable(type, json);
 
-			return DecodeObject(type, json);
+			else
+				__result = DecodeObject(type, json);
+
+			if (__result is ISerializationCallbackReceiver __receiver)
+				__receiver.OnAfterDeserialize();
+
+			return __result;
 		}
 		public T DecodeAny<T>(in string json) =>
 			(T)DecodeAny(typeof(T), json);
@@ -174,6 +187,9 @@ namespace Mithril
 		{
 			if (obj == null)
 				return NULL;
+
+			if (obj is ISerializationCallbackReceiver __receiver)
+				__receiver.OnBeforeSerialize();
 
 			var __type = obj.GetType();
 
@@ -681,9 +697,6 @@ namespace Mithril
 				iField.SetValue(__result, iValue);
 			}
 
-			if (__result is ISerializationCallbackReceiver __receiver)
-				__receiver.OnAfterDeserialize();
-
 			return __result;
 		}
 
@@ -735,9 +748,6 @@ namespace Mithril
 		{
 			var __result = OPEN_BRACE;
 			var __type = obj.GetType();
-
-			if (obj is ISerializationCallbackReceiver __receiver)
-				__receiver.OnBeforeSerialize();
 
 			var __isFirstIteration = true;
 			foreach (var iField in __type.GetSerializableFields())
@@ -841,6 +851,34 @@ namespace Mithril
 			__result += Encode(__rect.y) + ITERATE;
 			__result += Encode(__rect.width) + ITERATE;
 			__result += Encode(__rect.height);
+
+			return __result + CLOSE_BRACKET;
+		}
+
+		#endregion
+		#region GraphView.Edge
+
+		private Tuple<Guid, string, Guid, string> DecodeGraphViewEdge(string json)
+		{
+			var __elements = UnwrapArray(json);
+
+			var __guidOut = Decode<Guid>(__elements[0]);
+			var __portOut = Decode<string>(__elements[1]);
+			var __guidIn = Decode<Guid>(__elements[2]);
+			var __portIn = Decode<string>(__elements[3]);
+
+			return new Tuple<Guid, string, Guid, string>(__guidOut, __portOut, __guidIn, __portIn);
+		}
+
+		private string EncodeGraphViewEdge(object obj)
+		{
+			var __edge = (Edge)obj;
+			var __result = OPEN_BRACKET;
+
+			__result += Encode(((Mithril.Editor.Node)__edge.output.node).guid) + ITERATE;
+			__result += Encode(__edge.output.portName) + ITERATE;
+			__result += Encode(((Mithril.Editor.Node)__edge.input.node).guid) + ITERATE;
+			__result += Encode(__edge.input.portName);
 
 			return __result + CLOSE_BRACKET;
 		}

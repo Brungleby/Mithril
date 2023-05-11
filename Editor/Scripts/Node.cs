@@ -9,6 +9,7 @@
 
 #region Includes
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -46,6 +47,14 @@ namespace Mithril.Editor
 			NODE_HEADER_HEIGHT + NODE_PORT_HEIGHT
 		);
 
+		public static readonly string EXEC_LABEL_IN = "execIn";
+		public static readonly string EXEC_LABEL_OUT = "execOut";
+
+		protected static readonly Dictionary<string, Type> PRESET_PORTS_IN_EXEC = new Dictionary<string, Type>
+		{ { EXEC_LABEL_IN, typeof(Exec) } };
+		protected static readonly Dictionary<string, Type> PRESET_PORTS_OUT_EXEC = new Dictionary<string, Type>
+		{ { EXEC_LABEL_OUT, typeof(Exec) } };
+
 		/** <<============================================================>> **/
 		/**	Mirrored Data
 		*/
@@ -75,7 +84,7 @@ namespace Mithril.Editor
 		/**	Properties
 		*/
 
-		public virtual string defaultName => "New Custom Node";
+		public virtual string defaultTitle => "New Custom Node";
 		public virtual Orientation defaultOrientation => Orientation.Horizontal;
 		public virtual Vector2 defaultSize => new Vector2(
 			DEFAULT_NODE_WIDTH,
@@ -119,7 +128,7 @@ namespace Mithril.Editor
 		}
 
 		public int maxPortCount =>
-			Math.Max(GetInputPorts().Count, GetOutputPorts().Count);
+			Math.Max(GetPorts_In().Count, GetPorts_Out().Count);
 
 		#endregion
 		#region Methods
@@ -129,21 +138,16 @@ namespace Mithril.Editor
 		public Node()
 		{
 			AssignNewGuid();
-			this.title = defaultName;
+			title = defaultTitle;
+			onModified = new UnityEvent();
+
+			CreateDefaultPorts();
 
 			RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
 		}
 
-		public virtual void Init(NodeData data)
-		{
-			// guid = data.guid;
-			// title = data.title ?? defaultName;
-			// this.SetPositionOnly(data.rect.position);
-		}
-
 		public virtual void InitInGraph(NodeGraphView graph)
 		{
-			onModified = new UnityEvent();
 			onModified.AddListener(() => { graph.onModified.Invoke(); });
 		}
 
@@ -151,17 +155,29 @@ namespace Mithril.Editor
 			guid = Guid.GenerateNew();
 
 		#endregion
+
 		#region Fundamentals
+
+		public override bool Equals(object obj)
+		{
+			if (obj != null && obj is Node that)
+				return guid.Equals(that.guid);
+			return false;
+		}
+
+		public override int GetHashCode() =>
+			guid.GetHashCode();
+
+		public static bool operator ==(Node left, Node right) =>
+			left.guid.Equals(right.guid);
+		public static bool operator !=(Node left, Node right) =>
+			!left.guid.Equals(right.guid);
 
 		public override string ToString() =>
 			$"{title} [{GetType().Name}] : {position}";
 
 		#endregion
-
-		#region ISerializable
-
-		public string GetSerializedString() =>
-			JsonUtility.ToJson(NodeData.CreateFrom(this));
+		#region Serialization
 
 		public virtual void OnAfterDeserialize()
 		{
@@ -176,7 +192,7 @@ namespace Mithril.Editor
 		}
 
 		#endregion
-		#region Notifies
+		#region Events
 
 		protected virtual void OnGeometryChangedEvent(GeometryChangedEvent context) { }
 
@@ -184,6 +200,8 @@ namespace Mithril.Editor
 			onModified.Invoke();
 
 		#endregion
+
+		#region Manipulation
 
 		public override bool IsCopiable() =>
 			!isPredefined;
@@ -200,104 +218,137 @@ namespace Mithril.Editor
 			this.size = defaultSize;
 		}
 
+		#endregion
+
 		#region Port Handling
 
-		public VisualElement GetPortContainerFor(Port port)
-		{
-			switch (port.direction)
-			{
-				case Direction.Input:
-					return inputContainer;
-				case Direction.Output:
-					return outputContainer;
-				default:
-					throw new System.Exception($"This port ({port}) has an invalid direction.");
-			}
-		}
+		#region Retrieval
 
-		public List<Port> GetAllPorts()
+		public VisualElement GetPortContainerFor(UnityEditor.Experimental.GraphView.Port port) =>
+			port.direction == Direction.Input ?
+			inputContainer : outputContainer;
+
+		public UnityEditor.Experimental.GraphView.Port.Capacity GetPortCapacityForType(Type type, Direction direction) =>
+			direction == Direction.Input ^ typeof(Exec) == type ?
+						UnityEditor.Experimental.GraphView.Port.Capacity.Single : UnityEditor.Experimental.GraphView.Port.Capacity.Multi;
+
+		public List<UnityEditor.Experimental.GraphView.Port> GetPorts_All()
 		{
-			var __result = GetInputPorts();
-			__result.AddRange(GetOutputPorts());
+			var __result = GetPorts_In();
+			__result.AddRange(GetPorts_Out());
 			return __result;
 		}
-		public List<Port> GetInputPorts() =>
-			inputContainer.Query<Port>().ToList();
-		public List<Port> GetOutputPorts() =>
-			outputContainer.Query<Port>().ToList();
+		public List<UnityEditor.Experimental.GraphView.Port> GetPorts_In() =>
+						inputContainer.Query<UnityEditor.Experimental.GraphView.Port>().ToList();
+		public List<UnityEditor.Experimental.GraphView.Port> GetPorts_Out() =>
+						outputContainer.Query<UnityEditor.Experimental.GraphView.Port>().ToList();
 
-		public Port CreatePort(System.Type type, string portName, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null)
+		public UnityEditor.Experimental.GraphView.Port GetPortByName(string portName)
+		{
+			try
+			{ return GetPorts_All().Find(i => i.portName == portName); }
+			catch
+			{ throw new System.Exception($"The port \"{portName}\" was not found on {title}."); }
+		}
+
+		#endregion
+		#region Creation
+
+		public void SetupPort(UnityEditor.Experimental.GraphView.Port port)
+		{
+			GetPortContainerFor(port).Add(port);
+
+			RefreshAll();
+			NotifyIsModified();
+		}
+
+		public UnityEditor.Experimental.GraphView.Port CreatePort(System.Type portType, string portName, Direction direction)
 		{
 			var __port = InstantiatePort(
-				orientation ?? defaultOrientation,
+				defaultOrientation,
 				direction,
-				capacity ?? (direction == Direction.Input ? Port.Capacity.Single : Port.Capacity.Multi),
-				type
+				GetPortCapacityForType(portType, direction),
+				portType
 			);
 
 			__port.portName = portName;
 
-			AttachPort(__port);
+			SetupPort(__port);
 
 			return __port;
 		}
-		public Port CreatePort(string portName, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
-			CreatePort(typeof(bool), portName, direction, capacity, orientation);
-		public Port CreatePort<T>(string name, Direction direction, Port.Capacity? capacity = null, Orientation? orientation = null) =>
-			CreatePort(typeof(T), name, direction, capacity, orientation);
-		public Port CreatePort(PortData data) =>
-			CreatePort(System.Type.GetType(data.Type), data.PortName, data.Direction, data.Capacity, data.Orientation);
+		public UnityEditor.Experimental.GraphView.Port CreatePort<T>(string portName, Direction direction) =>
+			CreatePort(typeof(T), portName, direction);
 
+		public UnityEditor.Experimental.GraphView.Port CreateExecutiveInputPort(string name = null) =>
+			CreatePort<Exec>(name ?? EXEC_LABEL_IN, Direction.Input);
+		public UnityEditor.Experimental.GraphView.Port CreateExecutiveOutputPort(string name = null) =>
+			CreatePort<Exec>(name ?? EXEC_LABEL_OUT, Direction.Output);
 
-		public void AttachPort(Port port)
+		protected virtual void CreateDefaultPorts()
 		{
-			var __portContainer = GetPortContainerFor(port);
-			__portContainer.Add(port);
-
-			RefreshAll();
+			CreateDefaultPortsIn();
+			CreateDefaultPortsOut();
 		}
 
-		public void RemovePort(Port port)
+		private void CreateDefaultPortsIn()
 		{
-			var __portContainer = GetPortContainerFor(port);
-
-			__portContainer.Remove(port);
-
-			RefreshAll();
-		}
-
-		public Port FindPort(string portName)
-		{
-			foreach (var iPort in GetAllPorts())
+			foreach (var i in defaultPortsIn)
 			{
-				if (portName == iPort.portName)
-					return iPort;
-			}
+				var iName = i.Key;
+				var iType = i.Value;
 
-			throw new System.Exception($"The port \"{portName}\" was not found on {this.title}.");
+				CreatePort(iType, iName, Direction.Input);
+			}
 		}
 
-		public Port CreateExecutiveInputPort(string name = null) =>
-			CreatePort<Exec>(name ?? "In", Direction.Input, Port.Capacity.Multi);
-		public Port CreateExecutiveOutputPort(string name = null) =>
-			CreatePort<Exec>(name ?? "Out", Direction.Output, Port.Capacity.Single);
+		private void CreateDefaultPortsOut()
+		{
+			foreach (var i in defaultPortsOut)
+			{
+				var iName = i.Key;
+				var iType = i.Value;
+
+				CreatePort(iType, iName, Direction.Output);
+			}
+		}
+
+		protected virtual Dictionary<string, Type> defaultPortsIn => new Dictionary<string, Type>();
+		protected virtual Dictionary<string, Type> defaultPortsOut => new Dictionary<string, Type>();
+
+		#endregion
+		#region Destruction
+
+		public void RemovePort(UnityEditor.Experimental.GraphView.Port port)
+		{
+			GetPortContainerFor(port).Remove(port);
+
+			RefreshAll();
+			NotifyIsModified();
+		}
+
+		#endregion
 
 		#endregion
 
 		#region Edge Handling
 
+		#region Retrieval
+
 		public List<Edge> GetAllConnectedEdges()
 		{
 			var __result = new List<Edge>();
-			var __ports = GetAllPorts();
+			var __ports = GetPorts_All();
 
 			foreach (var iPort in __ports)
 			{
-				__result.AddRange(iPort.connections);
+				// __result.AddRange(iPort.connections);
 			}
 
 			return __result;
 		}
+
+		#endregion
 
 		#endregion
 

@@ -88,6 +88,7 @@ namespace Mithril.Editor
 		}
 
 		#endregion
+
 		#region UIElements
 
 		public static readonly Color SEPARATOR_COLOR = new Color(0.15f, 0.15f, 0.15f);
@@ -110,6 +111,20 @@ namespace Mithril.Editor
 
 				return __result;
 			}
+		}
+
+		#endregion
+		#region VisualElements
+
+		public static T FindRootElement<T>(this VisualElement element)
+		where T : VisualElement
+		{
+			var __parent = element;
+
+			while (__parent != null && !(__parent is T))
+				__parent = __parent.parent;
+
+			return (T)__parent;
 		}
 
 		#endregion

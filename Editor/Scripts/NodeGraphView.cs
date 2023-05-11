@@ -20,9 +20,6 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-using NodeData = Mithril.NodeData;
-using EdgeData = Mithril.EdgeData;
-
 #endregion
 
 namespace Mithril.Editor
@@ -101,26 +98,48 @@ namespace Mithril.Editor
 		{
 			/** <<============================================================>> **/
 
+			if (data == null)
+				return;
+
+			/** <<============================================================>> **/
+
 			SetViewPosition(data.viewPosition);
 
 			/** <<============================================================>> **/
 			/**	Nodes
 			*/
 
-			if (data != null)
-				foreach (var iNodeMirror in data.nodeMirrors)
-				{
-					var __node = iNodeMirror.GetReflection<Node>();
-					SetupNewNode(__node);
-				}
+			foreach (var iNodeMirror in data.nodeMirrors)
+			{
+				var __node = iNodeMirror.GetReflection<Node>();
+				SetupNewNode(__node);
+			}
+
+			/** <<============================================================>> **/
+			/**	Edges
+			*/
+
+			foreach (var iEdgeMirror in data.edgeMirrors)
+			{
+				var __edgeTuple = (Tuple<Guid, string, Guid, string>)iEdgeMirror.GetReflection(typeof(Edge));
+
+				var __nodeOut = FindNode(__edgeTuple.Item1);
+				var __portOut = __nodeOut.GetPortByName(__edgeTuple.Item2);
+				var __nodeIn = FindNode(__edgeTuple.Item3);
+				var __portIn = __nodeIn.GetPortByName(__edgeTuple.Item4);
+
+				var __edge = __portOut.ConnectTo(__portIn);
+
+				AddElement(__edge);
+			}
 		}
 
 		#endregion
 		#region Overrides
 
-		public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
+		public override List<UnityEditor.Experimental.GraphView.Port> GetCompatiblePorts(UnityEditor.Experimental.GraphView.Port startPort, NodeAdapter nodeAdapter)
 		{
-			var __result = new List<Port>();
+			var __result = new List<UnityEditor.Experimental.GraphView.Port>();
 
 			ports.ForEach((port) =>
 			{
@@ -337,7 +356,7 @@ namespace Mithril.Editor
 						continue;
 				}
 
-				edges.Where(i => i.input.node == iNode).ToList()
+				edges.Where(i => (Node)i.input.node == iNode).ToList()
 					.ForEach(iEdge => { __toRemove.Add(iEdge); });
 
 				__toRemove.Add(iNode);
@@ -366,13 +385,13 @@ namespace Mithril.Editor
 
 		public Edge CreateEdge(EdgeData edge)
 		{
-			var nPort = FindNode(edge.nPort.NodeGuid).FindPort(edge.nPort.PortName);
-			var oPort = FindNode(edge.oPort.NodeGuid).FindPort(edge.oPort.PortName);
+			var nPort = FindNode(edge.nPort.NodeGuid).GetPortByName(edge.nPort.PortName);
+			var oPort = FindNode(edge.oPort.NodeGuid).GetPortByName(edge.oPort.PortName);
 
 			return ConnectPorts(nPort, oPort);
 		}
 
-		public Edge ConnectPorts(Port input, Port output)
+		public Edge ConnectPorts(UnityEditor.Experimental.GraphView.Port input, UnityEditor.Experimental.GraphView.Port output)
 		{
 			var __edge = new Edge
 			{
@@ -402,6 +421,11 @@ namespace Mithril.Editor
 		}
 
 		#endregion
+
+		#endregion
+		#region Edge Handling
+
+
 
 		#endregion
 		#region Utils

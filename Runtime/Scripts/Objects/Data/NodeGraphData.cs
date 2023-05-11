@@ -50,6 +50,11 @@ namespace Mithril
 		private Mirror[] _nodeMirrors = new Mirror[0];
 		public Mirror[] nodeMirrors => _nodeMirrors;
 
+		[SerializeField]
+		[HideInInspector]
+		private Mirror[] _edgeMirrors = new Mirror[0];
+		public Mirror[] edgeMirrors => _edgeMirrors;
+
 		#endregion
 		#region Methods
 
@@ -57,6 +62,8 @@ namespace Mithril
 
 		public void UpdateFromGraphView(NodeGraphView graphView)
 		{
+			/** <<============================================================>> **/
+
 			/** <<============================================================>> **/
 
 			viewPosition = graphView.viewTransform.position;
@@ -75,17 +82,39 @@ namespace Mithril
 			}
 
 			_nodeMirrors = __nodeMirrorList.ToArray();
+
+			/** <<============================================================>> **/
+			/**	Edges
+			*
+			*	Note: Edges are not updated it graphView.edges until after they have been created.
+			*	This means that adding or removing an edge from the graph will not add nor remove it
+			*	from HERE until another change has been made (during autosaving only). However,
+			*	the InstantiableWindow performs one final save before closing, making this issue rather benign.
+			*/
+
+			var __edges = graphView.edges;
+
+			var __edgeMirrorList = new List<Mirror>();
+			foreach (var iEdge in __edges)
+			{
+				__edgeMirrorList.Add(new Mirror(iEdge));
+			}
+
+			_edgeMirrors = __edgeMirrorList.ToArray();
 		}
 
 		#endregion
 
-		public override void Save()
-		{
-			if (_currentlyOpenEditor is NodeGraphWindow __window)
-				UpdateFromGraphView(__window.graph);
+		// public override void Save()
+		// {
+		// 	if (_currentlyOpenEditor != null)
+		// 		if (_currentlyOpenEditor is NodeGraphWindow __window)
+		// 			UpdateFromGraphView(__window.graph);
+		// 		else
+		// 			Debug.LogError("Unable to update from graph view. Implement parent class at NodeGraphWindow.cs >> Line 30.");
 
-			base.Save();
-		}
+		// 	base.Save();
+		// }
 
 		#endregion
 	}
@@ -155,8 +184,8 @@ namespace Mithril
 
 		public static PortData[] GetPortsFrom(Node node)
 		{
-			var __nPorts = node.GetInputPorts();
-			var __oPorts = node.GetOutputPorts();
+			var __nPorts = node.GetPorts_In();
+			var __oPorts = node.GetPorts_Out();
 
 			var __ports = new PortData[__nPorts.Count + __oPorts.Count];
 
@@ -183,7 +212,7 @@ namespace Mithril
 		public string PortName;
 		public Direction Direction;
 		public Orientation Orientation;
-		public Port.Capacity Capacity;
+		public UnityEditor.Experimental.GraphView.Port.Capacity Capacity;
 		public string Type;
 
 #if UNITY_EDITOR
@@ -196,7 +225,7 @@ namespace Mithril
 		// 	Capacity = capacity;
 		// 	Type = type;
 
-		public PortData(Port port)
+		public PortData(UnityEditor.Experimental.GraphView.Port port)
 		{
 			NodeGuid = ((Node)port.node).guid;
 			PortName = port.portName;
@@ -206,7 +235,7 @@ namespace Mithril
 			Type = port.portType.AssemblyQualifiedName;
 		}
 
-		public static implicit operator PortData(Port _) =>
+		public static implicit operator PortData(UnityEditor.Experimental.GraphView.Port _) =>
 			new PortData(_);
 #endif
 	}

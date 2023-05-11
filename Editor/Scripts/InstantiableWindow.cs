@@ -128,6 +128,8 @@ namespace Mithril.Editor
 		/// Setting this value to true if <see cref="workObject"/> has autosaving enabled will automaticaly save the object and reset the value to false.
 		///</summary>
 
+		private bool _isLoaded = false;
+
 		public bool isModified
 		{
 			get =>
@@ -249,6 +251,7 @@ namespace Mithril.Editor
 			saveChangesMessage = GetSaveChangesMessage(obj);
 
 			OnGUI();
+			_isLoaded = true;
 		}
 
 		/// <summary>
@@ -367,6 +370,9 @@ namespace Mithril.Editor
 
 		public void HardSave()
 		{
+			if (!_isLoaded)
+				return;
+
 			OnBeforeSaveWorkObject();
 
 			_workObject.Save();
@@ -380,6 +386,9 @@ namespace Mithril.Editor
 
 		public void SoftSave()
 		{
+			if (!_isLoaded)
+				return;
+
 			OnBeforeSaveWorkObject();
 
 			/**	SaveMirror() is faster than Save() because it doesn't refresh the database.

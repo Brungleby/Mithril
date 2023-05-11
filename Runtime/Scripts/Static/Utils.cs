@@ -12,6 +12,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
@@ -193,6 +194,20 @@ namespace Mithril
 		{
 			foreach (var i in toAdd)
 				collection.Add((object)i);
+		}
+
+		#endregion
+		#region 
+
+		public static TCollection CombineCollection<TCollection, T>(IEnumerable<T> a, IEnumerable<T> b)
+		where TCollection : ICollection<T>, new()
+		{
+			var __result = new TCollection();
+
+			__result.AddAll(a);
+			__result.AddAll(b);
+
+			return __result;
 		}
 
 		#endregion

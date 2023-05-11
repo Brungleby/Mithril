@@ -280,7 +280,7 @@ namespace Mithril
 		public T Open<T>()
 		where T : InstantiableWindow =>
 			(T)Open(typeof(T));
-		public void Open() =>
+		public InstantiableWindow Open() =>
 			Open(compatibleEditorWindows[0]);
 
 		[UnityEditor.Callbacks.OnOpenAsset]

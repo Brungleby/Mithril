@@ -27,22 +27,31 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class NodeGraphWindow : InstantiableWindow
-	// where NodeGraphView : NodeGraphView
+	public abstract class NodeGraphWindow : InstantiableWindow
+	{
+		public abstract NodeGraphView graph { get; protected set; }
+	}
+
+	public abstract class NodeGraphWindow<TGraphView> : NodeGraphWindow
+	where TGraphView : NodeGraphView
 	{
 		#region Data
 
 		#region
 
-		private NodeGraphView _graph;
-		public NodeGraphView graph => _graph;
+		private TGraphView _graph;
+		public sealed override NodeGraphView graph
+		{
+			get => _graph;
+			protected set => _graph = (TGraphView)value;
+		}
 
 		#endregion
 
 		#endregion
 		#region Methods
 
-		private List<Edge> GetEdges() => _graph.edges.ToList();
+		private List<Edge> GetEdges() => _graph.edges.Cast<Edge>().ToList();
 		private List<Node> GetPredefinedNodes() => _graph.nodes
 			.Cast<Node>()
 			.Where(i => i.isPredefined)
@@ -62,7 +71,7 @@ namespace Mithril.Editor
 
 		protected override void SetupVisualElements()
 		{
-			_graph = System.Activator.CreateInstance<NodeGraphView>();
+			_graph = System.Activator.CreateInstance<TGraphView>();
 			_graph.onModified.AddListener(NotifyIsModified);
 
 			rootVisualElement.Add(graph);

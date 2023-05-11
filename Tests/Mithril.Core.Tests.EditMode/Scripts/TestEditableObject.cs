@@ -13,10 +13,7 @@ using Mithril.Editor;
 using Node = Mithril.Editor.Node;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
 using UnityEngine;
@@ -52,7 +49,7 @@ namespace Mithril.Tests
 		#endregion
 	}
 
-	public sealed class TestNodeGraphWindow : NodeGraphWindow
+	public sealed class TestNodeGraphWindow : NodeGraphWindow<TestNodeGraphView>
 	{
 		#region Data
 
@@ -81,21 +78,38 @@ namespace Mithril.Tests
 				new SearchTreeGroupEntry(new GUIContent("Available Nodes"), 0),
 
 				new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(Node) },
-				new SearchTreeEntry(new GUIContent("Test Node")) { level = 1, userData = typeof(TestNode) },
+				new SearchTreeEntry(new GUIContent("String Entry Node")) { level = 1, userData = typeof(TestStringEntryNode) },
+				new SearchTreeEntry(new GUIContent("String Receiver Node")) { level = 1, userData = typeof(TestStringReceiverNode) },
 			};
 
 			return __result;
 		}
 	}
 
-	public sealed class TestNode : Node
+	public sealed class TestStringReceiverNode : Node
+	{
+		#region Data
+
+		public override string defaultTitle =>
+			"String Receiver Node";
+
+		#endregion
+		#region Methods
+
+		protected override Dictionary<string, Type> defaultPortsIn => Utils.CombineCollection<Dictionary<string, Type>, KeyValuePair<string, Type>>(PRESET_PORTS_IN_EXEC, new Dictionary<string, Type> { { "Text", typeof(string) } });
+
+		protected override Dictionary<string, Type> defaultPortsOut => PRESET_PORTS_OUT_EXEC;
+		#endregion
+	}
+
+	public sealed class TestStringEntryNode : Node
 	{
 		#region Data
 
 		#region
 
-		public override string defaultName =>
-			"Test Node";
+		public override string defaultTitle =>
+			"String Entry Node";
 
 		private TextField _textField;
 
@@ -119,7 +133,7 @@ namespace Mithril.Tests
 
 		#region
 
-		public TestNode() : base()
+		public TestStringEntryNode() : base()
 		{
 			_message = string.Empty;
 
@@ -131,6 +145,9 @@ namespace Mithril.Tests
 
 			contentContainer.Add(_textField);
 		}
+
+		protected override Dictionary<string, Type> defaultPortsOut => new Dictionary<string, Type>
+		{ { "Text", typeof(string) } };
 
 		public override void OnAfterDeserialize()
 		{
