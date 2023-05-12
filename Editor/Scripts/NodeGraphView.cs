@@ -130,16 +130,8 @@ namespace Mithril.Editor
 
 			foreach (var iEdgeMirror in data.edgeMirrors)
 			{
-				var __edgeTuple = iEdgeMirror.GetReflection<Edge, Tuple<Guid, string, Guid, string>>();
-
-				var __nodeOut = FindNode(__edgeTuple.Item1);
-				var __portOut = __nodeOut.GetPortByName(__edgeTuple.Item2);
-				var __nodeIn = FindNode(__edgeTuple.Item3);
-				var __portIn = __nodeIn.GetPortByName(__edgeTuple.Item4);
-
-				var __edge = __portOut.ConnectTo(__portIn);
-
-				AddElement(__edge);
+				var __edge = iEdgeMirror.GetReflection<Edge>();
+				SetupEdgeAfterReflection(__edge);
 			}
 
 			_isNotifiable = true;
@@ -272,12 +264,7 @@ namespace Mithril.Editor
 
 		private void OnPaste(string operationName, string data)
 		{
-			GraphElement[] __elements;
-
-			try
-			{ __elements = JsonTranslator.Decode<GraphElement[]>(data); }
-			catch
-			{ return; }
+			GraphElement[] __elements = JsonTranslator.Decode<GraphElement[]>(data);
 
 			if (!__elements.Any())
 				return;
@@ -288,8 +275,7 @@ namespace Mithril.Editor
 
 			/** <<============================================================>> **/
 
-			var __nodes = __elements.Cast<Node>();
-
+			var __nodes = __elements.Where(i => i is Node).Cast<Node>();
 
 			var __averagePosition = __nodes.Select(i => i.position).Average();
 			var __deltaMousePosition = mousePosition - __averagePosition;
@@ -307,27 +293,29 @@ namespace Mithril.Editor
 
 			/** <<============================================================>> **/
 
-			// var __edges = new List<Edge>();
+			var __extractedEdges = __elements.Where(i => i is Edge).Cast<Edge>();
+			var __edges = new List<Edge>();
 
-			// foreach (var iEdgeData in clipboard.edgeData)
-			// {
-			// 	var __linkData = iEdgeData;
+			foreach (var iEdge in __extractedEdges)
+			{
+				var __edgeTuple = (Tuple<Guid, string, Guid, string>)iEdge.userData;
 
-			// 	__linkData.nPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.nPort.NodeGuid);
-			// 	__linkData.oPort.NodeGuid = __guidLinks.TryGetValue(iEdgeData.oPort.NodeGuid);
+				var __nodeOut = FindNode(__links.GetValueOrDefault(__edgeTuple.Item1, __edgeTuple.Item1));
+				var __portOut = __nodeOut.GetPortByName(__edgeTuple.Item2);
+				var __nodeIn = FindNode(__links.GetValueOrDefault(__edgeTuple.Item3, __edgeTuple.Item3));
+				var __portIn = __nodeIn.GetPortByName(__edgeTuple.Item4);
 
-			// 	try
-			// 	{ __edges.Add(CreateEdge(__linkData)); }
-			// 	catch
-			// 	{ continue; }
-			// }
+				var __edge = __portOut.ConnectTo(__portIn);
+				__edges.Add(__edge);
+				AddElement(__edge);
+			}
 
 			/** <<============================================================>> **/
 
 			var __newSelection = new List<ISelectable>();
 
 			__newSelection.AddRange(__nodes);
-			// __newSelection.AddRange(__edges);
+			__newSelection.AddRange(__edges);
 
 			this.SetSelection(__newSelection);
 
@@ -441,7 +429,17 @@ namespace Mithril.Editor
 		#endregion
 		#region Edge Handling
 
+		public void SetupEdgeAfterReflection(Edge edge)
+		{
+			var __edgeTuple = (Tuple<Guid, string, Guid, string>)edge.userData;
 
+			var __nodeOut = FindNode(__edgeTuple.Item1);
+			var __portOut = __nodeOut.GetPortByName(__edgeTuple.Item2);
+			var __nodeIn = FindNode(__edgeTuple.Item3);
+			var __portIn = __nodeIn.GetPortByName(__edgeTuple.Item4);
+
+			AddElement(__portOut.ConnectTo(__portIn));
+		}
 
 		#endregion
 		#region Utils

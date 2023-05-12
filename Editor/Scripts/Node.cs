@@ -47,8 +47,8 @@ namespace Mithril.Editor
 			NODE_HEADER_HEIGHT + NODE_PORT_HEIGHT
 		);
 
-		public static readonly string EXEC_LABEL_IN = "execIn";
-		public static readonly string EXEC_LABEL_OUT = "execOut";
+		public static readonly string EXEC_LABEL_IN = "_i";
+		public static readonly string EXEC_LABEL_OUT = "_o";
 
 		protected static readonly Dictionary<string, Type> PRESET_PORTS_IN_EXEC = new Dictionary<string, Type>
 		{ { EXEC_LABEL_IN, typeof(Exec) } };
@@ -222,6 +222,11 @@ namespace Mithril.Editor
 
 		#region Port Handling
 
+		public static readonly IStyle EXEC_PORT_STYLE;
+
+		protected virtual Dictionary<string, Type> defaultPortsIn => new Dictionary<string, Type>();
+		protected virtual Dictionary<string, Type> defaultPortsOut => new Dictionary<string, Type>();
+
 		#region Retrieval
 
 		public VisualElement GetPortContainerFor(UnityEditor.Experimental.GraphView.Port port) =>
@@ -256,6 +261,9 @@ namespace Mithril.Editor
 
 		public void SetupPort(UnityEditor.Experimental.GraphView.Port port)
 		{
+			if (typeof(Exec) == port.portType)
+				ChangeStyleToExecStyle(port);
+
 			GetPortContainerFor(port).Add(port);
 
 			RefreshAll();
@@ -313,8 +321,16 @@ namespace Mithril.Editor
 			}
 		}
 
-		protected virtual Dictionary<string, Type> defaultPortsIn => new Dictionary<string, Type>();
-		protected virtual Dictionary<string, Type> defaultPortsOut => new Dictionary<string, Type>();
+		private void ChangeStyleToExecStyle(Port port)
+		{
+			port.portColor = Color.white;
+
+			if (port.portName == EXEC_LABEL_IN || port.portName == EXEC_LABEL_OUT)
+			{
+				var __label = port.Q<Label>();
+				__label.visible = false;
+			}
+		}
 
 		#endregion
 		#region Destruction
@@ -330,7 +346,6 @@ namespace Mithril.Editor
 		#endregion
 
 		#endregion
-
 		#region Edge Handling
 
 		#region Retrieval

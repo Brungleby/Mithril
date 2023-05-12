@@ -140,8 +140,6 @@ namespace Mithril
 			new JsonTranslator().DecodeAny(type, json);
 		public static T Decode<T>(in string json) =>
 			(T)new JsonTranslator().DecodeAny(typeof(T), json);
-		public static TResult Decode<T, TResult>(in string json) =>
-			(TResult)new JsonTranslator().DecodeAny(typeof(T), json);
 
 		public static string Encode(object obj) =>
 			new JsonTranslator().EncodeAny(obj);
@@ -685,8 +683,13 @@ namespace Mithril
 			/** <<============================================================>> **/
 
 			var __objectType = DecodeType(__wrapperFields[0].Item2);
-			var __objectData = __wrapperFields[1].Item2;
 
+			if (DECODE_METHODS_BY_TYPE.TryGetValue(__objectType, out var __m_decodeCustom))
+				return __m_decodeCustom.Invoke(json);
+
+			/** <<============================================================>> **/
+
+			var __objectData = __wrapperFields[1].Item2;
 			var __objectFieldPairs = UnwrapFieldPairs(__objectData);
 
 			var __result = CreateInstance(__objectType);
@@ -860,29 +863,35 @@ namespace Mithril
 		#endregion
 		#region GraphView.Edge
 
-		private Tuple<Guid, string, Guid, string> DecodeGraphViewEdge(string json)
+		private Edge DecodeGraphViewEdge(string json)
 		{
-			var __elements = UnwrapArray(json);
+			var __data = UnwrapFieldPairs(json)[1].Item2;
+			var __elements = UnwrapFieldPairs(__data);
 
-			var __guidOut = Decode<Guid>(__elements[0]);
-			var __portOut = Decode<string>(__elements[1]);
-			var __guidIn = Decode<Guid>(__elements[2]);
-			var __portIn = Decode<string>(__elements[3]);
+			var __guidOut = Decode<Guid>(__elements[0].Item2);
+			var __portOut = Decode<string>(__elements[1].Item2);
+			var __guidIn = Decode<Guid>(__elements[2].Item2);
+			var __portIn = Decode<string>(__elements[3].Item2);
 
-			return new Tuple<Guid, string, Guid, string>(__guidOut, __portOut, __guidIn, __portIn);
+			var __edge = new Edge();
+			__edge.userData = new Tuple<Guid, string, Guid, string>(__guidOut, __portOut, __guidIn, __portIn);
+
+			return __edge;
 		}
 
 		private string EncodeGraphViewEdge(object obj)
 		{
 			var __edge = (Edge)obj;
-			var __result = OPEN_BRACKET;
+			var __data = OPEN_BRACE;
 
-			__result += Encode(((Mithril.Editor.Node)__edge.output.node).guid) + ITERATE;
-			__result += Encode(__edge.output.portName) + ITERATE;
-			__result += Encode(((Mithril.Editor.Node)__edge.input.node).guid) + ITERATE;
-			__result += Encode(__edge.input.portName);
+			__data += $"\"guidOut\":{SPACE}{Encode(((Mithril.Editor.Node)__edge.output.node).guid)}" + ITERATE;
+			__data += $"\"portOut\":{SPACE}{Encode(__edge.output.portName)}" + ITERATE;
+			__data += $"\"guidIn\":{SPACE}{Encode(((Mithril.Editor.Node)__edge.input.node).guid)}" + ITERATE;
+			__data += $"\"portIn\":{SPACE}{Encode(__edge.input.portName)}";
 
-			return __result + CLOSE_BRACKET;
+			__data += CLOSE_BRACE;
+
+			return EncodeObject(obj, __data);
 		}
 
 		#endregion

@@ -14,26 +14,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mirror:
     _json: '{"TYPE":"Mithril.Tests.TestEditableObject, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[79,102],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringReceiverNode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[136,-129],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringEntryNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[305,295,150,100],"guid":"987a17e101cd03347a525ff7c2fc9e55","isPredefined":false}},{"TYPE":"Mithril.Tests.TestStringEntryNode,
+      Entry Node","_rect":[-130.4162,428,150,75],"guid":"540f40cbadb770541a82055394690710","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[32.8,207,150,75],"guid":"1150d85ca309f5e43afd4cca4e391382","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
+      Receiver Node","_rect":[101,180,150,100],"guid":"f9dcd5dcfb0257042a680745b80cd5c6","isPredefined":false}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
       Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[305,30,150,100],"guid":"b754bee587e5e724fb7b60a027a7ce03","isPredefined":false}}],"_edgeMirrors":[["1150d85ca309f5e43afd4cca4e391382","Text","987a17e101cd03347a525ff7c2fc9e55","Text"],["1150d85ca309f5e43afd4cca4e391382","Text","b754bee587e5e724fb7b60a027a7ce03","Text"]]}}'
+      Receiver Node","_rect":[339,328,150,100],"guid":"5a07f01a50f35d042b38237b982d7801","isPredefined":false}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
+      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
+      Receiver Node","_rect":[339,453,150,100],"guid":"ae9ca1053ad246d4b8b843c0dc584c6b","isPredefined":false}}],"_edgeMirrors":[{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"f9dcd5dcfb0257042a680745b80cd5c6","portIn":"Text"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"Text"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"_i"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"_i"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"Text"}}]}}'
   _currentlyOpenEditor: {fileID: 0}
   _isAutosaved: 1
-  viewPosition: {x: 79, y: 102}
+  viewPosition: {x: 136, y: -129}
   _nodeMirrors:
-  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[305,295,150,100],"guid":"987a17e101cd03347a525ff7c2fc9e55","isPredefined":false}}'
   - _json: '{"TYPE":"Mithril.Tests.TestStringEntryNode, Mithril.Core.Tests.EditMode,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[32.8,207,150,75],"guid":"1150d85ca309f5e43afd4cca4e391382","isPredefined":false,"_message":""}}'
+      Entry Node","_rect":[-130.4162,428,150,75],"guid":"540f40cbadb770541a82055394690710","isPredefined":false,"_message":""}}'
   - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[305,30,150,100],"guid":"b754bee587e5e724fb7b60a027a7ce03","isPredefined":false}}'
+      Receiver Node","_rect":[101,180,150,100],"guid":"f9dcd5dcfb0257042a680745b80cd5c6","isPredefined":false}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
+      Receiver Node","_rect":[339,328,150,100],"guid":"5a07f01a50f35d042b38237b982d7801","isPredefined":false}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
+      Receiver Node","_rect":[339,453,150,100],"guid":"ae9ca1053ad246d4b8b843c0dc584c6b","isPredefined":false}}'
   _edgeMirrors:
-  - _json: '["1150d85ca309f5e43afd4cca4e391382","Text","987a17e101cd03347a525ff7c2fc9e55","Text"]'
-  - _json: '["1150d85ca309f5e43afd4cca4e391382","Text","b754bee587e5e724fb7b60a027a7ce03","Text"]'
+  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"f9dcd5dcfb0257042a680745b80cd5c6","portIn":"Text"}}'
+  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"Text"}}'
+  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"_i"}}'
+  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"_i"}}'
+  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"Text"}}'

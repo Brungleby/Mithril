@@ -108,8 +108,6 @@ namespace Mithril.Editor
 
 		public override void OnSetupForWorkObject()
 		{
-			Debug.Log(workObject.mirror);
-
 			SetupGraphView(_graph);
 		}
 
