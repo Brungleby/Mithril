@@ -14,44 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mirror:
     _json: '{"TYPE":"Mithril.Tests.TestEditableObject, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[136,-129],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestStringEntryNode,
-      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[-130.4162,428,150,75],"guid":"540f40cbadb770541a82055394690710","isPredefined":false,"_message":""}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
-      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[101,180,150,100],"guid":"f9dcd5dcfb0257042a680745b80cd5c6","isPredefined":false}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
-      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[339,328,150,100],"guid":"5a07f01a50f35d042b38237b982d7801","isPredefined":false}},{"TYPE":"Mithril.Tests.TestStringReceiverNode,
-      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[339,453,150,100],"guid":"ae9ca1053ad246d4b8b843c0dc584c6b","isPredefined":false}}],"_edgeMirrors":[{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
-      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"f9dcd5dcfb0257042a680745b80cd5c6","portIn":"Text"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
-      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"Text"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
-      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"_i"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
-      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"_i"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
-      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"Text"}}]}}'
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[0,-76],"_nodeMirrors":[{"TYPE":"Mithril.Tests.TestIntNode,
+      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"Int
+      Node","_rect":[-37,340,150,75],"guid":"ba18d3414c1c5894e85e772300f1f5af","isPredefined":false,"_intValue":0}},{"TYPE":"Mithril.Tests.TestIntNode,
+      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"Int
+      Node","_rect":[176,198,150,75],"guid":"dd17d241a9a1e0c438b05b7d9469d52c","isPredefined":false,"_intValue":1}},{"TYPE":"Mithril.Tests.TestIntNode,
+      Mithril.Core.Tests.EditMode, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"Int
+      Node","_rect":[370.44,340,150,75],"guid":"09cadb0f76f80e044aac751bd1e21ce1","isPredefined":false,"_intValue":3}}],"_edgeMirrors":[{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"ba18d3414c1c5894e85e772300f1f5af","portOut":"Out","guidIn":"dd17d241a9a1e0c438b05b7d9469d52c","portIn":"In"}},{"TYPE":"UnityEditor.Experimental.GraphView.Edge,
+      UnityEditor.GraphViewModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"dd17d241a9a1e0c438b05b7d9469d52c","portOut":"Out","guidIn":"09cadb0f76f80e044aac751bd1e21ce1","portIn":"In"}}]}}'
   _currentlyOpenEditor: {fileID: 0}
   _isAutosaved: 1
-  viewPosition: {x: 136, y: -129}
+  viewPosition: {x: 0, y: -76}
   _nodeMirrors:
-  - _json: '{"TYPE":"Mithril.Tests.TestStringEntryNode, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Entry Node","_rect":[-130.4162,428,150,75],"guid":"540f40cbadb770541a82055394690710","isPredefined":false,"_message":""}}'
-  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[101,180,150,100],"guid":"f9dcd5dcfb0257042a680745b80cd5c6","isPredefined":false}}'
-  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[339,328,150,100],"guid":"5a07f01a50f35d042b38237b982d7801","isPredefined":false}}'
-  - _json: '{"TYPE":"Mithril.Tests.TestStringReceiverNode, Mithril.Core.Tests.EditMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"String
-      Receiver Node","_rect":[339,453,150,100],"guid":"ae9ca1053ad246d4b8b843c0dc584c6b","isPredefined":false}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestIntNode, Mithril.Core.Tests.EditMode, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null","DATA":{"_title":"Int Node","_rect":[-37,340,150,75],"guid":"ba18d3414c1c5894e85e772300f1f5af","isPredefined":false,"_intValue":0}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestIntNode, Mithril.Core.Tests.EditMode, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null","DATA":{"_title":"Int Node","_rect":[176,198,150,75],"guid":"dd17d241a9a1e0c438b05b7d9469d52c","isPredefined":false,"_intValue":1}}'
+  - _json: '{"TYPE":"Mithril.Tests.TestIntNode, Mithril.Core.Tests.EditMode, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null","DATA":{"_title":"Int Node","_rect":[370.44,340,150,75],"guid":"09cadb0f76f80e044aac751bd1e21ce1","isPredefined":false,"_intValue":3}}'
   _edgeMirrors:
   - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"f9dcd5dcfb0257042a680745b80cd5c6","portIn":"Text"}}'
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"ba18d3414c1c5894e85e772300f1f5af","portOut":"Out","guidIn":"dd17d241a9a1e0c438b05b7d9469d52c","portIn":"In"}}'
   - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"Text"}}'
-  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"5a07f01a50f35d042b38237b982d7801","portIn":"_i"}}'
-  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"f9dcd5dcfb0257042a680745b80cd5c6","portOut":"_o","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"_i"}}'
-  - _json: '{"TYPE":"UnityEditor.Experimental.GraphView.Edge, UnityEditor.GraphViewModule,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"540f40cbadb770541a82055394690710","portOut":"Text","guidIn":"ae9ca1053ad246d4b8b843c0dc584c6b","portIn":"Text"}}'
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"guidOut":"dd17d241a9a1e0c438b05b7d9469d52c","portOut":"Out","guidIn":"09cadb0f76f80e044aac751bd1e21ce1","portIn":"In"}}'

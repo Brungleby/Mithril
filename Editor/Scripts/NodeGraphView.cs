@@ -73,13 +73,14 @@ namespace Mithril.Editor
 			onModified = new UnityEvent();
 
 			styleSheets.Add(Resources.Load<StyleSheet>("Stylesheets/GraphBackgroundDefault"));
+			styleSheets.Add(Resources.Load<StyleSheet>("Stylesheets/StickyNoteDefault"));
 
 			SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
 
 			this.AddManipulator(new ContentDragger());
 			this.AddManipulator(new SelectionDragger());
 			this.AddManipulator(new RectangleSelector());
-			// this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
+			this.AddManipulator(new ContextualMenuManipulator(_CreateContextMenu));
 
 			// nodeCreationRequest += OnNodeCreation;
 			graphViewChanged += OnGraphViewChanged;
@@ -186,13 +187,16 @@ namespace Mithril.Editor
 		private void _CreateContextMenu(ContextualMenuPopulateEvent context)
 		{
 			CreateContextMenu(context);
-			context.menu.InsertSeparator("/", 1);
 		}
 		protected virtual void CreateContextMenu(ContextualMenuPopulateEvent context)
 		{
-			context.menu.InsertAction(0, "Create Node", (_) =>
+			// context.menu.InsertAction(0, "Create Node", (_) =>
+			// {
+			// 	CreateNewNode<Node>();
+			// });
+			context.menu.InsertAction(1, "Create Sticky Note", (_) =>
 			{
-				CreateNewNode<Node>();
+				CreateNewStickyNote();
 			});
 		}
 
@@ -442,6 +446,29 @@ namespace Mithril.Editor
 		}
 
 		#endregion
+		#region Sticky Notes
+
+		public StickyNote CreateNewStickyNote()
+		{
+			Debug.Log(typeof(StickyNote).GetSerializableFields().ContentsToString());
+
+			var __result = new StickyNote
+			{
+				contents = "This is a sticky note!",
+				title = "Sticky Note Title",
+				capabilities = Capabilities.Movable | Capabilities.Deletable
+			};
+			__result.SetPositionOnly(_mousePosition);
+
+
+			AddElement(__result);
+
+
+			return __result;
+		}
+
+		#endregion
+
 		#region Utils
 
 		public void SetViewPosition(Vector2 position) =>

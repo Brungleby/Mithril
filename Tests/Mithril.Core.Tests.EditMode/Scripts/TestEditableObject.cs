@@ -80,10 +80,80 @@ namespace Mithril.Tests
 				new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(Node) },
 				new SearchTreeEntry(new GUIContent("String Entry Node")) { level = 1, userData = typeof(TestStringEntryNode) },
 				new SearchTreeEntry(new GUIContent("String Receiver Node")) { level = 1, userData = typeof(TestStringReceiverNode) },
+				new SearchTreeEntry(new GUIContent("Int Node")) { level = 1, userData = typeof(TestIntNode) },
 			};
 
 			return __result;
 		}
+	}
+
+	public sealed class TestIntNode : Node
+	{
+		[SerializeField]
+		private int _intValue;
+		public int intValue
+		{
+			get => _intValue;
+			set
+			{
+				_intValue = value;
+				RefreshTextField();
+			}
+		}
+
+		private TextField _textField;
+
+		public override string defaultTitle =>
+			"Int Node";
+
+		protected override Dictionary<string, Type> defaultPortsIn => new Dictionary<string, Type>
+		{
+			{ "In", typeof(int) },
+		};
+
+		protected override Dictionary<string, Type> defaultPortsOut => new Dictionary<string, Type>
+		{
+			{ "Out", typeof(int) },
+		};
+
+		public TestIntNode() : base()
+		{
+			_textField = new TextField(string.Empty);
+			_textField.multiline = true;
+			_textField.SetValueWithoutNotify(string.Empty);
+			_textField.RegisterCallback<ChangeEvent<string>>(OnTextFieldValueChanged);
+			_textField.RegisterCallback<BlurEvent>(OnBlurEvent);
+
+			contentContainer.Add(_textField);
+		}
+
+		public override void OnAfterDeserialize()
+		{
+			base.OnAfterDeserialize();
+
+			RefreshTextField();
+		}
+
+		private void OnTextFieldValueChanged(ChangeEvent<string> context)
+		{
+			RefreshSize();
+		}
+
+		private void OnBlurEvent(BlurEvent context)
+		{
+			try
+			{
+				_intValue = int.Parse(_textField.text);
+				NotifyIsModified();
+			}
+			catch
+			{
+				RefreshTextField();
+			}
+		}
+
+		private void RefreshTextField() =>
+			_textField.SetValueWithoutNotify(_intValue.ToString().Trim());
 	}
 
 	public sealed class TestStringReceiverNode : Node

@@ -55,6 +55,10 @@ namespace Mithril
 		private Mirror[] _edgeMirrors = new Mirror[0];
 		public Mirror[] edgeMirrors => _edgeMirrors;
 
+		[SerializeField]
+		[HideInInspector]
+		private NodeData[] _nodeData = new NodeData[0];
+
 		#endregion
 		#region Methods
 
@@ -104,17 +108,14 @@ namespace Mithril
 		}
 
 		#endregion
+		#region Retrieval
 
-		// public override void Save()
-		// {
-		// 	if (_currentlyOpenEditor != null)
-		// 		if (_currentlyOpenEditor is NodeGraphWindow __window)
-		// 			UpdateFromGraphView(__window.graph);
-		// 		else
-		// 			Debug.LogError("Unable to update from graph view. Implement parent class at NodeGraphWindow.cs >> Line 30.");
+		public NodeData GetNodeByGuid(Guid guid)
+		{
+			return _nodeData.Where(i => i.guid == guid).First();
+		}
 
-		// 	base.Save();
-		// }
+		#endregion
 
 		#endregion
 	}
@@ -153,6 +154,16 @@ namespace Mithril
 		{
 			get => Type.GetType(_nodeType);
 			set => _nodeType = value.AssemblyQualifiedName;
+		}
+
+		// public NodeData(Mirror mirror)
+		// {
+		// 	// guid = serialObject.Ge
+		// }
+
+		public NodeData()
+		{
+
 		}
 
 #if UNITY_EDITOR
