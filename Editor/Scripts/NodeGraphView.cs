@@ -24,19 +24,30 @@ using UnityEditor.Experimental.GraphView;
 
 namespace Mithril.Editor
 {
+	public class NodeGraphView<TSearchWindow> : NodeGraphView
+	where TSearchWindow : NodeGraphSearchSubwindow
+	{
+		private TSearchWindow _searchWindow;
+
+		protected override void AddSearchWindow()
+		{
+			_searchWindow = ScriptableObject.CreateInstance<TSearchWindow>();
+			nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
+			_searchWindow.InitializeFor(this);
+		}
+	}
+
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public class NodeGraphView : GraphView
+	public abstract class NodeGraphView : GraphView
 	{
 		#region Data
 
 		#region
 
 		public UnityEvent onModified;
-
-		private NodeGraphSearchSubwindow _searchWindow;
 
 		private Vector2 _mousePosition;
 		public Vector2 mousePosition => _mousePosition;
@@ -47,21 +58,6 @@ namespace Mithril.Editor
 		private bool _isNotifiable = false;
 
 		#endregion
-
-		#endregion
-		#region Properties
-
-		public virtual List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
-		{
-			var __result = new List<SearchTreeEntry>
-			{
-				new SearchTreeGroupEntry(new GUIContent("Available Nodes"), 0),
-					new SearchTreeEntry(new GUIContent("Custom Node")) { level = 1, userData = typeof(Node) },
-
-			};
-
-			return __result;
-		}
 
 		#endregion
 		#region Methods
@@ -200,12 +196,7 @@ namespace Mithril.Editor
 			});
 		}
 
-		private void AddSearchWindow()
-		{
-			_searchWindow = ScriptableObject.CreateInstance<NodeGraphSearchSubwindow>();
-			nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), _searchWindow);
-			_searchWindow.InitializeFor(this);
-		}
+		protected abstract void AddSearchWindow();
 
 		#endregion
 		#region Node Handling

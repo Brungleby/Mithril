@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4298f0ac7c68455469cd24e05aa6417f, type: 3}
+  m_Name: New Narrative Node Graph
+  m_EditorClassIdentifier: 
+  _mirror:
+    _data: '{"TYPE":"Mithril.Tests.NarrativeNodeGraph, Mithril.Core.Tests.PlayMode,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[0,212],"_nodeMirrors":[{"TYPE":"Mithril.Editor.Node,
+      Mithril.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"New
+      Custom Node","_rect":[196,-56,150,50],"guid":"7f184b13bb3e30b4dbf19f7ac15598fd","isPredefined":false}}],"_edgeMirrors":[],"_nodeData":[]}}'
+  _currentlyOpenEditor: {fileID: 0}
+  _isAutosaved: 1
+  viewPosition: {x: 0, y: 212}
+  _nodeMirrors:
+  - _data: '{"TYPE":"Mithril.Editor.Node, Mithril.Core, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null","DATA":{"_title":"New Custom Node","_rect":[196,-56,150,50],"guid":"7f184b13bb3e30b4dbf19f7ac15598fd","isPredefined":false}}'
+  _edgeMirrors: []
+  _nodeData: []

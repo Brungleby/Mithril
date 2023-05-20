@@ -26,13 +26,13 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class NodeGraphSearchSubwindow : ScriptableObject, ISearchWindowProvider
+	public abstract class NodeGraphSearchSubwindow : ScriptableObject, ISearchWindowProvider
 	{
 		#region Data
 
 		#region
 
-		private NodeGraphView _graph;
+		private NodeGraphView _graphView;
 
 		#endregion
 
@@ -41,19 +41,18 @@ namespace Mithril.Editor
 
 		#region
 
-		public void InitializeFor(NodeGraphView graph)
+		public void InitializeFor(NodeGraphView graphView)
 		{
-			_graph = graph;
+			_graphView = graphView;
 		}
 
-		public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context) =>
-			_graph.CreateSearchTree(context);
+		public abstract List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context);
 
 		public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
 		{
 			Type type = (Type)searchTreeEntry.userData;
 
-			_graph.CreateNewNodeAtCursor(type);
+			_graphView.CreateNewNodeAtCursor(type);
 			return true;
 		}
 

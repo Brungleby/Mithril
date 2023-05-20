@@ -901,7 +901,7 @@ namespace Mithril
 			Mirror.CreateFromJsonDirect(json);
 
 		private static string EncodeMirror(object obj) =>
-			((Mirror)obj).json;
+			((Mirror)obj).data;
 
 		#endregion
 

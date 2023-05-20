@@ -27,7 +27,7 @@ namespace Mithril.Editor
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class NodeGraphWindow : InstantiableWindow
+	public abstract class NodeGraphWindow : EditableWindow
 	{
 		public abstract NodeGraphView graph { get; protected set; }
 	}
@@ -126,4 +126,8 @@ namespace Mithril.Editor
 		/** <<============================================================>> **/
 		#endregion
 	}
+
+	public abstract class BasicNodeGraphWindow<TSearchWindow> : NodeGraphWindow<NodeGraphView<TSearchWindow>>
+	where TSearchWindow : NodeGraphSearchSubwindow
+	{ }
 }

@@ -30,7 +30,7 @@ namespace Mithril.Editor
 	/// Each instance of this window is assigned to a corresponding <see cref="workObject"/>.
 	///</summary>
 
-	public abstract class InstantiableWindow : EditorWindow, ISerializationCallbackReceiver
+	public abstract class EditableWindow : EditorWindow, ISerializationCallbackReceiver
 	{
 		#region Inners
 
@@ -210,7 +210,7 @@ namespace Mithril.Editor
 		/// Or, if the object is already being edited, it will simply focus that window.
 		///</summary>
 
-		public static InstantiableWindow Instantiate(Type type, EditableObject obj)
+		public static EditableWindow Instantiate(Type type, EditableObject obj)
 		{
 			/** <<============================================================>> **/
 			/**	If a window already editing this specific object exists,
@@ -219,7 +219,7 @@ namespace Mithril.Editor
 
 			var __allWindowsOfMatchingType = Resources
 				.FindObjectsOfTypeAll(type)
-				.Cast<InstantiableWindow>()
+				.Cast<EditableWindow>()
 			;
 
 			foreach (var iWindow in __allWindowsOfMatchingType)
@@ -235,7 +235,7 @@ namespace Mithril.Editor
 			/**	Otherwise, create a new window.
 			*/
 
-			var __window = (InstantiableWindow)EditorWindow.CreateInstance(type);
+			var __window = (EditableWindow)EditorWindow.CreateInstance(type);
 			__window.Initialize(obj);
 
 			return __window;
@@ -244,11 +244,11 @@ namespace Mithril.Editor
 		/// <inheritdoc cref="Instantiate"/>
 
 		public static T Instantiate<T>(EditableObject obj)
-		where T : InstantiableWindow =>
+		where T : EditableWindow =>
 			(T)Instantiate(typeof(T), obj);
 
 		/// <summary>
-		/// Loads the given <paramref name="obj"/> into the view(s) of this <see cref="InstantiableWindow"/>.
+		/// Loads the given <paramref name="obj"/> into the view(s) of this <see cref="EditableWindow"/>.
 		///</summary>
 
 		private void Initialize(EditableObject obj)
@@ -283,7 +283,7 @@ namespace Mithril.Editor
 		public virtual void OnSetupForWorkObject() { }
 
 		/// <summary>
-		/// Loads the given <paramref name="filePath"/> as a <see cref="EditableObject"/> into the view(s) of this <see cref="InstantiableWindow"/>.
+		/// Loads the given <paramref name="filePath"/> as a <see cref="EditableObject"/> into the view(s) of this <see cref="EditableWindow"/>.
 		///</summary>
 
 		public void Open(string filePath)
@@ -374,8 +374,8 @@ namespace Mithril.Editor
 
 		private void AssertCompatibleWith(EditableObject obj)
 		{
-			if (!obj.compatibleEditorWindows.Contains(GetType()))
-				throw new NotSupportedException($"{obj.name} ({obj.GetType()}) cannot be opened with this type of EditorWindow ({GetType()}). To edit this object here, add this window type to {obj.GetType()}'s {nameof(obj.compatibleEditorWindows)}.");
+			if (!obj.compatibleWindows.Contains(GetType()))
+				throw new NotSupportedException($"{obj.name} ({obj.GetType()}) cannot be opened with this type of EditorWindow ({GetType()}). To edit this object here, add this window type to {obj.GetType()}'s {nameof(obj.compatibleWindows)}.");
 		}
 
 		#endregion

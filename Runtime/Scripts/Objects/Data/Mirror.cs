@@ -32,8 +32,8 @@ namespace Mithril
 
 		[SerializeField]
 		[HideInInspector]
-		private string _json;
-		public string json => _json;
+		private string _data;
+		public string data => _data;
 
 		#endregion
 
@@ -43,12 +43,12 @@ namespace Mithril
 		#region Construction
 
 		private Mirror(string json) =>
-			_json = json;
+			_data = json;
 		public Mirror(object obj) =>
 			SetReflectionFrom(obj);
 
-		public static Mirror CreateFromJsonDirect(string json) =>
-			new Mirror(json);
+		public static Mirror CreateFromJsonDirect(string data) =>
+			new Mirror(data);
 
 		#endregion
 
@@ -75,37 +75,30 @@ namespace Mithril
 			if (obj != null)
 			{
 				if (obj is Mirror that_Mirror)
-					return this._json.Equals(that_Mirror._json);
+					return this._data.Equals(that_Mirror._data);
 				if (obj is string that_String)
-					return this._json.Equals(that_String);
+					return this._data.Equals(that_String);
 			}
 			return false;
 		}
 
-		public override int GetHashCode()
-		{
-			unchecked
-			{
-				var hash = 17;
-				hash = hash * 31 + _json.GetHashCode();
-				return hash;
-			}
-		}
+		public override int GetHashCode() =>
+			_data.GetHashCode();
 
 		public override string ToString() =>
-			_json;
+			_data;
 
 		#endregion
 
 		public object GetReflection() =>
-			JsonTranslator.Decode(_json);
+			JsonTranslator.Decode(_data);
 		public object GetReflection(Type type) =>
-			JsonTranslator.Decode(type, _json);
+			JsonTranslator.Decode(type, _data);
 		public T GetReflection<T>() =>
-			JsonTranslator.Decode<T>(_json);
+			JsonTranslator.Decode<T>(_data);
 
 		public void SetReflectionFrom(object obj) =>
-			_json = JsonTranslator.Encode(obj);
+			_data = JsonTranslator.Encode(obj);
 
 		public void ApplyReflectionTo(object obj) =>
 			CopySerializableFieldValues(GetReflection(), obj);
