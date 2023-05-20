@@ -17,7 +17,7 @@ using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 
 using Mithril.Editor;
-using Node = Mithril.Editor.Node;
+using EditorNode = Mithril.Editor.Node;
 
 #endregion
 
@@ -57,7 +57,7 @@ namespace Mithril
 
 		[SerializeField]
 		[HideInInspector]
-		private NodeData[] _nodeData = new NodeData[0];
+		private NodeData.Node[] _nodeData = new NodeData.Node[0];
 
 		#endregion
 		#region Methods
@@ -76,7 +76,7 @@ namespace Mithril
 			/**	Nodes
 			*/
 
-			var __nodes = graphView.nodes.Cast<Node>();
+			var __nodes = graphView.nodes.Cast<EditorNode>();
 
 			var __nodeMirrorList = new List<Mirror>();
 			foreach (var iNode in __nodes)
@@ -107,10 +107,15 @@ namespace Mithril
 			_edgeMirrors = __edgeMirrorList.ToArray();
 		}
 
+		public void UpdateModelFromEditor(NodeGraphView graphView)
+		{
+
+		}
+
 		#endregion
 		#region Retrieval
 
-		public NodeData GetNodeByGuid(Guid guid)
+		public NodeData.Node GetNodeByGuid(Guid guid)
 		{
 			return _nodeData.Where(i => i.guid == guid).First();
 		}
@@ -125,11 +130,11 @@ namespace Mithril
 	#region NodeData
 
 	/// <summary>
-	/// Stores data for a single Node within a NodeGraph.
+	/// Stores data for a single EditorNode within a NodeGraph.
 	///</summary>
 	[Serializable]
 
-	public class NodeData : object, ISerializable
+	public class NodeDataObject : object, ISerializable
 	{
 		public Guid guid;
 		public string title;
@@ -161,13 +166,13 @@ namespace Mithril
 		// 	// guid = serialObject.Ge
 		// }
 
-		public NodeData()
+		public NodeDataObject()
 		{
 
 		}
 
 #if UNITY_EDITOR
-		public virtual void Init(Node node)
+		public virtual void Init(EditorNode node)
 		{
 			guid = node.guid;
 			title = node.title;
@@ -181,19 +186,17 @@ namespace Mithril
 			nodeType = node.GetType();
 		}
 
-		private static NodeData CreateFrom(Type type, Node node)
+		private static NodeDataObject CreateFrom(Type type, EditorNode node)
 		{
-			var __result = (NodeData)Activator.CreateInstance(type);
+			var __result = (NodeDataObject)Activator.CreateInstance(type);
 			__result.Init(node);
 			return __result;
 		}
-		public static NodeData CreateFrom(Node node) =>
-			CreateFrom(node.DataType, node);
-		public static T CreateFrom<T>(Node node)
-		where T : NodeData, new() =>
+		public static T CreateFrom<T>(EditorNode node)
+		where T : NodeDataObject, new() =>
 			(T)CreateFrom(typeof(T), node);
 
-		public static PortData[] GetPortsFrom(Node node)
+		public static PortData[] GetPortsFrom(EditorNode node)
 		{
 			var __nPorts = node.GetPorts_In();
 			var __oPorts = node.GetPorts_Out();
@@ -238,7 +241,7 @@ namespace Mithril
 
 		public PortData(UnityEditor.Experimental.GraphView.Port port)
 		{
-			NodeGuid = ((Node)port.node).guid;
+			NodeGuid = ((EditorNode)port.node).guid;
 			PortName = port.portName;
 			Direction = port.direction;
 			Orientation = port.orientation;

@@ -256,7 +256,7 @@ namespace Mithril.Editor
 			AssertCompatibleWith(obj);
 
 			_workObject = obj;
-			OnSetupForWorkObject();
+			SetupWorkObject();
 
 			Utils.InitializeWindowHeader(this, obj.fileName, iconPath);
 			isModified = false;
@@ -280,7 +280,7 @@ namespace Mithril.Editor
 		/// Override this method to set up this object. Called during <see cref="Initialize"/>.
 		///</summary>
 
-		public virtual void OnSetupForWorkObject() { }
+		public virtual void SetupWorkObject() { }
 
 		/// <summary>
 		/// Loads the given <paramref name="filePath"/> as a <see cref="EditableObject"/> into the view(s) of this <see cref="EditableWindow"/>.
@@ -395,7 +395,7 @@ namespace Mithril.Editor
 			if (!_isLoaded)
 				return;
 
-			OnBeforeSaveWorkObject();
+			WrapupWorkObject();
 
 			_workObject.Save();
 
@@ -411,19 +411,19 @@ namespace Mithril.Editor
 			if (!_isLoaded)
 				return;
 
-			OnBeforeSaveWorkObject();
+			WrapupWorkObject();
 
 			/**	SaveMirror() is faster than Save() because it doesn't refresh the database.
 			*	Save() must be called before closing Unity, or the mirror won't persist.
 			*/
-			_workObject.SaveMirror();
+			_workObject.SaveReflection();
 
 			isModified = false;
 		}
 
 		public void CacheSave()
 		{
-			_workCache = _workObject.mirror;
+			_workCache = _workObject.reflection;
 
 			SoftSave();
 		}
@@ -435,7 +435,7 @@ namespace Mithril.Editor
 
 			RefreshWorkObject();
 
-			_workObject.mirror = _workCache;
+			_workObject.reflection = _workCache;
 			_workCache = null;
 		}
 
@@ -443,7 +443,7 @@ namespace Mithril.Editor
 		/// Override this method to finish preparing the <see cref="workObject"/> for saving. Called before both <see cref="HardSave"/> and <see cref="SoftSave"/>.
 		///</summary>
 
-		protected virtual void OnBeforeSaveWorkObject() { }
+		protected virtual void WrapupWorkObject() { }
 
 		/// <summary>
 		/// Call this function any time a significant action is performed. If autosaving is enabled, it will perform a <see cref="SoftSave"/>. If it is disabled, it will update the header to display that.

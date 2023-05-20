@@ -19,6 +19,7 @@ using UnityEngine.UIElements;
 
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using EditorPort = UnityEditor.Experimental.GraphView.Port;
 
 #endregion
 
@@ -90,7 +91,6 @@ namespace Mithril.Editor
 			DEFAULT_NODE_WIDTH,
 			NODE_HEADER_HEIGHT + (NODE_PORT_HEIGHT * maxPortCount)
 		);
-		public virtual System.Type DataType => typeof(NodeData);
 
 		public Rect rect
 		{
@@ -220,7 +220,7 @@ namespace Mithril.Editor
 
 		#endregion
 
-		#region Port Handling
+		#region EditorPort Handling
 
 		public static readonly IStyle EXEC_PORT_STYLE;
 
@@ -229,26 +229,26 @@ namespace Mithril.Editor
 
 		#region Retrieval
 
-		public VisualElement GetPortContainerFor(UnityEditor.Experimental.GraphView.Port port) =>
+		public VisualElement GetPortContainerFor(EditorPort port) =>
 			port.direction == Direction.Input ?
 			inputContainer : outputContainer;
 
-		public UnityEditor.Experimental.GraphView.Port.Capacity GetPortCapacityForType(Type type, Direction direction) =>
+		public EditorPort.Capacity GetPortCapacityForType(Type type, Direction direction) =>
 			direction == Direction.Input ^ typeof(Exec) == type ?
-						UnityEditor.Experimental.GraphView.Port.Capacity.Single : UnityEditor.Experimental.GraphView.Port.Capacity.Multi;
+						EditorPort.Capacity.Single : EditorPort.Capacity.Multi;
 
-		public List<UnityEditor.Experimental.GraphView.Port> GetPorts_All()
+		public List<EditorPort> GetPorts_All()
 		{
 			var __result = GetPorts_In();
 			__result.AddRange(GetPorts_Out());
 			return __result;
 		}
-		public List<UnityEditor.Experimental.GraphView.Port> GetPorts_In() =>
-						inputContainer.Query<UnityEditor.Experimental.GraphView.Port>().ToList();
-		public List<UnityEditor.Experimental.GraphView.Port> GetPorts_Out() =>
-						outputContainer.Query<UnityEditor.Experimental.GraphView.Port>().ToList();
+		public List<EditorPort> GetPorts_In() =>
+						inputContainer.Query<EditorPort>().ToList();
+		public List<EditorPort> GetPorts_Out() =>
+						outputContainer.Query<EditorPort>().ToList();
 
-		public UnityEditor.Experimental.GraphView.Port GetPortByName(string portName)
+		public EditorPort GetPortByName(string portName)
 		{
 			try
 			{ return GetPorts_All().Find(i => i.portName == portName); }
@@ -259,7 +259,7 @@ namespace Mithril.Editor
 		#endregion
 		#region Creation
 
-		public void SetupPort(UnityEditor.Experimental.GraphView.Port port)
+		public void SetupPort(EditorPort port)
 		{
 			if (typeof(Exec) == port.portType)
 				ChangeStyleToExecStyle(port);
@@ -270,7 +270,7 @@ namespace Mithril.Editor
 			NotifyIsModified();
 		}
 
-		public UnityEditor.Experimental.GraphView.Port CreatePort(System.Type portType, string portName, Direction direction)
+		public EditorPort CreatePort(System.Type portType, string portName, Direction direction)
 		{
 			var __port = InstantiatePort(
 				defaultOrientation,
@@ -285,12 +285,12 @@ namespace Mithril.Editor
 
 			return __port;
 		}
-		public UnityEditor.Experimental.GraphView.Port CreatePort<T>(string portName, Direction direction) =>
+		public EditorPort CreatePort<T>(string portName, Direction direction) =>
 			CreatePort(typeof(T), portName, direction);
 
-		public UnityEditor.Experimental.GraphView.Port CreateExecutiveInputPort(string name = null) =>
+		public EditorPort CreateExecutiveInputPort(string name = null) =>
 			CreatePort<Exec>(name ?? EXEC_LABEL_IN, Direction.Input);
-		public UnityEditor.Experimental.GraphView.Port CreateExecutiveOutputPort(string name = null) =>
+		public EditorPort CreateExecutiveOutputPort(string name = null) =>
 			CreatePort<Exec>(name ?? EXEC_LABEL_OUT, Direction.Output);
 
 		protected virtual void CreateDefaultPorts()
@@ -321,7 +321,7 @@ namespace Mithril.Editor
 			}
 		}
 
-		private void ChangeStyleToExecStyle(Port port)
+		private void ChangeStyleToExecStyle(EditorPort port)
 		{
 			port.portColor = Color.white;
 
@@ -335,7 +335,7 @@ namespace Mithril.Editor
 		#endregion
 		#region Destruction
 
-		public void RemovePort(UnityEditor.Experimental.GraphView.Port port)
+		public void RemovePort(EditorPort port)
 		{
 			GetPortContainerFor(port).Remove(port);
 

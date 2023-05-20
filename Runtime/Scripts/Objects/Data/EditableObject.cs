@@ -87,8 +87,8 @@ namespace Mithril
 		[NonMirrored]
 		[SerializeField]
 		[HideInInspector]
-		private Mirror _mirror;
-		public Mirror mirror { get => _mirror; set => _mirror = value; }
+		private Mirror _reflection;
+		public Mirror reflection { get => _reflection; set => _reflection = value; }
 
 		/// <summary>
 		/// Updated by <see cref="EditableObject.EditableObjectEditor"/>; indicates whether or not it is being directly edited in the inspector.
@@ -108,7 +108,7 @@ namespace Mithril
 		{
 			_isEnabled = true;
 
-			LoadMirror();
+			LoadReflection();
 		}
 
 		protected virtual void OnDisable()
@@ -121,32 +121,32 @@ namespace Mithril
 
 		public virtual void Save()
 		{
-			SaveMirror();
+			SaveReflection();
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssetIfDirty(this);
 			AssetDatabase.Refresh();
 		}
 
-		public virtual void LoadMirror()
+		public virtual void LoadReflection()
 		{
-			if (_mirror != null)
-				_mirror.ApplyReflectionTo(this);
+			if (_reflection != null)
+				_reflection.ApplyReflectionTo(this);
 		}
 
-		public virtual void SaveMirror()
+		public virtual void SaveReflection()
 		{
 			_whenSaved = EditorApplication.timeSinceStartup;
 
 			_isBeingModifiedInInspector = true;
-			_mirror = new Mirror(this);
+			_reflection = new Mirror(this);
 			_isBeingModifiedInInspector = false;
 		}
 
 		public virtual void OnAfterDeserialize()
 		{
 			// if (_isEnabled && !_isBeingModifiedInInspector)
-			// 	LoadMirror();
+			// 	LoadReflection();
 
 			_isBeingModifiedInInspector = false;
 		}
@@ -154,7 +154,7 @@ namespace Mithril
 		public virtual void OnBeforeSerialize()
 		{
 			if (_isEnabled && !_isBeingModifiedInInspector)
-				SaveMirror();
+				SaveReflection();
 
 			_isEnabled = false;
 		}
@@ -286,7 +286,7 @@ namespace Mithril
 		{
 			if (_currentlyOpenEditor == null)
 			{
-				LoadMirror();
+				LoadReflection();
 
 				_currentlyOpenEditor = EditableWindow.Instantiate(type, this);
 				_currentlyOpenEditor.Show();

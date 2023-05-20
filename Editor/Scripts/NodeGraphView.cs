@@ -134,6 +134,11 @@ namespace Mithril.Editor
 			_isNotifiable = true;
 		}
 
+		public void UpdateEditorFromModel(NodeGraphData data)
+		{
+
+		}
+
 		#endregion
 		#region Overrides
 

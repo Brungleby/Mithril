@@ -29,7 +29,7 @@ namespace Mithril.Editor
 
 	public abstract class NodeGraphWindow : EditableWindow
 	{
-		public abstract NodeGraphView graph { get; protected set; }
+		public abstract NodeGraphView graphView { get; protected set; }
 	}
 
 	public abstract class NodeGraphWindow<TGraphView> : NodeGraphWindow
@@ -39,11 +39,11 @@ namespace Mithril.Editor
 
 		#region
 
-		private TGraphView _graph;
-		public sealed override NodeGraphView graph
+		private TGraphView _graphView;
+		public sealed override NodeGraphView graphView
 		{
-			get => _graph;
-			protected set => _graph = (TGraphView)value;
+			get => _graphView;
+			protected set => _graphView = (TGraphView)value;
 		}
 
 		private Label _hoveredGuidLabel;
@@ -53,18 +53,18 @@ namespace Mithril.Editor
 		#endregion
 		#region Methods
 
-		private List<Edge> GetEdges() => _graph.edges.Cast<Edge>().ToList();
-		private List<Node> GetPredefinedNodes() => _graph.nodes
+		private List<Edge> GetEdges() => _graphView.edges.Cast<Edge>().ToList();
+		private List<Node> GetPredefinedNodes() => _graphView.nodes
 			.Cast<Node>()
 			.Where(i => i.isPredefined)
 			.ToList()
 		;
-		private List<Node> GetNodes() => _graph.nodes
+		private List<Node> GetNodes() => _graphView.nodes
 			.Cast<Node>()
 			.Where(i => !i.isPredefined)
 			.ToList()
 		;
-		private List<Node> GetAllNodes() => _graph.nodes
+		private List<Node> GetAllNodes() => _graphView.nodes
 			.Cast<Node>()
 			.ToList()
 		;
@@ -73,7 +73,7 @@ namespace Mithril.Editor
 		{
 			base.OnGUI();
 
-			if (_graph.hoveredNode is Node __hoveredNode)
+			if (_graphView.hoveredNode is Node __hoveredNode)
 				_hoveredGuidLabel.text = __hoveredNode.guid;
 			else
 				_hoveredGuidLabel.text = string.Empty;
@@ -81,12 +81,17 @@ namespace Mithril.Editor
 
 		/** <<============================================================>> **/
 
+		public void UpdateEditorFromModel(NodeGraphData data)
+		{
+			_graphView.UpdateEditorFromModel(data);
+		}
+
 		protected override void SetupVisualElements()
 		{
-			_graph = System.Activator.CreateInstance<TGraphView>();
-			_graph.onModified.AddListener(NotifyIsModified);
+			_graphView = System.Activator.CreateInstance<TGraphView>();
+			_graphView.onModified.AddListener(NotifyIsModified);
 
-			rootVisualElement.Add(graph);
+			rootVisualElement.Add(graphView);
 
 			_hoveredGuidLabel = new Label();
 			_hoveredGuidLabel.style.color = new StyleColor(new Color(1f, 1f, 1f, 0.25f));
@@ -100,20 +105,20 @@ namespace Mithril.Editor
 
 		protected override void TeardownVisualElements()
 		{
-			if (_graph != null)
-				rootVisualElement.Remove(_graph);
+			if (_graphView != null)
+				rootVisualElement.Remove(_graphView);
 		}
 
 		/** <<============================================================>> **/
 
-		public override void OnSetupForWorkObject()
+		public override void SetupWorkObject()
 		{
-			SetupGraphView(_graph);
+			SetupGraphView(_graphView);
 		}
 
-		protected override void OnBeforeSaveWorkObject()
+		protected override void WrapupWorkObject()
 		{
-			((NodeGraphData)workObject).UpdateFromGraphView(graph);
+			((NodeGraphData)workObject).UpdateFromGraphView(graphView);
 		}
 
 		/** <<============================================================>> **/

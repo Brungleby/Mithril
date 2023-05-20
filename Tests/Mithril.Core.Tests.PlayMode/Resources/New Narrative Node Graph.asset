@@ -12,16 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4298f0ac7c68455469cd24e05aa6417f, type: 3}
   m_Name: New Narrative Node Graph
   m_EditorClassIdentifier: 
-  _mirror:
+  _reflection:
     _data: '{"TYPE":"Mithril.Tests.NarrativeNodeGraph, Mithril.Core.Tests.PlayMode,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[0,212],"_nodeMirrors":[{"TYPE":"Mithril.Editor.Node,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_isAutosaved":true,"viewPosition":[-50,166],"_nodeMirrors":[{"TYPE":"Mithril.Editor.Node,
       Mithril.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","DATA":{"_title":"New
-      Custom Node","_rect":[196,-56,150,50],"guid":"7f184b13bb3e30b4dbf19f7ac15598fd","isPredefined":false}}],"_edgeMirrors":[],"_nodeData":[]}}'
+      Custom Node","_rect":[260,-51,150,50],"guid":"353527657e376524cb7ae3701a9338f0","isPredefined":false}}],"_edgeMirrors":[],"_nodeData":[]}}'
   _currentlyOpenEditor: {fileID: 0}
   _isAutosaved: 1
-  viewPosition: {x: 0, y: 212}
+  viewPosition: {x: -50, y: 166}
   _nodeMirrors:
   - _data: '{"TYPE":"Mithril.Editor.Node, Mithril.Core, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null","DATA":{"_title":"New Custom Node","_rect":[196,-56,150,50],"guid":"7f184b13bb3e30b4dbf19f7ac15598fd","isPredefined":false}}'
+      PublicKeyToken=null","DATA":{"_title":"New Custom Node","_rect":[260,-51,150,50],"guid":"353527657e376524cb7ae3701a9338f0","isPredefined":false}}'
   _edgeMirrors: []
-  _nodeData: []
