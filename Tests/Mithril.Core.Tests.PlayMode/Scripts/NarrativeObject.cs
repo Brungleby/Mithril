@@ -9,16 +9,21 @@
 
 #region Includes
 
+using System;
+
+using Mithril.Tests.EditMode;
+
 using UnityEngine;
 
 #endregion
 
-namespace Mithril
+namespace Mithril.Tests
 {
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
+	[CreateAssetMenu(menuName = "Mithril/Tests/NarrativeObject")]
 	public sealed class NarrativeObject : EditableObject
 	{
 		#region Data
@@ -32,14 +37,8 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		#region
-
-		public NarrativeObject()
-		{
-
-		}
-
-		#endregion
+		public override Type[] compatibleWindows => new Type[]
+			{ typeof(NarrativeEditorWindow) };
 
 		#endregion
 	}
