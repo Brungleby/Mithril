@@ -119,6 +119,12 @@ namespace Mithril
 	}
 
 	#endregion
+	#region MirrorFieldAttribute
+
+	[AttributeUsage(AttributeTargets.Field)]
+	public class MirrorFieldAttribute : Attribute { }
+
+	#endregion
 	#region NonMirroredAttribute
 
 	[AttributeUsage(AttributeTargets.Field)]

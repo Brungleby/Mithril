@@ -936,7 +936,6 @@ namespace Mithril
 		private static bool ShouldGetSuperFields(this Type type)
 		{
 			return typeof(object) != type;
-			// return typeof(object) != type && typeof(EditableObject) != type.BaseType;
 		}
 
 		private static IEnumerable<FieldInfo> GetLocalSerializableFields(this Type type)
@@ -978,10 +977,12 @@ namespace Mithril
 		private static bool IsSerializableField(this FieldInfo field)
 		{
 			return
-				field.GetCustomAttribute<NonSerializedAttribute>() == null &&
 				field.GetCustomAttribute<NonMirroredAttribute>() == null &&
-				(field.IsPublic || field.GetCustomAttribute<SerializeField>() != null)
-			;
+				(
+					field.IsPublic ||
+					field.GetCustomAttribute<MirrorFieldAttribute>() != null ||
+					field.GetCustomAttribute<SerializeField>() != null
+				);
 		}
 	}
 

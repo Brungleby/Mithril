@@ -85,7 +85,7 @@ namespace Mithril.Editor
 		/**	Properties
 		*/
 
-		public virtual string defaultTitle => "New Custom Node";
+		public virtual string defaultTitle => GetType().Name;
 		public virtual Orientation defaultOrientation => Orientation.Horizontal;
 		public virtual Vector2 defaultSize => new Vector2(
 			DEFAULT_NODE_WIDTH,
@@ -128,7 +128,7 @@ namespace Mithril.Editor
 		}
 
 		public int maxPortCount =>
-			Math.Max(GetPorts_In().Count, GetPorts_Out().Count);
+			Math.Max(GetPortsIn().Count, GetPortsOut().Count);
 
 		#endregion
 		#region Methods
@@ -139,10 +139,30 @@ namespace Mithril.Editor
 		{
 			AssignNewGuid();
 			title = defaultTitle;
-			onModified = new UnityEvent();
 
+			OnConstruct();
 			CreateDefaultPorts();
+		}
 
+		public Node(NodeData.Node model)
+		{
+			guid = model.guid;
+			title = model.title;
+
+			OnConstruct();
+
+			foreach (var iModelPort in model.portsIn)
+			{
+				CreatePort(iModelPort.portType, iModelPort.portName, Direction.Input);
+			}
+
+			rect = model.rect;
+
+		}
+
+		protected virtual void OnConstruct()
+		{
+			onModified = new UnityEvent();
 			RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
 		}
 
@@ -175,6 +195,8 @@ namespace Mithril.Editor
 
 		public override string ToString() =>
 			$"{title} [{GetType().Name}] : {position}";
+
+		public virtual Type modelType => typeof(NodeData.Node);
 
 		#endregion
 		#region Serialization
@@ -239,13 +261,13 @@ namespace Mithril.Editor
 
 		public List<EditorPort> GetPorts_All()
 		{
-			var __result = GetPorts_In();
-			__result.AddRange(GetPorts_Out());
+			var __result = GetPortsIn();
+			__result.AddRange(GetPortsOut());
 			return __result;
 		}
-		public List<EditorPort> GetPorts_In() =>
+		public List<EditorPort> GetPortsIn() =>
 						inputContainer.Query<EditorPort>().ToList();
-		public List<EditorPort> GetPorts_Out() =>
+		public List<EditorPort> GetPortsOut() =>
 						outputContainer.Query<EditorPort>().ToList();
 
 		public EditorPort GetPortByName(string portName)

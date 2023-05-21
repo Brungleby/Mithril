@@ -118,14 +118,16 @@ namespace Mithril.Editor
 
 		protected override void WrapupWorkObject()
 		{
-			((NodeGraphData)workObject).UpdateFromGraphView(graphView);
+			// ((NodeGraphData)workObject).UpdateFromGraphView(graphView);
+			((NodeGraphData)workObject).UpdateModelFromEditor(_graphView);
 		}
 
 		/** <<============================================================>> **/
 
-		protected virtual void SetupGraphView(NodeGraphView graph)
+		protected virtual void SetupGraphView(NodeGraphView graphView)
 		{
-			graph.InitFromGraphData((NodeGraphData)workObject);
+			// graph.InitFromGraphData((NodeGraphData)workObject);
+			graphView.UpdateEditorFromModel((NodeGraphData)workObject);
 		}
 
 		/** <<============================================================>> **/

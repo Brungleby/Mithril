@@ -32,7 +32,30 @@ namespace Mithril
 
 	public abstract class NodeGraphData : EditableObject
 	{
-		#region Bake Data
+		#region Data
+
+		[SerializeField]
+		[HideInInspector]
+		[NonMirrored]
+		private Mirror[] _nodeMirrors = new Mirror[0];
+		public Mirror[] nodeMirrors => _nodeMirrors;
+
+		[SerializeField]
+		[HideInInspector]
+		[NonMirrored]
+		private Mirror[] _edgeMirrors = new Mirror[0];
+		public Mirror[] edgeMirrors => _edgeMirrors;
+
+		[MirrorField]
+		private NodeData.Node[] _nodeData = new NodeData.Node[0];
+		public NodeData.Node[] nodeData => _nodeData;
+
+		[MirrorField]
+		private NodeData.Edge[] _edgeData = new NodeData.Edge[0];
+		public NodeData.Edge[] edgeData => _edgeData;
+
+		#endregion
+		#region Editor-only Data
 #if UNITY_EDITOR
 		/**	__TODO_REFACTOR__
 		*
@@ -44,26 +67,14 @@ namespace Mithril
 		[SerializeField]
 		[HideInInspector]
 		public Vector2 viewPosition;
+
+		private Editor.StickyNote[] _stickyNotes = new Editor.StickyNote[0];
 #endif
-		[SerializeField]
-		[HideInInspector]
-		private Mirror[] _nodeMirrors = new Mirror[0];
-		public Mirror[] nodeMirrors => _nodeMirrors;
-
-		[SerializeField]
-		[HideInInspector]
-		private Mirror[] _edgeMirrors = new Mirror[0];
-		public Mirror[] edgeMirrors => _edgeMirrors;
-
-		[SerializeField]
-		[HideInInspector]
-		private NodeData.Node[] _nodeData = new NodeData.Node[0];
-
 		#endregion
 		#region Methods
 
 		#region Setup / Teardown
-
+#if UNITY_EDITOR
 		public void UpdateFromGraphView(NodeGraphView graphView)
 		{
 			/** <<============================================================>> **/
@@ -109,16 +120,42 @@ namespace Mithril
 
 		public void UpdateModelFromEditor(NodeGraphView graphView)
 		{
+			viewPosition = graphView.viewTransform.position;
 
+			var __editorNodes = graphView.GetAllNodes();
+			var __modelNodes = new List<NodeData.Node>();
+			foreach (var iEditorNode in __editorNodes)
+			{
+				var iModelNode = (NodeData.Node)Activator
+				.CreateInstance(
+					iEditorNode.modelType,
+					new object[] { iEditorNode }
+					);
+				__modelNodes.Add(iModelNode);
+			}
+			_nodeData = __modelNodes.ToArray();
+
+			foreach (var i in __modelNodes)
+				Debug.Log(i.GetType());
+
+			var __editorEdges = graphView.GetAllEdges();
+			var __modelEdges = new List<NodeData.Edge>();
+			foreach (var iEditorEdge in __editorEdges)
+				__modelEdges.Add(new NodeData.Edge(iEditorEdge));
+			_edgeData = __modelEdges.ToArray();
 		}
-
+#endif
 		#endregion
 		#region Retrieval
 
-		public NodeData.Node GetNodeByGuid(Guid guid)
-		{
-			return _nodeData.Where(i => i.guid == guid).First();
-		}
+		public NodeData.Node GetNodeByGuid(Guid guid) =>
+			_nodeData.First(i => i.guid == guid);
+
+		public NodeData.Node GetNodeByType(Type type) =>
+			_nodeData.First(i => type.IsAssignableFrom(i.GetType()));
+		public T GetNodeByType<T>()
+		where T : NodeData.Node =>
+			(T)GetNodeByType(typeof(T));
 
 		#endregion
 
@@ -198,8 +235,8 @@ namespace Mithril
 
 		public static PortData[] GetPortsFrom(EditorNode node)
 		{
-			var __nPorts = node.GetPorts_In();
-			var __oPorts = node.GetPorts_Out();
+			var __nPorts = node.GetPortsIn();
+			var __oPorts = node.GetPortsOut();
 
 			var __ports = new PortData[__nPorts.Count + __oPorts.Count];
 

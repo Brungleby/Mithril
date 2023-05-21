@@ -9,9 +9,11 @@
 
 #region Includes
 
+using System;
 
-
+using EditorEdge = UnityEditor.Experimental.GraphView.Edge;
 using EditorNode = Mithril.Editor.Node;
+using EditorPort = UnityEditor.Experimental.GraphView.Port;
 
 using UnityEditor.Experimental.GraphView;
 
@@ -51,6 +53,15 @@ namespace Mithril.NodeData
 		private bool _isPredefined;
 		public bool isPredefined => _isPredefined;
 
+		[SerializeField]
+		private Port[] _portsIn;
+		public Port[] portsIn => _portsIn;
+
+		[SerializeField]
+		private Port[] _portsOut;
+		public Port[] portsOut => _portsOut;
+
+
 		#endregion
 		#region Editor-only Data
 #if UNITY_EDITOR
@@ -64,17 +75,43 @@ namespace Mithril.NodeData
 
 		#region Construction
 
+		public Node() { }
 #if UNITY_EDITOR
-		public Node(EditorNode rep_node)
+		public Node(EditorNode editorNode)
 		{
-			_guid = rep_node.guid;
-			_title = rep_node.title;
-			_isPredefined = rep_node.isPredefined;
+			_guid = editorNode.guid;
+			_title = editorNode.title;
+			_isPredefined = editorNode.isPredefined;
 
-			_rect = rep_node.rect;
+			{
+				var __editorPortsIn = editorNode.GetPortsIn();
+				_portsIn = new Port[__editorPortsIn.Count];
+
+				var i = 0;
+				foreach (EditorPort iPort in __editorPortsIn)
+				{
+					portsIn[i] = new Port(iPort);
+					i++;
+				}
+			}
+			{
+				var __editorPortsOut = editorNode.GetPortsOut();
+				_portsOut = new Port[__editorPortsOut.Count];
+
+				var i = 0;
+				foreach (EditorPort iPort in __editorPortsOut)
+				{
+					portsOut[i] = new Port(iPort);
+					i++;
+				}
+			}
+
+			_rect = editorNode.rect;
 		}
 #endif
 		#endregion
+
+		public virtual Type editorType => typeof(EditorNode);
 
 		#endregion
 	}
@@ -84,8 +121,32 @@ namespace Mithril.NodeData
 
 	public class Port : GraphObject
 	{
-		private Guid _nodeGuid;
+		#region Data
+
+		[SerializeField]
 		private string _portName;
+		public string portName => _portName;
+
+		[SerializeField]
+		private Type _portType;
+		public Type portType => _portType;
+
+		#endregion
+		#region Methods
+
+		#region Construction
+
+		public Port() { }
+#if UNITY_EDITOR
+		public Port(EditorPort port)
+		{
+			_portType = port.portType;
+			_portName = port.portName;
+		}
+#endif
+		#endregion
+
+		#endregion
 	}
 
 	#endregion
@@ -93,7 +154,43 @@ namespace Mithril.NodeData
 
 	public class Edge : GraphObject
 	{
+		#region Data
 
+		[SerializeField]
+		private Guid _guidIn;
+		public Guid guidIn => _guidIn;
+
+		[SerializeField]
+		private Guid _guidOut;
+		public Guid guidOut => _guidOut;
+
+		[SerializeField]
+		private string _portIn;
+		public string portIn => _portIn;
+
+		[SerializeField]
+		private string _portOut;
+		public string portOut => _portOut;
+
+		#endregion
+		#region Methods
+
+		#region Construction
+
+		public Edge() { }
+#if UNITY_EDITOR
+		public Edge(EditorEdge editorEdge)
+		{
+			_guidIn = ((EditorNode)editorEdge.input.node).guid;
+			_guidOut = ((EditorNode)editorEdge.output.node).guid;
+
+			_portIn = editorEdge.input.portName;
+			_portOut = editorEdge.output.portName;
+		}
+#endif
+		#endregion
+
+		#endregion
 	}
 
 	#endregion

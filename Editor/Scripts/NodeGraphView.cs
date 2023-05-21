@@ -110,7 +110,6 @@ namespace Mithril.Editor
 
 			SetViewPosition(data.viewPosition);
 
-
 			/** <<============================================================>> **/
 			/**	Nodes
 			*/
@@ -136,7 +135,21 @@ namespace Mithril.Editor
 
 		public void UpdateEditorFromModel(NodeGraphData data)
 		{
+			if (data == null)
+				return;
 
+			_isNotifiable = false;
+			ClearAllNodes();
+
+			SetViewPosition(data.viewPosition);
+
+			foreach (var iModelNode in data.nodeData)
+				CreateNewNodeFromModel(iModelNode);
+
+			foreach (var iModelEdge in data.edgeData)
+				ConnectPortsFromModelEdge(iModelEdge);
+
+			_isNotifiable = true;
 		}
 
 		#endregion
@@ -242,18 +255,50 @@ namespace Mithril.Editor
 		public Node CreateNewNodeAtCursor(Type type) =>
 			CreateNewNode(type, mousePosition);
 
+		public Node CreateNewNodeFromModel(NodeData.Node modelNode)
+		{
+			Debug.Log(modelNode.GetType());
+			Debug.Log(modelNode.editorType);
+
+			var __node = (Node)Activator
+			.CreateInstance(
+				modelNode.editorType,
+				new object[] { modelNode }
+			);
+
+			SetupNewNode(__node, false);
+
+			return __node;
+		}
+
 		#endregion
 
-		public T GetNode<T>()
-		where T : Node
+		#region Retrieval
+
+		public IEnumerable<Node> GetAllNodes() =>
+			nodes.Cast<Node>();
+
+		public Node GetNodeByGuid(Guid guid)
 		{
-			foreach (var i in nodes)
-			{
-				if (typeof(T).IsAssignableFrom(i.GetType()))
-					return (T)i;
-			}
+			foreach (var iNode in GetAllNodes())
+				if (iNode.guid == guid)
+					return iNode;
 			return null;
 		}
+
+		public Node GetNodeByType(Type type)
+		{
+			foreach (var iNode in GetAllNodes())
+				if (type.IsAssignableFrom(iNode.GetType()))
+					return iNode;
+			return null;
+		}
+
+		public T GetNodeByType<T>()
+		where T : Node =>
+			(T)GetNodeByType(typeof(T));
+
+		#endregion
 
 		#region Manipulation
 
@@ -428,6 +473,23 @@ namespace Mithril.Editor
 
 		#endregion
 		#region Edge Handling
+
+		public IEnumerable<Edge> GetAllEdges() =>
+			edges;
+
+		public Edge ConnectPortsFromModelEdge(NodeData.Edge modelEdge)
+		{
+			var __nodeIn = GetNodeByGuid(modelEdge.guidIn);
+			var __portIn = __nodeIn.GetPortByName(modelEdge.portIn);
+
+			var __nodeOut = GetNodeByGuid(modelEdge.guidOut);
+			var __portOut = __nodeOut.GetPortByName(modelEdge.portOut);
+
+			var __result = ConnectPorts(__portIn, __portOut);
+			// AddElement(__result);
+
+			return __result;
+		}
 
 		public void SetupEdgeAfterReflection(Edge edge)
 		{

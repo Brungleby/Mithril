@@ -114,6 +114,8 @@ namespace Mithril
 		protected virtual void OnDisable()
 		{
 			_isEnabled = false;
+
+			SaveReflection();
 		}
 
 		#endregion
@@ -197,21 +199,21 @@ namespace Mithril
 
 				var __target = (EditableObject)target;
 
-				// /** <<============================================================>> **/
-				// /**	Display Debug Print Button
-				// */
+				/** <<============================================================>> **/
+				/**	Display Debug Print Button
+				*/
 
-				// var currentEvent = Event.current;
-				// if (currentEvent.alt)
-				// {
-				// 	if (GUILayout.Button("Copy JSON"))
-				// 		GUIUtility.systemCopyBuffer = __target.mirror.ToString();
-				// }
-				// else
-				// {
-				// 	if (GUILayout.Button("Print JSON"))
-				// 		Debug.Log(__target.mirror.ToString());
-				// }
+				var currentEvent = Event.current;
+				if (currentEvent.alt)
+				{
+					if (GUILayout.Button("Copy JSON"))
+						GUIUtility.systemCopyBuffer = __target.reflection.ToString();
+				}
+				else
+				{
+					if (GUILayout.Button("Print JSON"))
+						Debug.Log(__target.reflection.ToString());
+				}
 
 				/** <<============================================================>> **/
 				/**	Display Editors
@@ -286,7 +288,7 @@ namespace Mithril
 		{
 			if (_currentlyOpenEditor == null)
 			{
-				LoadReflection();
+				// LoadReflection();
 
 				_currentlyOpenEditor = EditableWindow.Instantiate(type, this);
 				_currentlyOpenEditor.Show();
