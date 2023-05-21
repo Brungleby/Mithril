@@ -24,7 +24,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace Mithril.Editor
 {
-	public class NodeGraphView<TSearchWindow> : NodeGraphView
+	public abstract class NodeGraphView<TSearchWindow> : NodeGraphView
 	where TSearchWindow : NodeGraphSearchSubwindow
 	{
 		private TSearchWindow _searchWindow;
@@ -56,6 +56,7 @@ namespace Mithril.Editor
 		public Node hoveredNode => _hoveredNode;
 
 		private bool _isNotifiable = false;
+		private bool _shouldCreatePredefinedNodes = true;
 
 		#endregion
 
@@ -96,42 +97,42 @@ namespace Mithril.Editor
 			this.StretchToParentSize();
 		}
 
-		public void InitFromGraphData(NodeGraphData data)
-		{
-			/** <<============================================================>> **/
+		// public void InitFromGraphData(NodeGraphData data)
+		// {
+		// 	/** <<============================================================>> **/
 
-			if (data == null)
-				return;
+		// 	if (data == null)
+		// 		return;
 
-			_isNotifiable = false;
-			ClearAllNodes();
+		// 	_isNotifiable = false;
+		// 	ClearAllNodes();
 
-			/** <<============================================================>> **/
+		// 	/** <<============================================================>> **/
 
-			SetViewPosition(data.viewPosition);
+		// 	SetViewPosition(data.viewPosition);
 
-			/** <<============================================================>> **/
-			/**	Nodes
-			*/
+		// 	/** <<============================================================>> **/
+		// 	/**	Nodes
+		// 	*/
 
-			foreach (var iNodeMirror in data.nodeMirrors)
-			{
-				var __node = iNodeMirror.GetReflection<Node>();
-				SetupNewNode(__node);
-			}
+		// 	foreach (var iNodeMirror in data.nodeMirrors)
+		// 	{
+		// 		var __node = iNodeMirror.GetReflection<Node>();
+		// 		SetupNewNode(__node);
+		// 	}
 
-			/** <<============================================================>> **/
-			/**	Edges
-			*/
+		// 	/** <<============================================================>> **/
+		// 	/**	Edges
+		// 	*/
 
-			foreach (var iEdgeMirror in data.edgeMirrors)
-			{
-				var __edge = iEdgeMirror.GetReflection<Edge>();
-				SetupEdgeAfterReflection(__edge);
-			}
+		// 	foreach (var iEdgeMirror in data.edgeMirrors)
+		// 	{
+		// 		var __edge = iEdgeMirror.GetReflection<Edge>();
+		// 		SetupEdgeAfterReflection(__edge);
+		// 	}
 
-			_isNotifiable = true;
-		}
+		// 	_isNotifiable = true;
+		// }
 
 		public void UpdateEditorFromModel(NodeGraphData data)
 		{
@@ -145,6 +146,9 @@ namespace Mithril.Editor
 
 			foreach (var iModelNode in data.nodeData)
 				CreateNewNodeFromModel(iModelNode);
+
+			if (_shouldCreatePredefinedNodes)
+				CreatePredefinedNodes();
 
 			foreach (var iModelEdge in data.edgeData)
 				ConnectPortsFromModelEdge(iModelEdge);
@@ -255,8 +259,11 @@ namespace Mithril.Editor
 		public Node CreateNewNodeAtCursor(Type type) =>
 			CreateNewNode(type, mousePosition);
 
-		public Node CreateNewNodeFromModel(NodeData.Node modelNode)
+		public Node CreateNewNodeFromModel(Model.Node modelNode)
 		{
+			if (modelNode.isPredefined)
+				_shouldCreatePredefinedNodes = false;
+
 			var __node = (Node)Activator
 			.CreateInstance(
 				modelNode.editorType,
@@ -474,7 +481,7 @@ namespace Mithril.Editor
 		public IEnumerable<Edge> GetAllEdges() =>
 			edges;
 
-		public Edge ConnectPortsFromModelEdge(NodeData.Edge modelEdge)
+		public Edge ConnectPortsFromModelEdge(Model.Edge modelEdge)
 		{
 			try
 			{

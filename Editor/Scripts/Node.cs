@@ -144,7 +144,7 @@ namespace Mithril.Editor
 			OnConstruct();
 		}
 
-		public Node(NodeData.Node modelNode)
+		public Node(Model.Node modelNode)
 		{
 			guid = modelNode.guid;
 			title = modelNode.title;
@@ -196,7 +196,7 @@ namespace Mithril.Editor
 		public override string ToString() =>
 			$"{title} [{GetType().Name}] : {position}";
 
-		public virtual Type modelType => typeof(NodeData.Node);
+		public virtual Type modelType => typeof(Model.Node);
 
 		#endregion
 		#region Serialization

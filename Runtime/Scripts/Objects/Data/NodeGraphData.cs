@@ -47,12 +47,12 @@ namespace Mithril
 		public Mirror[] edgeMirrors => _edgeMirrors;
 
 		[MirrorField]
-		private NodeData.Node[] _nodeData = new NodeData.Node[0];
-		public NodeData.Node[] nodeData => _nodeData;
+		private Model.Node[] _nodeData = new Model.Node[0];
+		public Model.Node[] nodeData => _nodeData;
 
 		[MirrorField]
-		private NodeData.Edge[] _edgeData = new NodeData.Edge[0];
-		public NodeData.Edge[] edgeData => _edgeData;
+		private Model.Edge[] _edgeData = new Model.Edge[0];
+		public Model.Edge[] edgeData => _edgeData;
 
 		#endregion
 		#region Editor-only Data
@@ -123,10 +123,10 @@ namespace Mithril
 			viewPosition = graphView.viewTransform.position;
 
 			var __editorNodes = graphView.GetAllNodes();
-			var __modelNodes = new List<NodeData.Node>();
+			var __modelNodes = new List<Model.Node>();
 			foreach (var iEditorNode in __editorNodes)
 			{
-				var iModelNode = (NodeData.Node)Activator
+				var iModelNode = (Model.Node)Activator
 				.CreateInstance(
 					iEditorNode.modelType,
 					new object[] { iEditorNode }
@@ -136,22 +136,22 @@ namespace Mithril
 			_nodeData = __modelNodes.ToArray();
 
 			var __editorEdges = graphView.GetAllEdges();
-			var __modelEdges = new List<NodeData.Edge>();
+			var __modelEdges = new List<Model.Edge>();
 			foreach (var iEditorEdge in __editorEdges)
-				__modelEdges.Add(new NodeData.Edge(iEditorEdge));
+				__modelEdges.Add(new Model.Edge(iEditorEdge));
 			_edgeData = __modelEdges.ToArray();
 		}
 #endif
 		#endregion
 		#region Retrieval
 
-		public NodeData.Node GetNodeByGuid(Guid guid) =>
+		public Model.Node GetNodeByGuid(Guid guid) =>
 			_nodeData.First(i => i.guid == guid);
 
-		public NodeData.Node GetNodeByType(Type type) =>
+		public Model.Node GetNodeByType(Type type) =>
 			_nodeData.First(i => type.IsAssignableFrom(i.GetType()));
 		public T GetNodeByType<T>()
-		where T : NodeData.Node =>
+		where T : Model.Node =>
 			(T)GetNodeByType(typeof(T));
 
 		#endregion

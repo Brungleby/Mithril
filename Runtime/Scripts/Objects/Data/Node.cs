@@ -11,18 +11,15 @@
 
 using System;
 
-using Direction = UnityEditor.Experimental.GraphView.Direction;
 using EditorEdge = UnityEditor.Experimental.GraphView.Edge;
 using EditorNode = Mithril.Editor.Node;
 using EditorPort = UnityEditor.Experimental.GraphView.Port;
-
-using UnityEditor.Experimental.GraphView;
 
 using UnityEngine;
 
 #endregion
 
-namespace Mithril.NodeData
+namespace Mithril.Model
 {
 	#region GraphObject
 
@@ -57,7 +54,6 @@ namespace Mithril.NodeData
 		[SerializeField]
 		private Port[] _ports;
 		public Port[] ports => _ports;
-
 
 		#endregion
 		#region Editor-only Data

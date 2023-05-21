@@ -24,9 +24,6 @@ namespace Mithril
 	{
 		#region Object
 
-		public static T Safe<T>(this T obj) where T : new() =>
-			obj ?? new T();
-
 		#region IEnumerable.Contains
 
 		public static bool Contains(this IEnumerable enumerable, object query)
@@ -146,7 +143,7 @@ namespace Mithril
 
 		#endregion
 
-		#region 
+		#region Combine
 
 		public static T[] Combine<T>(this T[] a, T[] b)
 		{
@@ -164,6 +161,16 @@ namespace Mithril
 				c[i] = ib;
 				i++;
 			}
+
+			return c;
+		}
+
+		public static ICollection<T> Combine<T>(this ICollection<T> a, ICollection<T> b)
+		{
+			var c = (ICollection<T>)Activator.CreateInstance(a.GetType());
+
+			c.AddAll(a);
+			c.AddAll(b);
 
 			return c;
 		}
@@ -194,20 +201,6 @@ namespace Mithril
 		{
 			foreach (var i in toAdd)
 				collection.Add((object)i);
-		}
-
-		#endregion
-		#region 
-
-		public static TCollection CombineCollection<TCollection, T>(IEnumerable<T> a, IEnumerable<T> b)
-		where TCollection : ICollection<T>, new()
-		{
-			var __result = new TCollection();
-
-			__result.AddAll(a);
-			__result.AddAll(b);
-
-			return __result;
 		}
 
 		#endregion
