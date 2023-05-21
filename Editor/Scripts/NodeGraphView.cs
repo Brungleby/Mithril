@@ -476,16 +476,24 @@ namespace Mithril.Editor
 
 		public Edge ConnectPortsFromModelEdge(NodeData.Edge modelEdge)
 		{
-			var __nodeIn = GetNodeByGuid(modelEdge.guidIn);
-			var __portIn = __nodeIn.GetPortByName(modelEdge.portIn);
+			try
+			{
+				var __nodeIn = GetNodeByGuid(modelEdge.guidIn);
+				var __portIn = __nodeIn.GetPortByName(modelEdge.portIn);
 
-			var __nodeOut = GetNodeByGuid(modelEdge.guidOut);
-			var __portOut = __nodeOut.GetPortByName(modelEdge.portOut);
+				var __nodeOut = GetNodeByGuid(modelEdge.guidOut);
+				var __portOut = __nodeOut.GetPortByName(modelEdge.portOut);
 
-			var __result = ConnectPorts(__portIn, __portOut);
-			// AddElement(__result);
+				var __result = ConnectPorts(__portIn, __portOut);
+				// AddElement(__result);
 
-			return __result;
+				return __result;
+			}
+			catch
+			{
+				Debug.LogWarning($"Attempted to create an edge connection between nodes but either a port or node has been unexpectedly removed.");
+				return null;
+			}
 		}
 
 		public void SetupEdgeAfterReflection(Edge edge)

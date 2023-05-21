@@ -11,6 +11,7 @@
 
 using System;
 
+using Direction = UnityEditor.Experimental.GraphView.Direction;
 using EditorEdge = UnityEditor.Experimental.GraphView.Edge;
 using EditorNode = Mithril.Editor.Node;
 using EditorPort = UnityEditor.Experimental.GraphView.Port;
@@ -54,12 +55,8 @@ namespace Mithril.NodeData
 		public bool isPredefined => _isPredefined;
 
 		[SerializeField]
-		private Port[] _portsIn;
-		public Port[] portsIn => _portsIn;
-
-		[SerializeField]
-		private Port[] _portsOut;
-		public Port[] portsOut => _portsOut;
+		private Port[] _ports;
+		public Port[] ports => _ports;
 
 
 		#endregion
@@ -83,27 +80,13 @@ namespace Mithril.NodeData
 			_title = editorNode.title;
 			_isPredefined = editorNode.isPredefined;
 
+			var __editorPorts = editorNode.GetNonDefaultPorts();
+			_ports = new Port[__editorPorts.Count];
+			var i = 0;
+			foreach (var iEditorPort in __editorPorts)
 			{
-				var __editorPortsIn = editorNode.GetPortsIn();
-				_portsIn = new Port[__editorPortsIn.Count];
-
-				var i = 0;
-				foreach (EditorPort iPort in __editorPortsIn)
-				{
-					portsIn[i] = new Port(iPort);
-					i++;
-				}
-			}
-			{
-				var __editorPortsOut = editorNode.GetPortsOut();
-				_portsOut = new Port[__editorPortsOut.Count];
-
-				var i = 0;
-				foreach (EditorPort iPort in __editorPortsOut)
-				{
-					portsOut[i] = new Port(iPort);
-					i++;
-				}
+				ports[i] = new Port(iEditorPort);
+				i++;
 			}
 
 			_rect = editorNode.rect;
@@ -135,6 +118,10 @@ namespace Mithril.NodeData
 			private set => _portType = value.AssemblyQualifiedName;
 		}
 
+		[SerializeField]
+		private int _direction;
+		public int direction => _direction;
+
 		#endregion
 		#region Methods
 
@@ -146,6 +133,7 @@ namespace Mithril.NodeData
 		{
 			portType = port.portType;
 			_portName = port.portName;
+			_direction = (int)port.direction;
 		}
 #endif
 		#endregion

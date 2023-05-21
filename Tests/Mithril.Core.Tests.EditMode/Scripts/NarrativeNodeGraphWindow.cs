@@ -153,8 +153,8 @@ namespace Mithril.Tests.EditMode
 
 		public override Type modelType => typeof(ModelStringEntryNode);
 
-		protected override Dictionary<string, Type> defaultPortsIn => new Dictionary<string, Type>
-		{ { "Temp", typeof(string) } };
+		// protected override Dictionary<string, Type> defaultPortsIn => new Dictionary<string, Type>
+		// { { "Temp", typeof(string) } };
 
 		protected override Dictionary<string, Type> defaultPortsOut => new Dictionary<string, Type>
 		{ { "Text", typeof(string) } };

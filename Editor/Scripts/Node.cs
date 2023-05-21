@@ -12,6 +12,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -141,22 +142,19 @@ namespace Mithril.Editor
 			title = defaultTitle;
 
 			OnConstruct();
-			CreateDefaultPorts();
 		}
 
-		public Node(NodeData.Node model)
+		public Node(NodeData.Node modelNode)
 		{
-			guid = model.guid;
-			title = model.title;
+			guid = modelNode.guid;
+			title = modelNode.title;
 
 			OnConstruct();
 
-			foreach (var iModelPort in model.portsIn)
-				CreatePort(iModelPort.portType, iModelPort.portName, Direction.Input);
-			foreach (var iModelPort in model.portsOut)
-				CreatePort(iModelPort.portType, iModelPort.portName, Direction.Output);
+			foreach (var iModelPort in modelNode.ports)
+				CreatePort(iModelPort.portType, iModelPort.portName, (Direction)iModelPort.direction);
 
-			rect = model.rect;
+			rect = modelNode.rect;
 
 		}
 
@@ -164,6 +162,8 @@ namespace Mithril.Editor
 		{
 			onModified = new UnityEvent();
 			RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
+
+			CreateDefaultPorts();
 		}
 
 		public virtual void InitInGraph(NodeGraphView graph)
@@ -259,6 +259,14 @@ namespace Mithril.Editor
 			direction == Direction.Input ^ typeof(Exec) == type ?
 						EditorPort.Capacity.Single : EditorPort.Capacity.Multi;
 
+		public List<EditorPort> GetNonDefaultPorts()
+		{
+			return GetPorts_All().Where(iPort =>
+				!(defaultPortsIn.ContainsKey(iPort.portName) ||
+				defaultPortsOut.ContainsKey(iPort.portName))
+			)
+			.ToList();
+		}
 		public List<EditorPort> GetPorts_All()
 		{
 			var __result = GetPortsIn();
