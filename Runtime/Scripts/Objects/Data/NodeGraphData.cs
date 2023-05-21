@@ -135,9 +135,6 @@ namespace Mithril
 			}
 			_nodeData = __modelNodes.ToArray();
 
-			foreach (var i in __modelNodes)
-				Debug.Log(i.GetType());
-
 			var __editorEdges = graphView.GetAllEdges();
 			var __modelEdges = new List<NodeData.Edge>();
 			foreach (var iEditorEdge in __editorEdges)

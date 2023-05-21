@@ -152,9 +152,9 @@ namespace Mithril.Editor
 			OnConstruct();
 
 			foreach (var iModelPort in model.portsIn)
-			{
 				CreatePort(iModelPort.portType, iModelPort.portName, Direction.Input);
-			}
+			foreach (var iModelPort in model.portsOut)
+				CreatePort(iModelPort.portType, iModelPort.portName, Direction.Output);
 
 			rect = model.rect;
 

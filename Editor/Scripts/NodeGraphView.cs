@@ -257,9 +257,6 @@ namespace Mithril.Editor
 
 		public Node CreateNewNodeFromModel(NodeData.Node modelNode)
 		{
-			Debug.Log(modelNode.GetType());
-			Debug.Log(modelNode.editorType);
-
 			var __node = (Node)Activator
 			.CreateInstance(
 				modelNode.editorType,

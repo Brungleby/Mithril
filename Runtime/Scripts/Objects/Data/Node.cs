@@ -128,8 +128,12 @@ namespace Mithril.NodeData
 		public string portName => _portName;
 
 		[SerializeField]
-		private Type _portType;
-		public Type portType => _portType;
+		private string _portType;
+		public Type portType
+		{
+			get => Type.GetType(_portType);
+			private set => _portType = value.AssemblyQualifiedName;
+		}
 
 		#endregion
 		#region Methods
@@ -140,7 +144,7 @@ namespace Mithril.NodeData
 #if UNITY_EDITOR
 		public Port(EditorPort port)
 		{
-			_portType = port.portType;
+			portType = port.portType;
 			_portName = port.portName;
 		}
 #endif

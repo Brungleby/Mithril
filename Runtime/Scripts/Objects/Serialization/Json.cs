@@ -112,7 +112,7 @@ namespace Mithril
 				{ typeof(Vector3), DecodeVector3 },
 				{ typeof(Rect), DecodeRect },
 				{ typeof(Guid), DecodeGuid },
-				{ typeof(Edge), DecodeGraphViewEdge },
+				// { typeof(Edge), DecodeGraphViewEdge },
 				{ typeof(Mirror), DecodeMirror }
 			});
 			ENCODE_METHODS_BY_TYPE = new ReadOnlyDictionary<Type, Func<object, string>>(new Dictionary<Type, Func<object, string>>
@@ -121,7 +121,7 @@ namespace Mithril
 				{ typeof(Vector3), EncodeVector3 },
 				{ typeof(Rect), EncodeRect },
 				{ typeof(Guid), EncodeGuid },
-				{ typeof(Edge), EncodeGraphViewEdge },
+				// { typeof(Edge), EncodeGraphViewEdge },
 				{ typeof(Mirror), EncodeMirror }
 			});
 		}
@@ -861,38 +861,46 @@ namespace Mithril
 		}
 
 		#endregion
-		#region GraphView.Edge
+		// #region GraphView.Edge
 
-		private Edge DecodeGraphViewEdge(string json)
-		{
-			var __data = UnwrapFieldPairs(json)[1].Item2;
-			var __elements = UnwrapFieldPairs(__data);
+		// private Edge DecodeGraphViewEdge(string json)
+		// {
+		// 	var __data = UnwrapFieldPairs(json)[1].Item2;
+		// 	var __elements = UnwrapFieldPairs(__data);
 
-			var __guidOut = Decode<Guid>(__elements[0].Item2);
-			var __portOut = Decode<string>(__elements[1].Item2);
-			var __guidIn = Decode<Guid>(__elements[2].Item2);
-			var __portIn = Decode<string>(__elements[3].Item2);
+		// 	var __guidOut = Decode<Guid>(__elements[0].Item2);
+		// 	var __portOut = Decode<string>(__elements[1].Item2);
+		// 	var __guidIn = Decode<Guid>(__elements[2].Item2);
+		// 	var __portIn = Decode<string>(__elements[3].Item2);
 
-			var __edge = new Edge();
-			__edge.userData = new Tuple<Guid, string, Guid, string>(__guidOut, __portOut, __guidIn, __portIn);
+		// 	var __edge = new Edge();
+		// 	__edge.userData = new Tuple<Guid, string, Guid, string>(__guidOut, __portOut, __guidIn, __portIn);
 
-			return __edge;
-		}
+		// 	return __edge;
+		// }
 
-		private string EncodeGraphViewEdge(object obj)
-		{
-			var __edge = (Edge)obj;
-			var __data = OPEN_BRACE;
+		// private string EncodeGraphViewEdge(object obj)
+		// {
+		// 	var __edge = (Edge)obj;
+		// 	var __data = OPEN_BRACE;
 
-			__data += $"\"guidOut\":{SPACE}{Encode(((Mithril.Editor.Node)__edge.output.node).guid)}" + ITERATE;
-			__data += $"\"portOut\":{SPACE}{Encode(__edge.output.portName)}" + ITERATE;
-			__data += $"\"guidIn\":{SPACE}{Encode(((Mithril.Editor.Node)__edge.input.node).guid)}" + ITERATE;
-			__data += $"\"portIn\":{SPACE}{Encode(__edge.input.portName)}";
+		// 	__data += $"\"guidOut\":{SPACE}{Encode(((Mithril.Editor.Node)__edge.output.node).guid)}" + ITERATE;
+		// 	__data += $"\"portOut\":{SPACE}{Encode(__edge.output.portName)}" + ITERATE;
+		// 	__data += $"\"guidIn\":{SPACE}{Encode(((Mithril.Editor.Node)__edge.input.node).guid)}" + ITERATE;
+		// 	__data += $"\"portIn\":{SPACE}{Encode(__edge.input.portName)}";
 
-			__data += CLOSE_BRACE;
+		// 	__data += CLOSE_BRACE;
 
-			return EncodeObject(obj, __data);
-		}
+		// 	return EncodeObject(obj, __data);
+		// }
+
+		// #endregion
+		#region RuntimeType
+
+		// private string EncodeRuntimeType(object obj)
+		// {
+		// 	// var __type = (T)
+		// }
 
 		#endregion
 		#region Mirror
