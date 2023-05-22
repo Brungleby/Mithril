@@ -10,6 +10,7 @@
 #region Includes
 
 using System;
+using System.Linq;
 
 using EditorEdge = UnityEditor.Experimental.GraphView.Edge;
 using EditorNode = Mithril.Editor.Node;
@@ -52,8 +53,11 @@ namespace Mithril.Model
 		public bool isPredefined => _isPredefined;
 
 		[SerializeField]
-		private Port[] _ports;
-		public Port[] ports => _ports;
+		private Port[] _nonDefaultPorts;
+		public Port[] nonDefaultPorts => _nonDefaultPorts;
+		private Port[] _defaultPorts;
+		private Port[] _allPorts;
+		public Port[] ports => _allPorts;
 
 		#endregion
 		#region Editor-only Data
@@ -76,14 +80,27 @@ namespace Mithril.Model
 			_title = editorNode.title;
 			_isPredefined = editorNode.isPredefined;
 
-			var __editorPorts = editorNode.GetNonDefaultPorts();
-			_ports = new Port[__editorPorts.Count];
-			var i = 0;
-			foreach (var iEditorPort in __editorPorts)
 			{
-				ports[i] = new Port(iEditorPort);
-				i++;
+				var __nonDefaultPorts = editorNode.GetNonDefaultPorts();
+				_nonDefaultPorts = new Port[__nonDefaultPorts.Count];
+				var i = 0;
+				foreach (var iEditorPort in __nonDefaultPorts)
+				{
+					_nonDefaultPorts[i] = new Port(iEditorPort);
+					i++;
+				}
 			}
+			{
+				var __defaultPorts = editorNode.GetDefaultPorts();
+				_defaultPorts = new Port[__defaultPorts.Count];
+				var i = 0;
+				foreach (var iEditorPort in __defaultPorts)
+				{
+					_defaultPorts[i] = new Port(iEditorPort);
+					i++;
+				}
+			}
+			_allPorts = _defaultPorts.Combine(_nonDefaultPorts);
 
 			_rect = editorNode.rect;
 		}
@@ -91,6 +108,9 @@ namespace Mithril.Model
 		#endregion
 
 		public virtual Type editorType => typeof(EditorNode);
+
+		public Port GetPortByName(string portName) =>
+			_nonDefaultPorts.First(i => i.portName == portName);
 
 		#endregion
 	}

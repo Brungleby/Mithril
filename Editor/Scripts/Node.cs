@@ -151,7 +151,7 @@ namespace Mithril.Editor
 
 			OnConstruct();
 
-			foreach (var iModelPort in modelNode.ports)
+			foreach (var iModelPort in modelNode.nonDefaultPorts)
 				CreatePort(iModelPort.portType, iModelPort.portName, (Direction)iModelPort.direction);
 
 			rect = modelNode.rect;
@@ -261,11 +261,21 @@ namespace Mithril.Editor
 
 		public List<EditorPort> GetNonDefaultPorts()
 		{
-			return GetPorts_All().Where(iPort =>
-				!(defaultPortsIn.ContainsKey(iPort.portName) ||
-				defaultPortsOut.ContainsKey(iPort.portName))
-			)
-			.ToList();
+			return GetPorts_All()
+				.Where(iPort =>
+					!(defaultPortsIn.ContainsKey(iPort.portName) ||
+					defaultPortsOut.ContainsKey(iPort.portName))
+				)
+				.ToList();
+		}
+		public List<EditorPort> GetDefaultPorts()
+		{
+			return GetPorts_All()
+				.Where(iPort =>
+					defaultPortsIn.ContainsKey(iPort.portName) ||
+					defaultPortsOut.ContainsKey(iPort.portName)
+				)
+				.ToList();
 		}
 		public List<EditorPort> GetPorts_All()
 		{

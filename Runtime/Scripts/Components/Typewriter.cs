@@ -19,7 +19,7 @@ using TMPro;
 namespace Mithril
 {
 	/// <summary>
-	/// This is a component that allows any given <see cref="TMP_Text"/> to be "printed out" over time. Primarily used for dialogue boxes.
+	/// This is a component that allows any given <see cref="TMP_Text"/> to be "printed out" over time. Primarily used within dialogue boxes.
 	///</summary>
 
 	public class Typewriter : MonoBehaviour
@@ -31,6 +31,7 @@ namespace Mithril
 		/// <summary>
 		/// This event is called when the typewriter has finished printing out all characters.
 		///</summary>
+
 		[Tooltip("This event is called when the typewriter has finished printing out all characters.")]
 		[SerializeField]
 
@@ -46,6 +47,7 @@ namespace Mithril
 		/// <summary>
 		/// The affected Text component.
 		///</summary>
+
 		[Tooltip("The affected Text component.")]
 		[SerializeField]
 
@@ -65,6 +67,7 @@ namespace Mithril
 		/// <summary>
 		/// The affected AudioSource component from which to play audio.
 		///</summary>
+
 		[Tooltip("The affected AudioSource component from which to play audio.")]
 		[SerializeField]
 
@@ -76,6 +79,7 @@ namespace Mithril
 		/// <summary>
 		/// The number of characters to print out per second.
 		///</summary>
+
 		[Tooltip("The number of characters to print out per second.")]
 		[Min(0f)]
 		[SerializeField]
@@ -87,6 +91,7 @@ namespace Mithril
 		/// <summary>
 		/// The number of sounds to play per second (should generally be lower than <see cref="PrintoutSpeed"/>).
 		///</summary>
+
 		[Tooltip("The number of sounds to play per second (should generally be lower than PrintoutSpeed).")]
 		[Min(0f)]
 
@@ -95,6 +100,7 @@ namespace Mithril
 		/// <summary>
 		/// The AudioClip to play during printout.
 		///</summary>
+
 		[Tooltip("The AudioClip to play during printout.")]
 
 		public AudioClip PrintoutAudioClip;
@@ -102,6 +108,7 @@ namespace Mithril
 		/// <summary>
 		/// The AudioClip to play the moment printout is completed.
 		///</summary>
+
 		[Tooltip("The AudioClip to play the moment printout is completed.")]
 
 		public AudioClip CompletedAudioClip;
