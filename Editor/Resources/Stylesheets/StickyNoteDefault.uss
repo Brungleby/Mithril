@@ -1,4 +1,4 @@
 
 StickyNote {
-	backgroundColor: #FF0000;
+	background-color: #FF0000;
 }
