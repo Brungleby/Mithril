@@ -569,23 +569,18 @@ namespace Mithril
 		#endregion
 		#region RemapBool
 
+		public static int RemapBool(this in bool b, in int f = 0, in int t = 1) =>
+			b ? t : f;
 		public static float RemapBool(this in bool b, in float f = 0f, in float t = 1f) =>
 			b ? t : f;
-
+		public static Vector2Int RemapBool2(this in bool2 b, in int f = 0, in int t = 1) =>
+			new Vector2Int(b.x.RemapBool(f, t), b.y.RemapBool(f, t));
 		public static Vector2 RemapBool2(this in bool2 b, in float f = 0f, in float t = 1f) =>
-			new Vector2
-			(
-				b.x.RemapBool(f, t),
-				b.y.RemapBool(f, t)
-			);
-
+			new Vector2(b.x.RemapBool(f, t), b.y.RemapBool(f, t));
+		public static Vector3Int RemapBool3(this in bool3 b, in int f = 0, in int t = 1) =>
+			new Vector3Int(b.x.RemapBool(f, t), b.y.RemapBool(f, t), b.z.RemapBool(f, t));
 		public static Vector3 RemapBool3(this in bool3 b, in float f = 0f, in float t = 1f) =>
-			new Vector3
-			(
-				b.x.RemapBool(f, t),
-				b.y.RemapBool(f, t),
-				b.z.RemapBool(f, t)
-			);
+			new Vector3(b.x.RemapBool(f, t), b.y.RemapBool(f, t), b.z.RemapBool(f, t));
 
 		#endregion
 		#region SwapValues
