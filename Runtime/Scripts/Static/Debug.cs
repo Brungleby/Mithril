@@ -1,7 +1,7 @@
 
 /** Debug.cs
 *
-*	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
+*	Created by LIAM WOFFORD.
 *
 *	Free to use or modify, with or without creditation,
 *	under the Creative Commons 0 License.
@@ -24,6 +24,9 @@ namespace Mithril
 
 	public static class DebugDraw
 	{
+		public static readonly Color BLOCKING_COLOR = Color.red;
+		public static readonly Color CAST_COLOR = Color.cyan;
+
 		#region Drawing Methods
 
 		#region DrawPoint
@@ -143,6 +146,7 @@ namespace Mithril
 
 		public static void DrawCapsuleCast(this HitResult hit, Vector3 forward, Vector3 up, float radius, float height)
 		{
+			Gizmos.color = CAST_COLOR;
 			DrawWireCapsule
 			(
 				hit.origin + up * height / 2f,
@@ -150,12 +154,13 @@ namespace Mithril
 				forward,
 				radius,
 				height,
-				Color.red
+				CAST_COLOR
 			);
 
-			hit.DrawLinecast(0f);
-
-			Vector3 closestPoint = hit.isValid ? hit.point : hit.target;
+			Vector3 closestPoint = hit.isValid ? hit.pointAdjustment : hit.target;
+			Gizmos.DrawLine(hit.origin, closestPoint);
+			Color __resultColor = hit.isValid ? BLOCKING_COLOR : CAST_COLOR;
+			Gizmos.color = __resultColor;
 
 			DrawWireCapsule
 			(
@@ -164,8 +169,11 @@ namespace Mithril
 				forward,
 				radius,
 				height,
-				hit.isValid ? Color.red : Color.green
+				__resultColor
 			);
+
+			if (hit.isValid)
+				Gizmos.DrawLine(hit.pointAdjustment, hit.target);
 		}
 
 		#endregion
@@ -191,17 +199,17 @@ namespace Mithril
 		{
 			if (hit.IsValid())
 			{
-				Gizmos.color = Color.green;
+				Gizmos.color = CAST_COLOR;
 				Gizmos.DrawLine(origin, hit.point);
 
-				Gizmos.color = Color.red;
+				Gizmos.color = BLOCKING_COLOR;
 				Gizmos.DrawSphere(hit.point, pointSize);
 
 				Gizmos.DrawLine(hit.point, target);
 			}
 			else
 			{
-				Gizmos.color = Color.green;
+				Gizmos.color = CAST_COLOR;
 				Gizmos.DrawLine(origin, target);
 			}
 		}
@@ -255,14 +263,14 @@ namespace Mithril
 
 		public static void DrawSphereCast(Vector3 origin, Vector3 target, float sphereRadius, Vector3 hitPoint)
 		{
-			Gizmos.color = Color.green;
+			Gizmos.color = CAST_COLOR;
 			Gizmos.DrawWireSphere(origin, sphereRadius);
 
 			if (!Math.Approx(hitPoint, target, 0.01f))
 			{
 				Gizmos.DrawLine(origin, hitPoint);
 
-				Gizmos.color = Color.red;
+				Gizmos.color = BLOCKING_COLOR;
 				Gizmos.DrawWireSphere(target, sphereRadius);
 				Gizmos.DrawLine(hitPoint, target);
 
@@ -287,13 +295,27 @@ namespace Mithril
 		}
 
 		/// <inheritdoc cref="DrawSphereCast(Vector3, Vector3, float, Vector3)"/>
-		/// <param name="hitInfo">
+		/// <param name="hit">
 		/// The result <see cref="HitInfo"/> obtained after performing the spherecast.
 		///</param>
 
-		public static void DrawSphereCast(this HitResult hitInfo, float sphereRadius)
+		public static void DrawSphereCast(this HitResult hit, float radius)
 		{
-			DrawSphereCast(hitInfo.origin, hitInfo.target, sphereRadius, hitInfo.point);
+			Gizmos.color = CAST_COLOR;
+			Gizmos.DrawWireSphere(hit.origin, radius);
+
+			Vector3 closestPoint = hit.isValid ? hit.pointAdjustment : hit.target;
+
+			Gizmos.DrawLine(hit.origin, closestPoint);
+
+			Gizmos.color = hit.isValid ? BLOCKING_COLOR : CAST_COLOR;
+			Gizmos.DrawWireSphere(closestPoint, radius);
+
+			if (hit.isValid)
+			{
+				Gizmos.DrawLine(hit.pointAdjustment, hit.target);
+			}
+
 		}
 
 		#endregion
