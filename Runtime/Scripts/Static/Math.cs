@@ -402,15 +402,35 @@ namespace Mithril
 		/// The input Vector2 <paramref name="v"/> raised to the power of <paramref name="e"/>.
 		///</returns>
 
-		public static Vector2 Pow(this in Vector2 v, float e) =>
-			new Vector2(v.x.Pow(e), v.y.Pow(e));
+		public static Vector2 Pow(this in Vector2 v, float e) => new Vector2(
+			System.MathF.Pow(v.x, e),
+			System.MathF.Pow(v.y, e)
+		);
+
+		/// <inheritdoc cref="Pow(in Vector2, float)"/>
+
+		public static Vector2 Pow(this in Vector2 v, Vector2 e) => new Vector3(
+			System.MathF.Pow(v.x, e.x),
+			System.MathF.Pow(v.y, e.y)
+		);
 
 		/// <returns>
 		/// The input Vector3 <paramref name="v"/> raised to the power of <paramref name="e"/>.
 		///</returns>
 
-		public static Vector3 Pow(this in Vector3 v, float e) =>
-			new Vector3(v.x.Pow(e), v.y.Pow(e), v.z.Pow(e));
+		public static Vector3 Pow(this in Vector3 v, float e) => new Vector3(
+			System.MathF.Pow(v.x, e),
+			System.MathF.Pow(v.y, e),
+			System.MathF.Pow(v.z, e)
+		);
+
+		/// <inheritdoc cref="Pow(in Vector3, float)"/>
+
+		public static Vector3 Pow(this in Vector3 v, Vector3 e) => new Vector3(
+			System.MathF.Pow(v.x, e.x),
+			System.MathF.Pow(v.y, e.y),
+			System.MathF.Pow(v.z, e.z)
+		);
 
 		#endregion
 		#region Remap
