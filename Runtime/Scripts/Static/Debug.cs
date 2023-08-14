@@ -144,7 +144,7 @@ namespace Mithril
 #endif
 		}
 
-		public static void DrawCapsuleCast(this HitResult hit, Vector3 forward, Vector3 up, float radius, float height)
+		public static void DrawCapsuleCast(this Hit hit, Vector3 forward, Vector3 up, float radius, float height)
 		{
 			Gizmos.color = CAST_COLOR;
 			DrawWireCapsule
@@ -232,7 +232,7 @@ namespace Mithril
 		/// The result <see cref="HitInfo"/> obtained after performing the linecast.
 		///</param>
 
-		public static void DrawLinecast(this HitResult hit, float pointSize = 0.1f)
+		public static void DrawLinecast(this Hit hit, float pointSize = 0.1f)
 		{
 			try
 			{
@@ -299,7 +299,7 @@ namespace Mithril
 		/// The result <see cref="HitInfo"/> obtained after performing the spherecast.
 		///</param>
 
-		public static void DrawSphereCast(this HitResult hit, float radius)
+		public static void DrawSphereCast(this Hit hit, float radius)
 		{
 			Gizmos.color = CAST_COLOR;
 			Gizmos.DrawWireSphere(hit.origin, radius);

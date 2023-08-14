@@ -20,20 +20,20 @@ using Mithril;
 
 namespace Mithril
 {
-	#region (abstract) HitResultBase
+	#region (abstract) HitBase
 
 	/// <summary>
 	/// Base class for a more detailed RaycastHit.
 	///</summary>
 
-	public class HitResultBase
+	public class HitBase
 	{
-		public HitResultBase()
+		public HitBase()
 		{
 			isValid = false;
 		}
 
-		protected HitResultBase(bool _isValid)
+		protected HitBase(bool _isValid)
 		{
 			isValid = _isValid;
 		}
@@ -50,22 +50,22 @@ namespace Mithril
 	}
 
 	#endregion
-	#region (abstract) HitResult<TVector>
+	#region (abstract) Hit<TVector>
 
-	/// <inheritdoc cref="HitResultBase"/>
+	/// <inheritdoc cref="HitBase"/>
 
-	public abstract class HitResult<TVector> : HitResultBase
+	public abstract class Hit<TVector> : HitBase
 	where TVector : unmanaged
 	{
 		#region Constructor
 
-		protected HitResult() : base()
+		protected Hit() : base()
 		{
 			maxDistance = distance = percent = 0f;
 			origin = target = normal = point = pointAdjustment = default(TVector);
 		}
 
-		protected HitResult(
+		protected Hit(
 			bool _isValid,
 			float _maxDistance,
 			float _distance,
@@ -175,20 +175,20 @@ namespace Mithril
 	}
 
 	#endregion
-	#region (abstract) HitResult<TRaycastHit, TCollider, TRigidbody, TVector>
+	#region (abstract) Hit<TRaycastHit, TCollider, TRigidbody, TVector>
 
-	/// <inheritdoc cref="HitResultBase"/>
+	/// <inheritdoc cref="HitBase"/>
 
-	public abstract class HitResult<TRaycastHit, TCollider, TRigidbody, TVector> : HitResult<TVector>
+	public abstract class Hit<TRaycastHit, TCollider, TRigidbody, TVector> : Hit<TVector>
 	where TCollider : Component
 	where TRigidbody : Component
 	where TVector : unmanaged
 	{
 		#region Construction
 
-		protected HitResult() : base() { }
+		protected Hit() : base() { }
 
-		protected HitResult(
+		protected Hit(
 			bool _isValid,
 			float _maxDistance,
 			float _distance,
@@ -253,20 +253,20 @@ namespace Mithril
 
 	#endregion
 
-	#region (sealed) HitResult
+	#region (sealed) Hit
 
 	/// <summary>
 	/// This is a more detailed version of a <see cref="RaycastHit"/> to be used in 3D.
 	/// It supports multiple static methods for which to produce a result as one would with a <see cref="RaycastHit"/>.
 	///</summary>
 
-	public sealed class HitResult : HitResult<RaycastHit, Collider, Rigidbody, Vector3>
+	public sealed class Hit : Hit<RaycastHit, Collider, Rigidbody, Vector3>
 	{
 		#region Constructors
 
-		public HitResult() : base() { }
+		public Hit() : base() { }
 
-		private HitResult(RaycastHit _hit, Vector3 _origin, Vector3 _target) :
+		private Hit(RaycastHit _hit, Vector3 _origin, Vector3 _target) :
 		base(
 			_hit.IsValid(),
 			(_origin - _target).magnitude,
@@ -319,14 +319,14 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		#region (static) HitResultArray
+		#region (static) HitArray
 
-		private static HitResult[] _HitResultArray(RaycastHit[] hits, Vector3 origin, Vector3 target)
+		private static Hit[] _HitArray(RaycastHit[] hits, Vector3 origin, Vector3 target)
 		{
-			HitResult[] result = new HitResult[hits.Length];
+			Hit[] result = new Hit[hits.Length];
 
 			for (int i = 0; i < result.Length; i++)
-				result[i] = new HitResult(hits[i], origin, target);
+				result[i] = new Hit(hits[i], origin, target);
 
 			return result;
 		}
@@ -348,12 +348,12 @@ namespace Mithril
 		/// These layers will be filtered and any other layers will not be detected.
 		///</param>
 
-		public static HitResult Linecast(Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit Linecast(Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit __hit;
 			UnityEngine.Physics.Linecast(origin, target, out __hit, layerMask, queryTriggerInteraction);
 
-			return new HitResult(__hit, origin, target);
+			return new Hit(__hit, origin, target);
 		}
 
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, int, QueryTriggerInteraction)"/>
@@ -364,7 +364,7 @@ namespace Mithril
 		/// The maximum distance which this cast can reach.
 		///</param>
 
-		public static HitResult Linecast(Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit Linecast(Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			Linecast(origin, origin + direction.normalized * maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
@@ -372,7 +372,7 @@ namespace Mithril
 		/// Defining ray used to determine linecast origin and target.
 		///</param>
 
-		public static HitResult Linecast(Ray ray, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit Linecast(Ray ray, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			Linecast(ray.origin, ray.origin + ray.direction * maxDistance, layerMask, queryTriggerInteraction);
 
 		#endregion
@@ -383,22 +383,22 @@ namespace Mithril
 		///</summary>
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] LinecastAll(Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit[] LinecastAll(Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit[] __hits = UnityEngine.Physics.RaycastAll(origin, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-			return _HitResultArray(__hits, origin, origin + direction * maxDistance);
+			return _HitArray(__hits, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="LinecastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] LinecastAll(Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] LinecastAll(Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			LinecastAll(origin, (target - origin).normalized, (target - origin).magnitude, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="LinecastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 		/// <inheritdoc cref="Linecast(Ray, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] LinecastAll(Ray ray, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] LinecastAll(Ray ray, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			LinecastAll(ray.origin, ray.direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		#endregion
@@ -478,7 +478,7 @@ namespace Mithril
 		#endregion
 		#region SphereExpansionCast
 
-		public static HitResult SphereExpansionCast(Vector3 origin, float radius, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit SphereExpansionCast(Vector3 origin, float radius, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			/**	Get all overlapping objects.
 			*/
@@ -519,7 +519,7 @@ namespace Mithril
 
 			return Linecast(origin, closestCollider.Item1 + direction * extraDistance, layerMask, queryTriggerInteraction);
 		}
-		// public static HitResult SphereExpansionCast(Vector3 origin, float radius, int layerMask)
+		// public static Hit SphereExpansionCast(Vector3 origin, float radius, int layerMask)
 
 		#endregion
 
@@ -536,17 +536,17 @@ namespace Mithril
 		/// Defines the rotation of the box.
 		///</param>
 
-		public static HitResult BoxCast(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit BoxCast(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit hit;
 			UnityEngine.Physics.BoxCast(origin, halfExtents, direction, out hit, orientation, maxDistance, layerMask, queryTriggerInteraction);
 
-			return new HitResult(hit, origin, origin + direction * maxDistance);
+			return new Hit(hit, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult BoxCast(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit BoxCast(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			Vector3 delta = target - origin;
 			return BoxCast(origin, halfExtents, orientation, delta.normalized, delta.magnitude, layerMask, queryTriggerInteraction);
@@ -554,11 +554,11 @@ namespace Mithril
 
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, int, QueryTriggerInteraction)"/>
 
-		public static HitResult BoxCast(Vector3 origin, Vector3 halfExtents, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) => BoxCast(origin, halfExtents, Quaternion.identity, target, layerMask, queryTriggerInteraction);
+		public static Hit BoxCast(Vector3 origin, Vector3 halfExtents, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) => BoxCast(origin, halfExtents, Quaternion.identity, target, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult BoxCast(Vector3 origin, Vector3 halfExtents, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit BoxCast(Vector3 origin, Vector3 halfExtents, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			BoxCast(origin, halfExtents, Quaternion.identity, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
@@ -566,12 +566,12 @@ namespace Mithril
 		/// Template box collider used to define the origin and shape of the cast.
 		///</param>
 
-		public static HitResult BoxCast(BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit BoxCast(BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			BoxCast(box.transform.position + box.center, box.size / 2f, box.transform.rotation, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult BoxCast(BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit BoxCast(BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			Vector3 delta = target - box.transform.position;
 			return BoxCast(box, delta.normalized, delta.magnitude, layerMask, queryTriggerInteraction);
@@ -585,29 +585,29 @@ namespace Mithril
 		///</summary>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit[] hits = UnityEngine.Physics.BoxCastAll(origin, halfExtents, direction, orientation, maxDistance, layerMask, queryTriggerInteraction);
 
-			return _HitResultArray(hits, origin, origin + direction * maxDistance);
+			return _HitArray(hits, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="BoxCastAll"/>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			BoxCastAll(origin, halfExtents, Quaternion.identity, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCastAll"/>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] BoxCastAll(BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			BoxCastAll(box.transform.position + box.center, box.size / 2f, box.transform.rotation, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCastAll"/>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			Vector3 delta = target - origin;
 			return BoxCastAll(origin, halfExtents, orientation, delta.normalized, delta.magnitude, layerMask, queryTriggerInteraction);
@@ -616,13 +616,13 @@ namespace Mithril
 		/// <inheritdoc cref="BoxCastAll"/>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			BoxCastAll(origin, halfExtents, Quaternion.identity, target, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCastAll"/>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Vector3, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] BoxCastAll(BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			BoxCastAll(box.transform.position + box.center, box.size / 2f, box.transform.rotation, target, layerMask, queryTriggerInteraction);
 
 		#endregion
@@ -637,17 +637,17 @@ namespace Mithril
 		/// Defines the size of the sphere to be cast.
 		///</param>
 
-		public static HitResult SphereCast(Vector3 origin, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit SphereCast(Vector3 origin, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit hit;
 			UnityEngine.Physics.SphereCast(origin, radius, direction, out hit, maxDistance, layerMask, queryTriggerInteraction);
 
-			return new HitResult(hit, origin, origin + direction * maxDistance);
+			return new Hit(hit, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="SphereCast"/>
 
-		public static HitResult SphereCast(Vector3 origin, float radius, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit SphereCast(Vector3 origin, float radius, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			var delta = target - origin;
 			return SphereCast(origin, radius, delta.normalized, delta.magnitude, layerMask, queryTriggerInteraction);
@@ -658,12 +658,12 @@ namespace Mithril
 		/// Template sphere collider used to define the origin and shape of the cast.
 		///</param>
 
-		public static HitResult SphereCast(SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit SphereCast(SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			SphereCast(sphere.transform.position + sphere.center, sphere.radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult SphereCast(SphereCollider sphere, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit SphereCast(SphereCollider sphere, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			SphereCast(sphere.transform.position + sphere.center, sphere.radius, target, layerMask, queryTriggerInteraction);
 
 		#endregion
@@ -674,17 +674,17 @@ namespace Mithril
 		///</summary>
 		/// <inheritdoc cref="SphereCast"/>
 
-		public static HitResult[] SphereCastAll(Vector3 origin, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit[] SphereCastAll(Vector3 origin, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit[] hits = UnityEngine.Physics.SphereCastAll(origin, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-			return _HitResultArray(hits, origin, origin + direction * maxDistance);
+			return _HitArray(hits, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="SphereCastAll"/>
 		/// <inheritdoc cref="SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] SphereCastAll(SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] SphereCastAll(SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			SphereCastAll(sphere.transform.position + sphere.center, sphere.radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 
@@ -703,13 +703,13 @@ namespace Mithril
 		/// The world position of the second hemisphere (uncapped) of the capsule.
 		///</param>
 
-		public static HitResult CapsuleCast(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit CapsuleCast(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit __hit;
 			UnityEngine.Physics.CapsuleCast(point1, point2, radius, direction, out __hit, maxDistance, layerMask, queryTriggerInteraction);
 
 			Vector3 __midpoint = Math.Midpoint(point1, point2);
-			return new HitResult(__hit, __midpoint, __midpoint + direction * maxDistance);
+			return new Hit(__hit, __midpoint, __midpoint + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="CapsuleCast"/>
@@ -717,7 +717,7 @@ namespace Mithril
 		/// Template capsule collider used to define the origin and shape of the cast.
 		///</param>
 
-		public static HitResult CapsuleCast(CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit CapsuleCast(CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			CapsuleCast(capsule.GetTailPositionUncapped(), capsule.GetHeadPositionUncapped(), capsule.radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		#endregion
@@ -728,18 +728,18 @@ namespace Mithril
 		///</summary>
 		/// <inheritdoc cref="CapsuleCast"/>
 
-		public static HitResult[] CapsuleCastAll(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Hit[] CapsuleCastAll(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit[] __hits = UnityEngine.Physics.CapsuleCastAll(point1, point2, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 			Vector3 __midpoint = Math.Midpoint(point1, point2);
-			return _HitResultArray(__hits, __midpoint, __midpoint + direction * maxDistance);
+			return _HitArray(__hits, __midpoint, __midpoint + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="CapsuleCastAll"/>
 		/// <inheritdoc cref="CapsuleCast(CapsuleCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] CapsuleCastAll(CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] CapsuleCastAll(CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			CapsuleCastAll(capsule.GetTailPositionUncapped(), capsule.GetHeadPositionUncapped(), capsule.radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		#endregion
@@ -748,13 +748,13 @@ namespace Mithril
 	}
 
 	#endregion
-	#region (sealed) HitResult2D
+	#region (sealed) Hit2D
 
-	public sealed class HitResult2D : HitResult<RaycastHit2D, Collider2D, Rigidbody2D, Vector2>
+	public sealed class Hit2D : Hit<RaycastHit2D, Collider2D, Rigidbody2D, Vector2>
 	{
 		#region Constructors
 
-		private HitResult2D(RaycastHit2D _hit, Vector2 _origin, Vector2 _target) :
+		private Hit2D(RaycastHit2D _hit, Vector2 _origin, Vector2 _target) :
 		base(
 			_hit.IsValid(),
 			(_origin - _target).magnitude,
@@ -805,9 +805,9 @@ namespace Mithril
 
 	#endregion
 
-	#region (static) HitResultExtensions
+	#region (static) HitExtensions
 
-	public static class HitResultExtensions
+	public static class HitExtensions
 	{
 		public static bool IsValid(this RaycastHit hit) =>
 			hit.collider != null;
@@ -815,57 +815,57 @@ namespace Mithril
 		public static bool IsValid(this RaycastHit2D hit) =>
 			hit.collider != null;
 
-		public static bool IsValid(this HitResultBase hit) =>
+		public static bool IsValid(this HitBase hit) =>
 			hit != null && hit.isValid;
 
-		/// <inheritdoc cref="HitResult.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult BoxCast(this BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.BoxCast(box, direction, maxDistance, layerMask, queryTriggerInteraction);
+		public static Hit BoxCast(this BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.BoxCast(box, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult BoxCast(this BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.BoxCast(box, target, layerMask, queryTriggerInteraction);
+		public static Hit BoxCast(this BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.BoxCast(box, target, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.BoxCastAll"/>
-		/// <inheritdoc cref="HitResult.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.BoxCastAll"/>
+		/// <inheritdoc cref="Hit.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(this BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.BoxCastAll(box, direction, maxDistance, layerMask, queryTriggerInteraction);
+		public static Hit[] BoxCastAll(this BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.BoxCastAll(box, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.BoxCastAll"/>
-		/// <inheritdoc cref="HitResult.BoxCast(BoxCollider, Vector3, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.BoxCastAll"/>
+		/// <inheritdoc cref="Hit.BoxCast(BoxCollider, Vector3, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] BoxCastAll(this BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.BoxCastAll(box, target, layerMask, queryTriggerInteraction);
+		public static Hit[] BoxCastAll(this BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.BoxCastAll(box, target, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult SphereCast(this SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.SphereCast(sphere, direction, maxDistance, layerMask, queryTriggerInteraction);
+		public static Hit SphereCast(this SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.SphereCast(sphere, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult SphereCast(this SphereCollider sphere, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.SphereCast(sphere, target, layerMask, queryTriggerInteraction);
+		public static Hit SphereCast(this SphereCollider sphere, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.SphereCast(sphere, target, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.SphereCastAll"/>
-		/// <inheritdoc cref="HitResult.SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.SphereCastAll"/>
+		/// <inheritdoc cref="Hit.SphereCast(SphereCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] SphereCastAll(this SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+		public static Hit[] SphereCastAll(this SphereCollider sphere, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			SphereCastAll(sphere, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.CapsuleCast(CapsuleCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.CapsuleCast(CapsuleCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult CapsuleCast(this CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.CapsuleCast(capsule, direction, maxDistance, layerMask, queryTriggerInteraction);
+		public static Hit CapsuleCast(this CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.CapsuleCast(capsule, direction, maxDistance, layerMask, queryTriggerInteraction);
 
-		/// <inheritdoc cref="HitResult.CapsuleCastAll"/>
-		/// <inheritdoc cref="HitResult.CapsuleCast(CapsuleCollider, Vector3, float, int, QueryTriggerInteraction)"/>
+		/// <inheritdoc cref="Hit.CapsuleCastAll"/>
+		/// <inheritdoc cref="Hit.CapsuleCast(CapsuleCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
-		public static HitResult[] CapsuleCastAll(this CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			HitResult.CapsuleCastAll(capsule, direction, maxDistance, layerMask, queryTriggerInteraction);
+		public static Hit[] CapsuleCastAll(this CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			Hit.CapsuleCastAll(capsule, direction, maxDistance, layerMask, queryTriggerInteraction);
 	}
 
 	#endregion
