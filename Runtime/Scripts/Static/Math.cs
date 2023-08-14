@@ -131,6 +131,27 @@ namespace Mithril
 			return result.Value;
 		}
 		#endregion
+		#region Floor, Round, Ceil
+
+		public static float Floor(this float value) =>
+			Mathf.Floor(value);
+
+		public static int FloorToInt(this float value) =>
+			Mathf.FloorToInt(value);
+
+		public static float Round(this float value) =>
+			Mathf.Round(value);
+
+		public static int RoundToInt(this float value) =>
+			Mathf.RoundToInt(value);
+
+		public static float Ceil(this float value) =>
+			Mathf.Ceil(value);
+
+		public static int CeilToInt(this float value) =>
+			Mathf.CeilToInt(value);
+
+		#endregion
 		#region Clamp
 
 		/// <returns>
