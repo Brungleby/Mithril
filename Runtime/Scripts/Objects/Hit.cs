@@ -14,20 +14,20 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using Mithril;
-
 #endregion
 
 namespace Mithril
 {
-	#region (abstract) HitBase
+	#region HitBase
 
 	/// <summary>
 	/// Base class for a more detailed RaycastHit.
 	///</summary>
 
-	public class HitBase
+	public abstract class HitBase
 	{
+		#region Construction
+
 		public HitBase()
 		{
 			isBlocked = false;
@@ -38,26 +38,24 @@ namespace Mithril
 			isBlocked = _isBlocked;
 		}
 
-		#region IsValid
+		#endregion
 
 		/// <summary>
 		/// Whether or not the cast performed actually hit anything.
 		///</summary>
 
 		public readonly bool isBlocked;
-
-		#endregion
 	}
 
 	#endregion
-	#region (abstract) Hit<TVector>
+	#region Hit<TVector>
 
 	/// <inheritdoc cref="HitBase"/>
 
 	public abstract class Hit<TVector> : HitBase
 	where TVector : unmanaged
 	{
-		#region Constructor
+		#region Construction
 
 		protected Hit() : base()
 		{
@@ -66,7 +64,7 @@ namespace Mithril
 		}
 
 		protected Hit(
-			bool _isValid,
+			bool _isBlocked,
 			float _maxDistance,
 			float _distance,
 			TVector _origin,
@@ -77,7 +75,7 @@ namespace Mithril
 			Transform _transform
 		) :
 		base(
-			_isValid
+			_isBlocked
 		)
 		{
 			maxDistance = _maxDistance;
@@ -97,23 +95,15 @@ namespace Mithril
 
 		#region Members
 
-		#region MaxDistance
-
 		/// <summary>
 		/// The distance between <see cref="origin"/> and <see cref="target"/>.
 		///</summary>
 
 		public readonly float maxDistance;
 
-		#endregion
-		#region Distance
-
 		/// <inheritdoc cref="RaycastHit.distance"/>
 
 		public readonly float distance;
-
-		#endregion
-		#region Percent
 
 		/// <summary>
 		/// The percentage (between 0 and 1) as <see cref="distance"/> approaches <see cref="maxDistance"/>.
@@ -121,17 +111,11 @@ namespace Mithril
 
 		public readonly float percent;
 
-		#endregion
-		#region Origin
-
 		/// <summary>
 		/// The position at which the cast began.
 		///</summary>
 
 		public readonly TVector origin;
-
-		#endregion
-		#region Target
 
 		/// <summary>
 		/// The position at which the cast tried to end at.
@@ -139,33 +123,19 @@ namespace Mithril
 
 		public readonly TVector target;
 
-		#endregion
-		#region Normal
-
 		/// <inheritdoc cref="RaycastHit.normal"/>
 
 		public readonly TVector normal;
 
-		#endregion
-		#region Point
-
 		/// <inheritdoc cref="RaycastHit.point"/>
 
 		public readonly TVector point;
-
-		#endregion
-		#region AdjustmentPoint
 
 		/// <summary>
 		/// The point at which we can set Collider to so as not to intersect with it.
 		///</summary>
 
 		public readonly TVector pointAdjustment;
-
-		#endregion
-
-		#endregion
-		#region Transform
 
 		/// <inheritdoc cref="RaycastHit.transform"/>
 
@@ -175,7 +145,7 @@ namespace Mithril
 	}
 
 	#endregion
-	#region (abstract) Hit<TRaycastHit, TCollider, TRigidbody, TVector>
+	#region Hit<TRaycastHit, TCollider, TRigidbody, TVector>
 
 	/// <inheritdoc cref="HitBase"/>
 
@@ -189,7 +159,7 @@ namespace Mithril
 		protected Hit() : base() { }
 
 		protected Hit(
-			bool _isValid,
+			bool _isBlocked,
 			float _maxDistance,
 			float _distance,
 			TVector _origin,
@@ -203,7 +173,7 @@ namespace Mithril
 			TRigidbody _rigidbody
 		) :
 		base(
-			_isValid,
+			_isBlocked,
 			_maxDistance,
 			_distance,
 			_origin,
@@ -217,13 +187,22 @@ namespace Mithril
 			hit = _hit;
 			collider = _collider;
 			rigidbody = _rigidbody;
+
+			if (_collider != null)
+			{
+				physicMaterial = GetPhysicMaterial(_collider);
+				surface = GetSurface(_collider);
+			}
+			else
+			{
+				physicMaterial = default;
+				surface = default;
+			}
 		}
 
 		#endregion
 
 		#region Members
-
-		#region Hit
 
 		/// <summary>
 		/// The default <see cref="RaycastHit"/> obtained from a standard cast method.
@@ -231,29 +210,38 @@ namespace Mithril
 
 		public readonly TRaycastHit hit;
 
-		#endregion
-
-		#region Collider
-
 		/// <inheritdoc cref="RaycastHit.collider"/>
 
 		public readonly TCollider collider;
-
-		#endregion
-		#region Rigidbody
 
 		/// <inheritdoc cref="RaycastHit.rigidbody"/>
 
 		public readonly TRigidbody rigidbody;
 
+		/// <summary>
+		/// The physic material which was hit.
+		///</summary>
+
+		public readonly PhysicMaterial physicMaterial;
+
+		/// <summary>
+		/// The surface definition which was hit.
+		///</summary>
+
+		public readonly Surface surface;
+
 		#endregion
+		#region Methods
+
+		protected abstract PhysicMaterial GetPhysicMaterial(in TCollider collider);
+		protected abstract Surface GetSurface(in TCollider collider);
 
 		#endregion
 	}
 
 	#endregion
 
-	#region (sealed) Hit
+	#region Hit
 
 	/// <summary>
 	/// This is a more detailed version of a <see cref="RaycastHit"/> to be used in 3D.
@@ -281,45 +269,18 @@ namespace Mithril
 			_hit.collider,
 			_hit.rigidbody
 		)
-		{
-			if (collider)
-			{
-				physicMaterial = collider.material;
-				surface = collider.GetSurface();
-			}
-			else
-			{
-				physicMaterial = default;
-				surface = default;
-			}
-		}
-
-		#endregion
-		#region Members
-
-		#region PhysicMaterial
-
-		/// <summary>
-		/// The physic material which was hit.
-		///</summary>
-
-		public readonly PhysicMaterial physicMaterial;
-
-		#endregion
-		#region Surface
-
-		/// <summary>
-		/// The surface definition which was hit.
-		///</summary>
-
-		public readonly Surface surface;
-
-		#endregion
+		{ }
 
 		#endregion
 		#region Methods
 
-		#region (static) HitArray
+		protected override PhysicMaterial GetPhysicMaterial(in Collider collider) =>
+			collider.material;
+
+		protected override Surface GetSurface(in Collider collider) =>
+			collider.GetSurface();
+
+		#region Static
 
 		private static Hit[] _HitArray(RaycastHit[] hits, Vector3 origin, Vector3 target)
 		{
@@ -330,8 +291,6 @@ namespace Mithril
 
 			return result;
 		}
-
-		#endregion
 
 		#region Linecast
 
@@ -745,6 +704,8 @@ namespace Mithril
 		#endregion
 
 		#endregion
+
+		#endregion
 	}
 
 	#endregion
@@ -769,36 +730,24 @@ namespace Mithril
 			_hit.collider,
 			_hit.rigidbody
 		)
-		{
-			if (collider)
-			{
-				Surface = collider.GetSurface();
-			}
-			else
-			{
-				Surface = default;
-			}
-		}
-
-		#endregion
-		#region Members
-
-		#region Surface
-
-		/// <summary>
-		/// The surface definition which was hit.
-		///</summary>
-
-		public readonly Surface Surface;
-
-		#endregion
+		{ }
 
 		#endregion
 		#region Methods
 
+		protected override PhysicMaterial GetPhysicMaterial(in Collider2D collider) =>
+			throw new System.NotImplementedException();
+
+		protected override Surface GetSurface(in Collider2D collider) =>
+			collider.GetSurface();
+
+		#region Static
+
 		/**
 		*	__TODO_DEVELOP__
 		*/
+
+		#endregion
 
 		#endregion
 	}

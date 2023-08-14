@@ -28,25 +28,6 @@ namespace Mithril
 	{
 		#region Fields
 
-		#region (field) ID
-
-		/// <summary>
-		/// This string is used to identify this surface. Each <see cref="Surface.ID"/> should be unique.
-		///</summary>
-
-		[Tooltip("This string is used to identify this surface. Each Surface.ID should be unique.")]
-		[SerializeField]
-
-		private string _ID = default(string);
-
-		/// <inheritdoc cref="_ID"/>
-
-		public string ID => _ID;
-
-		#endregion
-
-		#region (field) FrictionScale
-
 		/// <summary>
 		/// Pawns with a FrictionMovement component will have their acceleration and deceleration multiplied by this amount.
 		///</summary>
@@ -54,29 +35,16 @@ namespace Mithril
 		[Tooltip("Pawns with a FrictionMovement component will have their acceleration and deceleration multiplied by this amount.")]
 		[SerializeField]
 
-		private float _FrictionScale = 1f;
-
-		/// <inheritdoc cref="_FrictionScale"/>
-
-		public float FrictionScale => _FrictionScale;
-
-		#endregion
-		#region (field) FrictionSpeedScale
+		public float frictionScale = 1f;
 
 		/// <summary>
-		/// The "viscosity" of this surface, pawns with a <see cref="WalkMovement"/> component will have their <see cref="WalkMovement.MaxWalkSpeed_cx"/> multiplied by this amount.
+		/// The "viscosity" of this surface, pawns with a <see cref="WalkMovement"/> component will have their <see cref="WalkMovement.maxSpeed"/> multiplied by this amount.
 		///</summary>
 
 		[Tooltip("The \"viscosity\" of this surface, pawns with a WalkMovement component will have their Max Walk Speed multiplied by this amount.")]
 		[SerializeField]
 
-		private float _FrictionSpeedScale = 1f;
-
-		/// <inheritdoc cref="_FrictionSpeedScale"/>
-
-		public float FrictionSpeedScale => _FrictionSpeedScale;
-
-		#endregion
+		public float walkSpeedScale = 1f;
 
 		#endregion
 	}
@@ -95,7 +63,7 @@ namespace Mithril
 
 			if (filter != null)
 				return filter.Surface;
-			return default(Surface);
+			return default;
 		}
 
 		/// <returns>
