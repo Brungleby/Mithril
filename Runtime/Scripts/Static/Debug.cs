@@ -157,9 +157,9 @@ namespace Mithril
 				CAST_COLOR
 			);
 
-			Vector3 closestPoint = hit.isValid ? hit.pointAdjustment : hit.target;
+			Vector3 closestPoint = hit.isBlocked ? hit.pointAdjustment : hit.target;
 			Gizmos.DrawLine(hit.origin, closestPoint);
-			Color __resultColor = hit.isValid ? BLOCKING_COLOR : CAST_COLOR;
+			Color __resultColor = hit.isBlocked ? BLOCKING_COLOR : CAST_COLOR;
 			Gizmos.color = __resultColor;
 
 			DrawWireCapsule
@@ -172,7 +172,7 @@ namespace Mithril
 				__resultColor
 			);
 
-			if (hit.isValid)
+			if (hit.isBlocked)
 				Gizmos.DrawLine(hit.pointAdjustment, hit.target);
 		}
 
@@ -197,7 +197,7 @@ namespace Mithril
 
 		public static void DrawLinecast(this RaycastHit hit, Vector3 origin, Vector3 target, float pointSize = 0.1f)
 		{
-			if (hit.IsValid())
+			if (hit.IsBlocked())
 			{
 				Gizmos.color = CAST_COLOR;
 				Gizmos.DrawLine(origin, hit.point);
@@ -304,14 +304,14 @@ namespace Mithril
 			Gizmos.color = CAST_COLOR;
 			Gizmos.DrawWireSphere(hit.origin, radius);
 
-			Vector3 closestPoint = hit.isValid ? hit.pointAdjustment : hit.target;
+			Vector3 closestPoint = hit.isBlocked ? hit.pointAdjustment : hit.target;
 
 			Gizmos.DrawLine(hit.origin, closestPoint);
 
-			Gizmos.color = hit.isValid ? BLOCKING_COLOR : CAST_COLOR;
+			Gizmos.color = hit.isBlocked ? BLOCKING_COLOR : CAST_COLOR;
 			Gizmos.DrawWireSphere(closestPoint, radius);
 
-			if (hit.isValid)
+			if (hit.isBlocked)
 			{
 				Gizmos.DrawLine(hit.pointAdjustment, hit.target);
 			}

@@ -30,12 +30,12 @@ namespace Mithril
 	{
 		public HitBase()
 		{
-			isValid = false;
+			isBlocked = false;
 		}
 
-		protected HitBase(bool _isValid)
+		protected HitBase(bool _isBlocked)
 		{
-			isValid = _isValid;
+			isBlocked = _isBlocked;
 		}
 
 		#region IsValid
@@ -44,7 +44,7 @@ namespace Mithril
 		/// Whether or not the cast performed actually hit anything.
 		///</summary>
 
-		public readonly bool isValid;
+		public readonly bool isBlocked;
 
 		#endregion
 	}
@@ -268,7 +268,7 @@ namespace Mithril
 
 		private Hit(RaycastHit _hit, Vector3 _origin, Vector3 _target) :
 		base(
-			_hit.IsValid(),
+			_hit.IsBlocked(),
 			(_origin - _target).magnitude,
 			_hit.distance,
 			_origin,
@@ -756,7 +756,7 @@ namespace Mithril
 
 		private Hit2D(RaycastHit2D _hit, Vector2 _origin, Vector2 _target) :
 		base(
-			_hit.IsValid(),
+			_hit.IsBlocked(),
 			(_origin - _target).magnitude,
 			_hit.distance,
 			_origin,
@@ -809,14 +809,12 @@ namespace Mithril
 
 	public static class HitExtensions
 	{
-		public static bool IsValid(this RaycastHit hit) =>
+		public static bool IsBlocked(this HitBase hit) =>
+			hit != null && hit.isBlocked;
+		public static bool IsBlocked(this RaycastHit hit) =>
 			hit.collider != null;
-
-		public static bool IsValid(this RaycastHit2D hit) =>
+		public static bool IsBlocked(this RaycastHit2D hit) =>
 			hit.collider != null;
-
-		public static bool IsValid(this HitBase hit) =>
-			hit != null && hit.isValid;
 
 		/// <inheritdoc cref="Hit.BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
