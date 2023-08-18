@@ -639,7 +639,7 @@ namespace Mithril
 
 		#endregion
 
-		#region Vector Math
+		#region Vectors
 
 		#region Components
 
@@ -945,6 +945,15 @@ namespace Mithril
 		}
 
 		#endregion
+
+		#endregion
+
+		#region Quaternions
+
+		public static Quaternion ProjectRotationOnAxis(this Quaternion rotation, Vector3 axis)
+		{
+			return Quaternion.Euler(Vector3.Scale(rotation.eulerAngles, axis));
+		}
 
 		#endregion
 
