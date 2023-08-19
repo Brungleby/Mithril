@@ -79,7 +79,7 @@ namespace Mithril
 
 		public static void DrawArrow(Vector3 origin, Vector3 direction, float headHight = 0.25f, float headWidth = 25f)
 		{
-			if (direction.magnitude < 0.0001f) return;
+			if (direction.Approx(Vector3.zero)) return;
 
 			Gizmos.DrawLine(origin, origin + (direction * (1f - headHight)));
 
