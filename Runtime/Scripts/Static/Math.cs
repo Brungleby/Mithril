@@ -74,6 +74,12 @@ namespace Mithril
 		public static float Max(this float a, float b = 0f) =>
 			System.Math.Max(a, b);
 
+		public static Vector3 Max(this Vector3 a, float b = 0f) => new Vector3(
+			System.Math.Max(a.x, b),
+			System.Math.Max(a.y, b),
+			System.Math.Max(a.z, b)
+		);
+
 		public static int Max(this int a, int b = 0) =>
 			System.Math.Max(a, b);
 

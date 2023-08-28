@@ -9,6 +9,7 @@
 
 #region Includes
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -28,7 +29,7 @@ namespace Mithril
 	{
 		#region Construction
 
-		public HitBase()
+		protected HitBase()
 		{
 			isBlocked = false;
 		}
@@ -52,7 +53,7 @@ namespace Mithril
 
 	/// <inheritdoc cref="HitBase"/>
 
-	public abstract class Hit<TVector> : HitBase
+	public abstract class Hit<TVector> : HitBase, IComparable<Hit<TVector>>
 	where TVector : unmanaged
 	{
 		#region Construction
@@ -140,6 +141,8 @@ namespace Mithril
 		/// <inheritdoc cref="RaycastHit.transform"/>
 
 		public readonly Transform transform;
+
+		public int CompareTo(Hit<TVector> other) => (int)(distance - other.distance).Sign();
 
 		#endregion
 	}
@@ -281,6 +284,8 @@ namespace Mithril
 			collider.GetSurface();
 
 		#region Static
+
+		public static Hit none => new Hit();
 
 		private static Hit[] _HitArray(RaycastHit[] hits, Vector3 origin, Vector3 target)
 		{
@@ -715,6 +720,8 @@ namespace Mithril
 	{
 		#region Constructors
 
+		public Hit2D() : base() { }
+
 		private Hit2D(RaycastHit2D _hit, Vector2 _origin, Vector2 _target) :
 		base(
 			_hit.IsBlocked(),
@@ -746,6 +753,8 @@ namespace Mithril
 		/**
 		*	__TODO_DEVELOP__
 		*/
+
+		public static Hit2D none => new Hit2D();
 
 		#endregion
 
