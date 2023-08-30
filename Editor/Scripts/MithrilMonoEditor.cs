@@ -32,7 +32,7 @@ namespace Mithril
 		private const string METHOD_NAME0 = "OnDrawGizmos";
 		private const string METHOD_NAME1 = "OnDrawGizmosSelected";
 		private const BindingFlags BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-		private bool _isDrawGizmosToggled = true;
+		// private bool _isDrawGizmosToggled = true;
 
 		private bool implementsGizmos
 		{
@@ -50,10 +50,10 @@ namespace Mithril
 
 		public override void OnInspectorGUI()
 		{
-			if (implementsGizmos)
-			{
-				// _isDrawGizmosToggled = GUILayout.Toggle(_isDrawGizmosToggled, LABEL_NAME);
-			}
+			// if (implementsGizmos)
+			// {
+			// _isDrawGizmosToggled = GUILayout.Toggle(_isDrawGizmosToggled, LABEL_NAME);
+			// }
 
 			base.OnInspectorGUI();
 		}
