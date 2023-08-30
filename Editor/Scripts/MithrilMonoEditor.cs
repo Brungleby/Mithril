@@ -52,7 +52,7 @@ namespace Mithril
 		{
 			if (implementsGizmos)
 			{
-				_isDrawGizmosToggled = GUILayout.Toggle(_isDrawGizmosToggled, LABEL_NAME);
+				// _isDrawGizmosToggled = GUILayout.Toggle(_isDrawGizmosToggled, LABEL_NAME);
 			}
 
 			base.OnInspectorGUI();
