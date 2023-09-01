@@ -777,6 +777,10 @@ namespace Mithril
 		public static Vector3Int CeilInt(this in Vector3 v) =>
 			new Vector3Int(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y), Mathf.CeilToInt(v.z));
 
+		public static Vector3 Round(this in Vector3 v) =>
+			new Vector3(Mathf.Round(v.x), Mathf.Round(v.y), Mathf.Round(v.z));
+		public static Vector3Int RoundToInt(this in Vector3 v) =>
+			new Vector3Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
 
 		#endregion
 		#region Vector2 Translation
@@ -800,6 +804,11 @@ namespace Mithril
 			new Vector2(Mathf.Ceil(v.x), Mathf.Ceil(v.y));
 		public static Vector2Int CeilInt(this in Vector2 v) =>
 			new Vector2Int(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y));
+
+		public static Vector2 Round(this in Vector2 v) =>
+			new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
+		public static Vector2Int RoundToInt(this in Vector2 v) =>
+			new Vector2Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
 
 		#endregion
 
