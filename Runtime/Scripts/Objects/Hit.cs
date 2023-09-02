@@ -61,7 +61,7 @@ namespace Mithril
 		protected Hit() : base()
 		{
 			maxDistance = distance = percent = 0f;
-			origin = target = normal = point = pointAdjustment = default(TVector);
+			origin = target = normal = point = adjustmentPoint = default(TVector);
 		}
 
 		protected Hit(
@@ -87,7 +87,7 @@ namespace Mithril
 			target = _target;
 			normal = _normal;
 			point = _point;
-			pointAdjustment = _adjustmentPoint;
+			adjustmentPoint = _adjustmentPoint;
 
 			transform = _transform;
 		}
@@ -136,7 +136,7 @@ namespace Mithril
 		/// The point at which we can set Collider to so as not to intersect with it.
 		///</summary>
 
-		public readonly TVector pointAdjustment;
+		public readonly TVector adjustmentPoint;
 
 		/// <inheritdoc cref="RaycastHit.transform"/>
 

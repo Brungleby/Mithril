@@ -157,7 +157,7 @@ namespace Mithril
 				CAST_COLOR
 			);
 
-			Vector3 closestPoint = hit.isBlocked ? hit.pointAdjustment : hit.target;
+			Vector3 closestPoint = hit.isBlocked ? hit.adjustmentPoint : hit.target;
 			Gizmos.DrawLine(hit.origin, closestPoint);
 			Color __resultColor = hit.isBlocked ? BLOCKING_COLOR : CAST_COLOR;
 			Gizmos.color = __resultColor;
@@ -173,7 +173,7 @@ namespace Mithril
 			);
 
 			if (hit.isBlocked)
-				Gizmos.DrawLine(hit.pointAdjustment, hit.target);
+				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
 		}
 
 		#endregion
@@ -304,7 +304,7 @@ namespace Mithril
 			Gizmos.color = CAST_COLOR;
 			Gizmos.DrawWireSphere(hit.origin, radius);
 
-			Vector3 closestPoint = hit.isBlocked ? hit.pointAdjustment : hit.target;
+			Vector3 closestPoint = hit.isBlocked ? hit.adjustmentPoint : hit.target;
 
 			Gizmos.DrawLine(hit.origin, closestPoint);
 
@@ -313,7 +313,7 @@ namespace Mithril
 
 			if (hit.isBlocked)
 			{
-				Gizmos.DrawLine(hit.pointAdjustment, hit.target);
+				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
 			}
 
 		}
