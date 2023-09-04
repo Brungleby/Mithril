@@ -7,6 +7,7 @@
 *	under the Creative Commons 0 License.
 */
 
+#if UNITY_EDITOR
 #region Includes
 
 using System.Reflection;
@@ -61,3 +62,4 @@ namespace Mithril
 
 	#endregion
 }
+#endif
