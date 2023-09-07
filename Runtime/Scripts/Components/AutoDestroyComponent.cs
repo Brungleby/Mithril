@@ -39,7 +39,7 @@ namespace Mithril
 
 		private void Awake()
 		{
-			DestroyTimeline.OnCease.AddListener(() =>
+			DestroyTimeline.onCease.AddListener(() =>
 			{
 				gameObject.SetActive(false);
 			});
