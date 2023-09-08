@@ -1,1 +1,1 @@
-# cuberoot.core
+# mithril.core

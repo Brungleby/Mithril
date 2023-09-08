@@ -1,5 +1,5 @@
 {
-	"name": "com.cuberoot.mithril",
+	"name": "com.brungleby.mithril",
 	"displayName": "Mithril.Core",
 	"description": "Contains basic auxiliary objects and functions necessary to use Mithril.",
 	"version": "0.0.0",
