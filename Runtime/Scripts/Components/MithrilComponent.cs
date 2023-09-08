@@ -83,6 +83,8 @@ namespace Mithril
 			var fieldsToAssign = GetType().GetFields(ASSIGN_ON_AWAKE_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AssignOnAwakeAttribute>() != null);
 			foreach (var iField in fieldsToAssign)
 			{
+				if (iField.GetValue(this) != null) continue;
+
 				var iAttribute = iField.GetCustomAttribute<AssignOnAwakeAttribute>();
 				iField.SetValue(this, GetAssignOnAwakeValue(iAttribute, iField.FieldType));
 			}
