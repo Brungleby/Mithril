@@ -70,7 +70,8 @@ namespace Mithril
 
 		protected virtual void Awake()
 		{
-			AssignComponentsOnAwake();
+			try { AssignComponentsOnAwake(); }
+			catch (Exception e) { Debug.LogException(e); }
 
 			Init();
 #if UNITY_EDITOR
