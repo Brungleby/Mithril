@@ -61,7 +61,7 @@ namespace Mithril
 		protected Hit() : base()
 		{
 			maxDistance = distance = percent = 0f;
-			origin = target = normal = point = adjustmentPoint = default(TVector);
+			origin = target = normal = point = adjustmentPoint = default;
 		}
 
 		protected Hit(
@@ -300,7 +300,7 @@ namespace Mithril
 		#region Linecast
 
 		/// <summary>
-		/// Casts a straight line and stops at the first <see cref="UnityEngine.Collider"/> in its path, returning information about the <see cref="UnityEngine.Collider"/> and the nature of the collision.
+		/// Casts a straight line and stops at the first <see cref="Collider"/> in its path, returning information about the <see cref="Collider"/> and the nature of the collision.
 		///</summary>
 		/// <param name="origin">
 		/// The starting world position of the cast.
@@ -315,7 +315,7 @@ namespace Mithril
 		public static Hit Linecast(Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit __hit;
-			UnityEngine.Physics.Linecast(origin, target, out __hit, layerMask, queryTriggerInteraction);
+			Physics.Linecast(origin, target, out __hit, layerMask, queryTriggerInteraction);
 
 			return new Hit(__hit, origin, target);
 		}
@@ -343,13 +343,13 @@ namespace Mithril
 		#region LinecastAll
 
 		/// <summary>
-		/// Casts a straight line and detects any or all <see cref="UnityEngine.Collider"/>s between the origin and target position.
+		/// Casts a straight line and detects any or all <see cref="Collider"/>s between the origin and target position.
 		///</summary>
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 
 		public static Hit[] LinecastAll(Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			RaycastHit[] __hits = UnityEngine.Physics.RaycastAll(origin, direction, maxDistance, layerMask, queryTriggerInteraction);
+			RaycastHit[] __hits = Physics.RaycastAll(origin, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 			return _HitArray(__hits, origin, origin + direction * maxDistance);
 		}
@@ -394,7 +394,7 @@ namespace Mithril
 				*/
 				if (collider.IsConvex())
 				{
-					Vector3 closestPoint = UnityEngine.Physics.ClosestPoint(origin, collider, collider.transform.position, collider.transform.rotation);
+					Vector3 closestPoint = Physics.ClosestPoint(origin, collider, collider.transform.position, collider.transform.rotation);
 					distance = (closestPoint - origin).magnitude;
 				}
 				else // if the collider is a concave mesh.
@@ -437,7 +437,7 @@ namespace Mithril
 		#region SphereExpansionOverlapAll
 
 		public static Collider[] SphereExpansionOverlapAll(Vector3 origin, float radius, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			UnityEngine.Physics.OverlapSphere(origin, radius, layerMask, queryTriggerInteraction);
+			Physics.OverlapSphere(origin, radius, layerMask, queryTriggerInteraction);
 
 		#endregion
 		#region SphereExpansionCast
@@ -458,7 +458,7 @@ namespace Mithril
 			{
 				if (!collider.IsConvex()) continue;
 
-				Vector3 closestPoint = UnityEngine.Physics.ClosestPoint(origin, collider, collider.transform.position, collider.transform.rotation);
+				Vector3 closestPoint = Physics.ClosestPoint(origin, collider, collider.transform.position, collider.transform.rotation);
 
 				colliderTable.Add(
 				(
@@ -490,7 +490,7 @@ namespace Mithril
 		#region BoxCast
 
 		/// <summary>
-		/// Casts a box along a straight line and stops at the first <see cref="UnityEngine.Collider"/> in its path, returning information about the <see cref="UnityEngine.Collider"/> and the nature of the collision.
+		/// Casts a box along a straight line and stops at the first <see cref="Collider"/> in its path, returning information about the <see cref="Collider"/> and the nature of the collision.
 		///</summary>
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 		/// <param name="halfExtents">
@@ -503,7 +503,7 @@ namespace Mithril
 		public static Hit BoxCast(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit hit;
-			UnityEngine.Physics.BoxCast(origin, halfExtents, direction, out hit, orientation, maxDistance, layerMask, queryTriggerInteraction);
+			Physics.BoxCast(origin, halfExtents, direction, out hit, orientation, maxDistance, layerMask, queryTriggerInteraction);
 
 			return new Hit(hit, origin, origin + direction * maxDistance);
 		}
@@ -545,13 +545,13 @@ namespace Mithril
 		#region BoxCastAll
 
 		/// <summary>
-		/// Casts a box along a straight line and detects any or all <see cref="UnityEngine.Collider"/>s between the origin and target position.
+		/// Casts a box along a straight line and detects any or all <see cref="Collider"/>s between the origin and target position.
 		///</summary>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
 		public static Hit[] BoxCastAll(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			RaycastHit[] hits = UnityEngine.Physics.BoxCastAll(origin, halfExtents, direction, orientation, maxDistance, layerMask, queryTriggerInteraction);
+			RaycastHit[] hits = Physics.BoxCastAll(origin, halfExtents, direction, orientation, maxDistance, layerMask, queryTriggerInteraction);
 
 			return _HitArray(hits, origin, origin + direction * maxDistance);
 		}
@@ -594,7 +594,7 @@ namespace Mithril
 		#region SphereCast
 
 		/// <summary>
-		/// Casts a sphere along a straight line and stops at the first <see cref="UnityEngine.Collider"/> in its path, returning information about the <see cref="UnityEngine.Collider"/> and the nature of the collision.
+		/// Casts a sphere along a straight line and stops at the first <see cref="Collider"/> in its path, returning information about the <see cref="Collider"/> and the nature of the collision.
 		///</summary>
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 		/// <param name="radius">
@@ -604,7 +604,7 @@ namespace Mithril
 		public static Hit SphereCast(Vector3 origin, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit hit;
-			UnityEngine.Physics.SphereCast(origin, radius, direction, out hit, maxDistance, layerMask, queryTriggerInteraction);
+			Physics.SphereCast(origin, radius, direction, out hit, maxDistance, layerMask, queryTriggerInteraction);
 
 			return new Hit(hit, origin, origin + direction * maxDistance);
 		}
@@ -634,13 +634,13 @@ namespace Mithril
 		#region SphereCastAll
 
 		/// <summary>
-		/// Casts a sphere along a straight line and detects any or all <see cref="UnityEngine.Collider"/>s between the origin and target position.
+		/// Casts a sphere along a straight line and detects any or all <see cref="Collider"/>s between the origin and target position.
 		///</summary>
 		/// <inheritdoc cref="SphereCast"/>
 
 		public static Hit[] SphereCastAll(Vector3 origin, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			RaycastHit[] hits = UnityEngine.Physics.SphereCastAll(origin, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
+			RaycastHit[] hits = Physics.SphereCastAll(origin, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 			return _HitArray(hits, origin, origin + direction * maxDistance);
 		}
@@ -657,7 +657,7 @@ namespace Mithril
 		#region CapsuleCast
 
 		/// <summary>
-		/// Casts a capsule along a straight line and stops at the first <see cref="UnityEngine.Collider"/> in its path, returning information about the <see cref="UnityEngine.Collider"/> and the nature of the collision.
+		/// Casts a capsule along a straight line and stops at the first <see cref="Collider"/> in its path, returning information about the <see cref="Collider"/> and the nature of the collision.
 		///</summary>
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 		/// <param name="point1">
@@ -670,7 +670,7 @@ namespace Mithril
 		public static Hit CapsuleCast(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			RaycastHit __hit;
-			UnityEngine.Physics.CapsuleCast(point1, point2, radius, direction, out __hit, maxDistance, layerMask, queryTriggerInteraction);
+			Physics.CapsuleCast(point1, point2, radius, direction, out __hit, maxDistance, layerMask, queryTriggerInteraction);
 
 			Vector3 __midpoint = Math.Midpoint(point1, point2);
 			return new Hit(__hit, __midpoint, __midpoint + direction * maxDistance);
@@ -688,13 +688,13 @@ namespace Mithril
 		#region CapsuleCastAll
 
 		/// <summary>
-		/// Casts a capsule along a straight line and detects any or all <see cref="UnityEngine.Collider"/>s between the origin and target position.
+		/// Casts a capsule along a straight line and detects any or all <see cref="Collider"/>s between the origin and target position.
 		///</summary>
 		/// <inheritdoc cref="CapsuleCast"/>
 
 		public static Hit[] CapsuleCastAll(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			RaycastHit[] __hits = UnityEngine.Physics.CapsuleCastAll(point1, point2, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
+			RaycastHit[] __hits = Physics.CapsuleCastAll(point1, point2, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 			Vector3 __midpoint = Math.Midpoint(point1, point2);
 			return _HitArray(__hits, __midpoint, __midpoint + direction * maxDistance);
@@ -767,7 +767,7 @@ namespace Mithril
 
 	public static class HitExtensions
 	{
-		public static bool IsBlocked(this HitBase hit) =>
+		public static bool IsValidAndBlocked(this HitBase hit) =>
 			hit != null && hit.isBlocked;
 		public static bool IsBlocked(this RaycastHit hit) =>
 			hit.collider != null;
