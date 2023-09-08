@@ -1,10 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
+
+/** Arrow.cs
+*
+*	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
+*
+*	Free to use or modify, with or without creditation,
+*	under the Creative Commons 0 License.
+*/
+
+#region Includes
+
 using UnityEngine;
+
+#endregion
 
 namespace Mithril
 {
-	public class ArrowComponent : MonoBehaviour
+	#region Arrow
+
+	/// <summary>
+	/// __TODO_ANNOTATE__
+	///</summary>
+
+	public sealed class Arrow : MithrilComponent
 	{
 		public bool enableDrawAlways = true;
 		public bool scaleWithViewport = true;
@@ -34,4 +51,6 @@ namespace Mithril
 			DebugDraw.DrawArrow(transform.position, transform.rotation * direction * scale, color);
 		}
 	}
+
+	#endregion
 }

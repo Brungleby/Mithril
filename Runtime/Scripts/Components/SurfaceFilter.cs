@@ -22,7 +22,7 @@ namespace Mithril
 	/// Add this component to any <see cref="GameObject"/> with a Collider or Collider2D to apply a <see cref="Surface"/>'s properties to it.
 	///</summary>
 
-	public class SurfaceFilter : MonoBehaviour
+	public class SurfaceFilter : MithrilComponent
 	{
 		#region Public Fields
 

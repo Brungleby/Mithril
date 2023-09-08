@@ -52,11 +52,9 @@ namespace Mithril
 		#region Members
 
 		private const BindingFlags ASSIGN_ON_AWAKE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
 #if UNITY_EDITOR
-		private bool _isAwake;
+		private bool _isAwake = false;
 #endif
-
 		#endregion
 		#region Methods
 

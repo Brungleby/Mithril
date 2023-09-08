@@ -22,7 +22,7 @@ namespace Mithril
 	/// This is a component that allows any given <see cref="TMP_Text"/> to be "printed out" over time. Primarily used within dialogue boxes.
 	///</summary>
 
-	public class Typewriter : MonoBehaviour
+	public class Typewriter : MithrilComponent
 	{
 		#region Fields
 
@@ -162,15 +162,12 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		private void OnValidate()
+		protected override void Awake()
 		{
-			if (Text == null)
-				Text = GetComponent<TMP_Text>();
-		}
+			Text ??= GetComponent<TMP_Text>();
 
-		private void Awake()
-		{
-			OnValidate();
+			base.Awake();
+
 			Clear();
 		}
 
