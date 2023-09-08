@@ -7,7 +7,6 @@
 *	under the Creative Commons 0 License.
 */
 
-#if UNITY_EDITOR
 #region Includes
 
 using UnityEngine;
@@ -15,7 +14,7 @@ using UnityEditor;
 
 #endregion
 
-namespace Mithril
+namespace Mithril.Editor
 {
 	#region SingleLinePropertyDrawer
 
@@ -62,4 +61,3 @@ namespace Mithril
 
 	#endregion
 }
-#endif
