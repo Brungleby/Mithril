@@ -25,7 +25,7 @@ namespace Mithril
 	/// Base class for a <see cref="MonoBehaviour"/> with a little extra functionality.
 	///</summary>
 
-	public class MithrilComponent : MonoBehaviour
+	public abstract class MithrilComponent : MonoBehaviour
 	{
 		#region Inners
 

@@ -25,6 +25,10 @@ namespace Mithril
 	{
 		#region Fields
 
+		public Transform ActualParent;
+
+		[Space]
+
 		public bool followPosition = true;
 
 		[Min(0f)]
@@ -37,6 +41,8 @@ namespace Mithril
 		private float _positionMaxDistance = 1f;
 		public float positionMaxDistance { get => _positionMaxDistance; set => _positionMaxDistance.Max(); }
 
+		[Space]
+
 		public bool followRotation = true;
 
 		[Min(0f)]
@@ -47,7 +53,7 @@ namespace Mithril
 		#endregion
 		#region Members
 
-		private Transform leaderTransform;
+		private Transform anchor;
 
 		private Vector3 _positionVelocity;
 		private Vector3 _rotationVelocity;
@@ -67,17 +73,16 @@ namespace Mithril
 		{
 			base.Awake();
 
-			var leaderObject = new GameObject($"{gameObject.name} [Leader]");
+			var anchorObject = new GameObject($"{gameObject.name} [Leader]");
 
-			leaderTransform = leaderObject.transform;
-			leaderTransform.SetParent(transform.parent);
+			anchor = anchorObject.transform;
+			anchor.SetParent(transform.parent);
 
-			leaderTransform.localPosition = transform.localPosition;
-			leaderTransform.localRotation = transform.localRotation;
-			leaderTransform.localScale = Vector3.one;
+			anchor.localPosition = transform.localPosition;
+			anchor.localRotation = transform.localRotation;
+			anchor.localScale = Vector3.one;
 
-			transform.SetParent(null);
-
+			transform.SetParent(ActualParent ?? GameObject.FindWithTag("World Context").transform);
 		}
 
 		private void Update()
@@ -86,7 +91,7 @@ namespace Mithril
 			{
 				if (enablePositionLag)
 				{
-					var targetPosition = leaderTransform.position;
+					var targetPosition = anchor.position;
 					var deltaPosition = targetPosition - transform.position;
 
 					Vector3 startPosition;
@@ -98,17 +103,17 @@ namespace Mithril
 					transform.position = Vector3.SmoothDamp(startPosition, targetPosition, ref _positionVelocity, positionLagTime);
 				}
 				else
-					transform.position = leaderTransform.position;
+					transform.position = anchor.position;
 			}
 
 			if (followRotation)
 			{
 				if (enableRotationLag)
 				{
-					transform.eulerAngles = Math.SmoothDampEulerAngles(transform.eulerAngles, leaderTransform.eulerAngles, ref _rotationVelocity, _rotationLagTime);
+					transform.eulerAngles = Math.SmoothDampEulerAngles(transform.eulerAngles, anchor.eulerAngles, ref _rotationVelocity, _rotationLagTime);
 				}
 				else
-					transform.rotation = leaderTransform.rotation;
+					transform.rotation = anchor.rotation;
 			}
 
 		}
