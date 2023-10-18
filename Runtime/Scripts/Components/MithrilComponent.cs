@@ -29,18 +29,18 @@ namespace Mithril
 	{
 		#region Inners
 
-		#region AssignOnAwakeAttribute
+		#region AutoAssignAttribute
 
 		[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-		protected sealed class AssignOnAwakeAttribute : Attribute
+		protected sealed class AutoAssignAttribute : Attribute
 		{
 			public Type assignType { get; }
 
-			public AssignOnAwakeAttribute(Type assignType)
+			public AutoAssignAttribute(Type assignType)
 			{
 				this.assignType = assignType;
 			}
-			public AssignOnAwakeAttribute()
+			public AutoAssignAttribute()
 			{
 				assignType = null;
 			}
@@ -51,7 +51,7 @@ namespace Mithril
 		#endregion
 		#region Members
 
-		private const BindingFlags ASSIGN_ON_AWAKE_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		private const BindingFlags AUTO_ASSIGN_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 #if UNITY_EDITOR
 		private bool _isAwake = false;
 #endif
@@ -70,7 +70,7 @@ namespace Mithril
 
 		protected virtual void Awake()
 		{
-			try { AssignComponentsOnAwake(); }
+			try { AutoAssignComponents(); }
 			catch (Exception e) { Debug.LogException(e); }
 
 			Init();
@@ -79,26 +79,26 @@ namespace Mithril
 #endif
 		}
 
-		private void AssignComponentsOnAwake()
+		private void AutoAssignComponents()
 		{
-			var fieldsToAssign = GetType().GetFields(ASSIGN_ON_AWAKE_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AssignOnAwakeAttribute>() != null);
+			var fieldsToAssign = GetType().GetFields(AUTO_ASSIGN_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AutoAssignAttribute>() != null);
 			foreach (var iField in fieldsToAssign)
 			{
 				if (iField.GetValue(this) != null) continue;
 
-				var iAttribute = iField.GetCustomAttribute<AssignOnAwakeAttribute>();
-				iField.SetValue(this, GetAssignOnAwakeValue(iAttribute, iField.FieldType));
+				var iAttribute = iField.GetCustomAttribute<AutoAssignAttribute>();
+				iField.SetValue(this, GetAutoAssignValue(iAttribute, iField.FieldType));
 			}
 
-			var propertiesToAssign = GetType().GetProperties(ASSIGN_ON_AWAKE_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AssignOnAwakeAttribute>() != null);
+			var propertiesToAssign = GetType().GetProperties(AUTO_ASSIGN_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AutoAssignAttribute>() != null);
 			foreach (var iProperty in propertiesToAssign)
 			{
-				var iAttribute = iProperty.GetCustomAttribute<AssignOnAwakeAttribute>();
-				iProperty.SetValue(this, GetAssignOnAwakeValue(iAttribute, iProperty.PropertyType));
+				var iAttribute = iProperty.GetCustomAttribute<AutoAssignAttribute>();
+				iProperty.SetValue(this, GetAutoAssignValue(iAttribute, iProperty.PropertyType));
 			}
 		}
 
-		private Component GetAssignOnAwakeValue(AssignOnAwakeAttribute attribute, Type verifyType)
+		private Component GetAutoAssignValue(AutoAssignAttribute attribute, Type verifyType)
 		{
 			var assignType = attribute.assignType ?? verifyType;
 
