@@ -1,11 +1,12 @@
 {
-	"name": "com.brungleby.mithril.core",
-	"displayName": "Mithril.Core",
-	"description": "Contains basic auxiliary objects and functions necessary to use Mithril.",
+	"name": "com.brungleby.mithril",
+	"displayName": "Mithril",
+	"description": "Mithril",
 	"version": "0.0.0",
-	"unity": "2021.3",
+	"unity": "2022.3",
 	"dependencies": {
 		"com.unity.mathematics": "1.2.6",
+		"com.unity.inputsystem": "1.7.0",
 		"com.unity.textmeshpro": "3.0.6"
 	}
 }
