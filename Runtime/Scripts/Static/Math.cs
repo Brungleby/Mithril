@@ -74,7 +74,7 @@ namespace Mithril
 		public static float Max(this float a, float b = 0f) =>
 			System.Math.Max(a, b);
 
-		public static Vector3 Max(this Vector3 a, float b = 0f) => new Vector3(
+		public static Vector3 Max(this Vector3 a, float b = 0f) => new(
 			System.Math.Max(a.x, b),
 			System.Math.Max(a.y, b),
 			System.Math.Max(a.z, b)
@@ -211,22 +211,22 @@ namespace Mithril
 		/// <inheritdoc cref="Clamp(in Vector3, in Vector3, in Vector3)"/>
 
 		public static Vector2 Clamp(this in Vector2 vector, in Vector2 min, in Vector2 max) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(min.x, max.x),
 				vector.y.Clamp(min.y, max.y)
 			);
 		public static Vector2 Clamp(this in Vector2 vector, in Vector2 min, in float max) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(min.x, max),
 				vector.y.Clamp(min.y, max)
 			);
 		public static Vector2 Clamp(this in Vector2 vector, in float min, in Vector2 max) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(min, max.x),
 				vector.y.Clamp(min, max.y)
 			);
 		public static Vector2 Clamp(this in Vector2 vector, in float min, in float max) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(min, max),
 				vector.y.Clamp(min, max)
 			);
@@ -236,12 +236,12 @@ namespace Mithril
 		///</returns>
 
 		public static Vector2 Clamp(this in Vector2 vector, in Vector2 max) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(0f, max.x),
 				vector.y.Clamp(0f, max.y)
 			);
 		public static Vector2 Clamp(this in Vector2 vector, in float max) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(0f, max),
 				vector.y.Clamp(0f, max)
 			);
@@ -251,7 +251,7 @@ namespace Mithril
 		///</returns>
 
 		public static Vector2 Clamp(this in Vector2 vector) =>
-			new Vector2(
+			new(
 				vector.x.Clamp(0f, 1f),
 				vector.y.Clamp(0f, 1f)
 			);
@@ -277,25 +277,25 @@ namespace Mithril
 		///</returns>
 
 		public static Vector3 Clamp(this in Vector3 vector, in Vector3 min, in Vector3 max) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(min.x, max.x),
 				vector.y.Clamp(min.y, max.y),
 				vector.z.Clamp(min.z, max.z)
 			);
 		public static Vector3 Clamp(this in Vector3 vector, in Vector3 min, in float max) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(min.x, max),
 				vector.y.Clamp(min.y, max),
 				vector.z.Clamp(min.z, max)
 			);
 		public static Vector3 Clamp(this in Vector3 vector, in float min, in Vector3 max) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(min, max.x),
 				vector.y.Clamp(min, max.y),
 				vector.z.Clamp(min, max.z)
 			);
 		public static Vector3 Clamp(this in Vector3 vector, in float min, in float max) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(min, max),
 				vector.y.Clamp(min, max),
 				vector.z.Clamp(min, max)
@@ -306,13 +306,13 @@ namespace Mithril
 		///</returns>
 
 		public static Vector3 Clamp(this in Vector3 vector, in Vector3 max) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(0f, max.x),
 				vector.y.Clamp(0f, max.y),
 				vector.z.Clamp(0f, max.z)
 			);
 		public static Vector3 Clamp(this in Vector3 vector, in float max) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(0f, max),
 				vector.y.Clamp(0f, max),
 				vector.z.Clamp(0f, max)
@@ -323,7 +323,7 @@ namespace Mithril
 		///</returns>
 
 		public static Vector3 Clamp(this in Vector3 vector) =>
-			new Vector3(
+			new(
 				vector.x.Clamp(0f, 1f),
 				vector.y.Clamp(0f, 1f),
 				vector.z.Clamp(0f, 1f)
@@ -359,24 +359,24 @@ namespace Mithril
 		///</returns>
 
 		public static Vector2 Abs(this in Vector2 v) =>
-			new Vector2(v.x.Abs(), v.y.Abs());
+			new(v.x.Abs(), v.y.Abs());
 
 		/// <inheritdoc cref="Abs(in Vector2)"/>
 
 		public static Vector2Int Abs(this in Vector2Int v) =>
-			new Vector2Int(v.x.Abs(), v.y.Abs());
+			new(v.x.Abs(), v.y.Abs());
 
 		/// <returns>
 		/// A Vector3 containing the absolute value of input vector <paramref name="v"/>'s components.
 		///</returns>
 
 		public static Vector3 Abs(this in Vector3 v) =>
-			new Vector3(v.x.Abs(), v.y.Abs(), v.z.Abs());
+			new(v.x.Abs(), v.y.Abs(), v.z.Abs());
 
 		/// <inheritdoc cref="Abs(in Vector3)"/>
 
 		public static Vector3Int Abs(this in Vector3Int v) =>
-			new Vector3Int(v.x.Abs(), v.y.Abs(), v.z.Abs());
+			new(v.x.Abs(), v.y.Abs(), v.z.Abs());
 
 		#endregion
 		#region Sign
@@ -392,28 +392,28 @@ namespace Mithril
 		///</returns>
 
 		public static Vector2 Sign(this in Vector2 v) =>
-			new Vector2(v.x.Sign(), v.y.Sign());
+			new(v.x.Sign(), v.y.Sign());
 
 		/// <returns>
 		/// A Vector2Int containing the sign of input vector <paramref name="v"/>'s components.
 		///</returns>
 
 		public static Vector2Int Sign(this in Vector2Int v) =>
-			new Vector2Int(v.x.Sign(), v.y.Sign());
+			new(v.x.Sign(), v.y.Sign());
 
 		/// <returns>
 		/// A Vector3 containing the sign of input vector <paramref name="v"/>'s components.
 		///</returns>
 
 		public static Vector3 Sign(this in Vector3 v) =>
-			new Vector3(v.x.Sign(), v.y.Sign(), v.z.Sign());
+			new(v.x.Sign(), v.y.Sign(), v.z.Sign());
 
 		/// <returns>
 		/// A new Vector3Int containing the sign of input vector <paramref name="v"/>'s components.
 		///</returns>
 
 		public static Vector3Int Sign(this in Vector3Int v) =>
-			new Vector3Int(v.x.Sign(), v.y.Sign(), v.z.Sign());
+			new(v.x.Sign(), v.y.Sign(), v.z.Sign());
 
 		#endregion
 		#region Pow
@@ -423,40 +423,40 @@ namespace Mithril
 		///</returns>
 
 		public static float Pow(this in float f, float e) =>
-			System.MathF.Pow(f, e);
+			MathF.Pow(f, e);
 
 		/// <returns>
 		/// The input Vector2 <paramref name="v"/> raised to the power of <paramref name="e"/>.
 		///</returns>
 
-		public static Vector2 Pow(this in Vector2 v, float e) => new Vector2(
-			System.MathF.Pow(v.x, e),
-			System.MathF.Pow(v.y, e)
+		public static Vector2 Pow(this in Vector2 v, float e) => new(
+			MathF.Pow(v.x, e),
+			MathF.Pow(v.y, e)
 		);
 
 		/// <inheritdoc cref="Pow(in Vector2, float)"/>
 
-		public static Vector2 Pow(this in Vector2 v, Vector2 e) => new Vector3(
-			System.MathF.Pow(v.x, e.x),
-			System.MathF.Pow(v.y, e.y)
+		public static Vector2 Pow(this in Vector2 v, Vector2 e) => new(
+			MathF.Pow(v.x, e.x),
+			MathF.Pow(v.y, e.y)
 		);
 
 		/// <returns>
 		/// The input Vector3 <paramref name="v"/> raised to the power of <paramref name="e"/>.
 		///</returns>
 
-		public static Vector3 Pow(this in Vector3 v, float e) => new Vector3(
-			System.MathF.Pow(v.x, e),
-			System.MathF.Pow(v.y, e),
-			System.MathF.Pow(v.z, e)
+		public static Vector3 Pow(this in Vector3 v, float e) => new(
+			MathF.Pow(v.x, e),
+			MathF.Pow(v.y, e),
+			MathF.Pow(v.z, e)
 		);
 
 		/// <inheritdoc cref="Pow(in Vector3, float)"/>
 
-		public static Vector3 Pow(this in Vector3 v, Vector3 e) => new Vector3(
-			System.MathF.Pow(v.x, e.x),
-			System.MathF.Pow(v.y, e.y),
-			System.MathF.Pow(v.z, e.z)
+		public static Vector3 Pow(this in Vector3 v, Vector3 e) => new(
+			MathF.Pow(v.x, e.x),
+			MathF.Pow(v.y, e.y),
+			MathF.Pow(v.z, e.z)
 		);
 
 		#endregion
@@ -475,7 +475,6 @@ namespace Mithril
 		public static float Remap(this in float value, in float inMin = 0f, in float inMax = 1f, in float outMin = 0f, in float outMax = 1f, in bool clamp = false)
 		{
 			var __result = outMin + ((outMax - outMin) * ((value - inMin) / (inMax - inMin)));
-
 			return clamp ? __result.Clamp(outMin, outMax) : __result;
 		}
 
@@ -484,14 +483,13 @@ namespace Mithril
 		public static int Remap(this in int value, in int inMin = 0, in int inMax = 1, in int outMin = 0, in int outMax = 1, in bool clamp = false)
 		{
 			var __result = outMin + ((outMax - outMin) * ((value - inMin) / (inMax - inMin)));
-
 			return clamp ? __result.Clamp(outMin, outMax) : __result;
 		}
 
 		/// <inheritdoc cref="Remap"/>
 
 		public static Vector2 Remap(this in Vector2 value, in Vector2 inMin, in Vector2 inMax, in Vector2 outMin, in Vector2 outMax, in bool clamp = false) =>
-			new Vector2(
+			new(
 				value.x.Remap(inMin.x, inMax.x, outMin.x, outMax.x, clamp),
 				value.y.Remap(inMin.y, inMax.y, outMin.y, outMax.y, clamp)
 			);
@@ -499,7 +497,7 @@ namespace Mithril
 		/// <inheritdoc cref="Remap"/>
 
 		public static Vector2Int Remap(this in Vector2Int value, in Vector2Int inMin, in Vector2Int inMax, in Vector2Int outMin, in Vector2Int outMax, in bool clamp = false) =>
-			new Vector2Int(
+			new(
 				value.x.Remap(inMin.x, inMax.x, outMin.x, outMax.x, clamp),
 				value.y.Remap(inMin.y, inMax.y, outMin.y, outMax.y, clamp)
 			);
@@ -507,7 +505,7 @@ namespace Mithril
 		/// <inheritdoc cref="Remap"/>
 
 		public static Vector3 Remap(this in Vector3 value, in Vector3 inMin, in Vector3 inMax, in Vector3 outMin, in Vector3 outMax, in bool clamp = false) =>
-			new Vector3(
+			new(
 				value.x.Remap(inMin.x, inMax.x, outMin.x, outMax.x, clamp),
 				value.y.Remap(inMin.y, inMax.y, outMin.y, outMax.y, clamp),
 				value.z.Remap(inMin.z, inMax.z, outMin.z, outMax.z, clamp)
@@ -516,7 +514,7 @@ namespace Mithril
 		/// <inheritdoc cref="Remap"/>
 
 		public static Vector3Int Remap(this in Vector3Int value, in Vector3Int inMin, in Vector3Int inMax, in Vector3Int outMin, in Vector3Int outMax, in bool clamp = false) =>
-			new Vector3Int(
+			new(
 				value.x.Remap(inMin.x, inMax.x, outMin.x, outMax.x, clamp),
 				value.y.Remap(inMin.y, inMax.y, outMin.y, outMax.y, clamp),
 				value.z.Remap(inMin.z, inMax.z, outMin.z, outMax.z, clamp)
@@ -551,13 +549,13 @@ namespace Mithril
 			System.Linq.Enumerable.Average(values);
 
 		public static Vector2 Average(this IEnumerable<Vector2> positions) =>
-			new Vector2(
+			new(
 				positions.Select(i => i.x).Average(),
 				positions.Select(i => i.y).Average()
 			);
 
 		public static Vector3 Average(this IEnumerable<Vector3> positions) =>
-			new Vector3(
+			new(
 				positions.Select(i => i.x).Average(),
 				positions.Select(i => i.y).Average(),
 				positions.Select(i => i.z).Average()
@@ -603,15 +601,15 @@ namespace Mithril
 
 		public static float ClampAngle(this float value, float min, float max)
 		{
-			if (value < 0f)
-				value += 360f;
+			value = Mathf.Repeat(value, 360f);
 			if (value > 180f)
 				return Mathf.Max(value, min + 360f);
-			return Mathf.Min(value, max);
+			else
+				return Mathf.Min(value, max);
 		}
 
 		public static float ClampAngle(this float value, float minMax) =>
-			ClampAngle(value, -(minMax.Abs()), minMax.Abs());
+			ClampAngle(value, -minMax.Abs(), minMax.Abs());
 
 		#endregion
 		#region RemapBool
@@ -621,23 +619,19 @@ namespace Mithril
 		public static float RemapBool(this in bool b, in float f = 0f, in float t = 1f) =>
 			b ? t : f;
 		public static Vector2Int RemapBool2(this in bool2 b, in int f = 0, in int t = 1) =>
-			new Vector2Int(b.x.RemapBool(f, t), b.y.RemapBool(f, t));
+			new(b.x.RemapBool(f, t), b.y.RemapBool(f, t));
 		public static Vector2 RemapBool2(this in bool2 b, in float f = 0f, in float t = 1f) =>
-			new Vector2(b.x.RemapBool(f, t), b.y.RemapBool(f, t));
+			new(b.x.RemapBool(f, t), b.y.RemapBool(f, t));
 		public static Vector3Int RemapBool3(this in bool3 b, in int f = 0, in int t = 1) =>
-			new Vector3Int(b.x.RemapBool(f, t), b.y.RemapBool(f, t), b.z.RemapBool(f, t));
+			new(b.x.RemapBool(f, t), b.y.RemapBool(f, t), b.z.RemapBool(f, t));
 		public static Vector3 RemapBool3(this in bool3 b, in float f = 0f, in float t = 1f) =>
-			new Vector3(b.x.RemapBool(f, t), b.y.RemapBool(f, t), b.z.RemapBool(f, t));
+			new(b.x.RemapBool(f, t), b.y.RemapBool(f, t), b.z.RemapBool(f, t));
 
 		#endregion
 		#region SwapValues
 
-		public static void SwapValues(ref float a, ref float b)
-		{
-			float t = a;
-			a = b;
-			b = t;
-		}
+		public static void SwapValues(ref float a, ref float b) =>
+			(b, a) = (a, b);
 
 		#endregion
 
@@ -697,12 +691,12 @@ namespace Mithril
 		///</returns>
 
 		public static Vector3 XLateral_YVertical(in this Vector2 v) =>
-			new Vector3(v.x, v.y, v.x);
+			new(v.x, v.y, v.x);
 
 		/// <inheritdoc cref="XLateral_YVertical(Vector2)"/>
 
 		public static Vector3 XLateral_YVertical(in float x, in float y) =>
-			new Vector3(x, y, x);
+			new(x, y, x);
 
 		/// <returns>
 		/// The given input vector <paramref name="v"/> with only the Y and Z components.
@@ -712,7 +706,7 @@ namespace Mithril
 		///</param>
 
 		public static Vector3 YZ(this in Vector3 v, in float x = 0f) =>
-			new Vector3(x, v.y, v.z);
+			new(x, v.y, v.z);
 
 		/// <summary>
 		/// Converts the given <see cref="Vector2"/> <paramref name="v"/> to a <see cref="Vector3"/> with the <see cref="Vector2.x"/> mapped to the <see cref="Vector3.z"/>.
@@ -722,7 +716,7 @@ namespace Mithril
 		///</param>
 
 		public static Vector3 YZ(this in Vector2 v, in float x = 0f) =>
-			new Vector3(x, v.y, v.x);
+			new(x, v.y, v.x);
 
 		/// <returns>
 		/// The given input vector <paramref name="v"/> with only the X and Z components.
@@ -732,7 +726,7 @@ namespace Mithril
 		///</param>
 
 		public static Vector3 XZ(this in Vector3 v, in float y = 0f) =>
-			new Vector3(v.x, y, v.z);
+			new(v.x, y, v.z);
 
 		/// <summary>
 		/// Converts the given <see cref="Vector2"/> <paramref name="v"/> to a <see cref="Vector3"/> with the <see cref="Vector2.y"/> mapped to the <see cref="Vector3.z"/>.
@@ -742,7 +736,7 @@ namespace Mithril
 		///</param>
 
 		public static Vector3 XZ(this in Vector2 v, in float y = 0f) =>
-			new Vector3(v.x, y, v.y);
+			new(v.x, y, v.y);
 
 		/// <returns>
 		/// The given input vector <paramref name="v"/> with only the X and Y components.
@@ -752,7 +746,7 @@ namespace Mithril
 		///</param>
 
 		public static Vector3 XY(this in Vector3 v, in float z = 0f) =>
-			new Vector3(v.x, v.y, z);
+			new(v.x, v.y, z);
 
 		/// <summary>
 		/// Converts the given <see cref="Vector2"/> <paramref name="v"/> to a <see cref="Vector3"/>.
@@ -762,53 +756,53 @@ namespace Mithril
 		///</param>
 
 		public static Vector3 XY(this in Vector2 v, in float z = 0f) =>
-			new Vector3(v.x, v.y, z);
+			new(v.x, v.y, z);
 
 		public static Vector3 Reciprocal(this in Vector3 v) =>
-			new Vector3(1f / v.x, 1f / v.y, 1f / v.z);
+			new(1f / v.x, 1f / v.y, 1f / v.z);
 
 		public static Vector3 Floor(this in Vector3 v) =>
-			new Vector3(Mathf.Floor(v.x), Mathf.Floor(v.y), Mathf.Floor(v.z));
+			new(Mathf.Floor(v.x), Mathf.Floor(v.y), Mathf.Floor(v.z));
 		public static Vector3Int FloorToInt(this in Vector3 v) =>
-			new Vector3Int(Mathf.FloorToInt(v.x), Mathf.FloorToInt(v.y), Mathf.FloorToInt(v.z));
+			new(Mathf.FloorToInt(v.x), Mathf.FloorToInt(v.y), Mathf.FloorToInt(v.z));
 
 		public static Vector3 Ceil(this in Vector3 v) =>
-			new Vector3(Mathf.Ceil(v.x), Mathf.Ceil(v.y), Mathf.Ceil(v.z));
+			new(Mathf.Ceil(v.x), Mathf.Ceil(v.y), Mathf.Ceil(v.z));
 		public static Vector3Int CeilInt(this in Vector3 v) =>
-			new Vector3Int(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y), Mathf.CeilToInt(v.z));
+			new(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y), Mathf.CeilToInt(v.z));
 
 		public static Vector3 Round(this in Vector3 v) =>
-			new Vector3(Mathf.Round(v.x), Mathf.Round(v.y), Mathf.Round(v.z));
+			new(Mathf.Round(v.x), Mathf.Round(v.y), Mathf.Round(v.z));
 		public static Vector3Int RoundToInt(this in Vector3 v) =>
-			new Vector3Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
+			new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
 
 		#endregion
 		#region Vector2 Translation
 
 		public static Vector2 ZY(this in Vector3 v) =>
-			new Vector2(v.z, v.y);
+			new(v.z, v.y);
 		public static Vector2 XZ(this in Vector3 v) =>
-			new Vector2(v.x, v.z);
+			new(v.x, v.z);
 		public static Vector2 XY(this in Vector3 v) =>
-			new Vector2(v.x, v.y);
+			new(v.x, v.y);
 
 		public static Vector2 Reciprocal(this in Vector2 v) =>
-			new Vector2(1f / v.x, 1f / v.y);
+			new(1f / v.x, 1f / v.y);
 
 		public static Vector2 Floor(this in Vector2 v) =>
-			new Vector2(Mathf.Floor(v.x), Mathf.Floor(v.y));
+			new(Mathf.Floor(v.x), Mathf.Floor(v.y));
 		public static Vector2Int FloorToInt(this in Vector2 v) =>
-			new Vector2Int(Mathf.FloorToInt(v.x), Mathf.FloorToInt(v.y));
+			new(Mathf.FloorToInt(v.x), Mathf.FloorToInt(v.y));
 
 		public static Vector2 Ceil(this in Vector2 v) =>
-			new Vector2(Mathf.Ceil(v.x), Mathf.Ceil(v.y));
+			new(Mathf.Ceil(v.x), Mathf.Ceil(v.y));
 		public static Vector2Int CeilInt(this in Vector2 v) =>
-			new Vector2Int(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y));
+			new(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y));
 
 		public static Vector2 Round(this in Vector2 v) =>
-			new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
+			new(Mathf.Round(v.x), Mathf.Round(v.y));
 		public static Vector2Int RoundToInt(this in Vector2 v) =>
-			new Vector2Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
+			new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
 
 		#endregion
 
@@ -835,7 +829,7 @@ namespace Mithril
 		{
 			float rotationX = currentVelocity.x, rotationY = currentVelocity.y, rotationZ = currentVelocity.z;
 
-			Vector3 result = new Vector3(
+			Vector3 result = new(
 				Mathf.SmoothDampAngle(current.x, target.x, ref rotationX, smoothTime.x, maxSpeed.x, deltaTime),
 				Mathf.SmoothDampAngle(current.y, target.y, ref rotationY, smoothTime.y, maxSpeed.y, deltaTime),
 				Mathf.SmoothDampAngle(current.z, target.z, ref rotationZ, smoothTime.z, maxSpeed.z, deltaTime)
@@ -849,7 +843,7 @@ namespace Mithril
 		{
 			float rotationX = currentVelocity.x, rotationY = currentVelocity.y, rotationZ = currentVelocity.z;
 
-			Vector3 result = new Vector3(
+			Vector3 result = new(
 				Mathf.SmoothDampAngle(current.x, target.x, ref rotationX, smoothTime.x, maxSpeed.x),
 				Mathf.SmoothDampAngle(current.y, target.y, ref rotationY, smoothTime.y, maxSpeed.y),
 				Mathf.SmoothDampAngle(current.z, target.z, ref rotationZ, smoothTime.z, maxSpeed.z)
@@ -863,7 +857,7 @@ namespace Mithril
 		{
 			float rotationX = currentVelocity.x, rotationY = currentVelocity.y, rotationZ = currentVelocity.z;
 
-			Vector3 result = new Vector3(
+			Vector3 result = new(
 				Mathf.SmoothDampAngle(current.x, target.x, ref rotationX, smoothTime.x),
 				Mathf.SmoothDampAngle(current.y, target.y, ref rotationY, smoothTime.y),
 				Mathf.SmoothDampAngle(current.z, target.z, ref rotationZ, smoothTime.z)
@@ -877,7 +871,7 @@ namespace Mithril
 		{
 			float rotationX = currentVelocity.x, rotationY = currentVelocity.y, rotationZ = currentVelocity.z;
 
-			Vector3 result = new Vector3(
+			Vector3 result = new(
 				Mathf.SmoothDampAngle(current.x, target.x, ref rotationX, smoothTime, maxSpeed, deltaTime),
 				Mathf.SmoothDampAngle(current.y, target.y, ref rotationY, smoothTime, maxSpeed, deltaTime),
 				Mathf.SmoothDampAngle(current.z, target.z, ref rotationZ, smoothTime, maxSpeed, deltaTime)
@@ -892,7 +886,7 @@ namespace Mithril
 		{
 			float rotationX = currentVelocity.x, rotationY = currentVelocity.y, rotationZ = currentVelocity.z;
 
-			Vector3 result = new Vector3(
+			Vector3 result = new(
 				Mathf.SmoothDampAngle(current.x, target.x, ref rotationX, smoothTime, maxSpeed),
 				Mathf.SmoothDampAngle(current.y, target.y, ref rotationY, smoothTime, maxSpeed),
 				Mathf.SmoothDampAngle(current.z, target.z, ref rotationZ, smoothTime, maxSpeed)
@@ -907,7 +901,7 @@ namespace Mithril
 		{
 			float rotationX = currentVelocity.x, rotationY = currentVelocity.y, rotationZ = currentVelocity.z;
 
-			Vector3 result = new Vector3(
+			Vector3 result = new(
 				Mathf.SmoothDampAngle(current.x, target.x, ref rotationX, smoothTime),
 				Mathf.SmoothDampAngle(current.y, target.y, ref rotationY, smoothTime),
 				Mathf.SmoothDampAngle(current.z, target.z, ref rotationZ, smoothTime)
@@ -977,9 +971,9 @@ namespace Mithril
 		#region Color
 
 		public static Color IgnoreAlpha(this in Color color, in float a) =>
-			new Color(color.r, color.g, color.b, a);
+			new(color.r, color.g, color.b, a);
 		public static Color IgnoreAlpha(this in Color color) =>
-			new Color(color.r, color.g, color.b, 1f);
+			new(color.r, color.g, color.b, 1f);
 
 		#endregion
 
