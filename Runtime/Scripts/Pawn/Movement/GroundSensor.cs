@@ -20,10 +20,12 @@ namespace Mithril.Pawn
 {
 	#region GroundSensorBase
 
-	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit> :
-	ShapeSensorComponent<TCollider, THit>, IPawnUser<TPawn>
+	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit, TShapeInfo> :
+	ShapeSensorComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
 	where THit : HitBase, new()
+	where TCollider : Component
 	where TVector : unmanaged
+	where TShapeInfo : ShapeInfoBase
 	{
 		#region Fields
 
@@ -40,8 +42,8 @@ namespace Mithril.Pawn
 		#endregion
 		#region Members
 
-		[HideInInspector] public UnityEvent onGrounded = new UnityEvent();
-		[HideInInspector] public UnityEvent onAirborne = new UnityEvent();
+		[HideInInspector] public UnityEvent onGrounded = new();
+		[HideInInspector] public UnityEvent onAirborne = new();
 
 		[AutoAssign]
 		public TPawn pawn { get; protected set; }
@@ -188,7 +190,7 @@ namespace Mithril.Pawn
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public sealed class GroundSensor : GroundSensorBase<CapsulePawn, Collider, CapsuleCollider, Rigidbody, Vector3, Hit>
+	public sealed class GroundSensor : GroundSensorBase<CapsulePawn, Collider, CapsuleCollider, Rigidbody, Vector3, Hit, CapsuleInfo>
 	{
 		#region Fields
 

@@ -56,10 +56,8 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		protected override void OnValidate()
+		private void OnValidate()
 		{
-			base.OnValidate();
-
 			AssignShapedMethods();
 			falloffDistance = _falloffDistance;
 		}

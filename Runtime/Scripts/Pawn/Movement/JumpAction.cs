@@ -65,9 +65,9 @@ namespace Mithril.Pawn
 
 		protected virtual TVector direction => pawn.up;
 
-		protected override void Init()
+		protected override void Awake()
 		{
-			base.Init();
+			base.Awake();
 
 			_disableGroundCheckTimer.duration = _disableGroundCheckDelay;
 			_disableGroundCheckTimer.onStart.AddListener(DisableGround);

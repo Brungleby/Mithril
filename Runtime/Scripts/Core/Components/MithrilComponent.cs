@@ -52,31 +52,14 @@ namespace Mithril
 		#region Members
 
 		private const BindingFlags AUTO_ASSIGN_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-#if UNITY_EDITOR
-		private bool _isAwake = false;
-#endif
+
 		#endregion
 		#region Methods
-
-		protected virtual void Init() { }
-
-		protected virtual void OnValidate()
-		{
-#if UNITY_EDITOR
-			if (_isAwake)
-				Init();
-#endif
-		}
 
 		protected virtual void Awake()
 		{
 			try { AutoAssignComponents(); }
 			catch (Exception e) { Debug.LogException(e); }
-
-			Init();
-#if UNITY_EDITOR
-			_isAwake = true;
-#endif
 		}
 
 		private void AutoAssignComponents()

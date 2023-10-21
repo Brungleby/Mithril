@@ -217,20 +217,48 @@ namespace Mithril
 		}
 
 		#endregion
+		#endregion
 
-		#region GetChildren
+		#region GameObject
 
-		public static Transform[] GetChildren(this Transform t)
+		public static Transform[] GetChildren(this Transform transform)
 		{
-			var __result = new List<Transform>();
-
-			for (var i = 0; i < t.childCount; i++)
-				__result.Add(t.GetChild(i));
-
-			return __result.ToArray();
+			var result = new Transform[transform.childCount];
+			for (var i = 0; i < result.Length; i++)
+				result[i] = transform.GetChild(i);
+			return result;
 		}
 
+		public static GameObject[] GetChildrenGameObjects(this Transform transform)
+		{
+			var result = new GameObject[transform.childCount];
+			for (var i = 0; i < result.Length; i++)
+				result[i] = transform.GetChild(i).gameObject;
+			return result;
+		}
+
+		public static GameObject[] GetChildrenGameObjects(this GameObject gameObject)
+		{
+			var result = new GameObject[gameObject.transform.childCount];
+			for (var i = 0; i < result.Length; i++)
+				result[i] = gameObject.transform.GetChild(i).gameObject;
+			return result;
+		}
+
+
 		#endregion
+
+		#region Component
+
+		public static void SetEnabled(this Component component, bool value)
+		{
+			if (component is Behaviour behaviour)
+				behaviour.enabled = value;
+			else if (component is Collider collider)
+				collider.enabled = value;
+			else if (component is Collider2D collider2D)
+				collider2D.enabled = value;
+		}
 
 		#endregion
 

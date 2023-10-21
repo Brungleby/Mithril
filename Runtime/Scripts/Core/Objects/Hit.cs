@@ -12,7 +12,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 #endregion
@@ -96,6 +96,8 @@ namespace Mithril
 
 		#region Members
 
+		// public readonly float minDistance;
+
 		/// <summary>
 		/// The distance between <see cref="origin"/> and <see cref="target"/>.
 		///</summary>
@@ -141,6 +143,8 @@ namespace Mithril
 		/// <inheritdoc cref="RaycastHit.transform"/>
 
 		public readonly Transform transform;
+
+		public abstract TVector direction { get; }
 
 		public int CompareTo(Hit<TVector> other) => (int)(distance - other.distance).Sign();
 
@@ -257,25 +261,64 @@ namespace Mithril
 
 		public Hit() : base() { }
 
-		private Hit(RaycastHit _hit, Vector3 _origin, Vector3 _target) :
+		private Hit(
+			bool _isBlocked,
+			float _maxDistance,
+			float _distance,
+			Vector3 _origin,
+			Vector3 _target,
+			Vector3 _normal,
+			Vector3 _point,
+			Vector3 _adjustmentPoint,
+			RaycastHit _hit,
+			Transform _transform,
+			Collider _collider,
+			Rigidbody _rigidbody) :
 		base(
-			_hit.IsBlocked(),
-			(_origin - _target).magnitude,
-			_hit.distance,
+			_isBlocked,
+			_maxDistance,
+			_distance,
 			_origin,
 			_target,
-			_hit.normal,
-			_hit.point,
-			Vector3.Lerp(_origin, _target, _hit.distance / (_origin - _target).magnitude),
+			_normal,
+			_point,
+			_adjustmentPoint,
 			_hit,
-			_hit.transform,
-			_hit.collider,
-			_hit.rigidbody
+			_transform,
+			_collider,
+			_rigidbody
 		)
 		{ }
 
+		private static Hit Create(RaycastHit raycastHit, Vector3 origin, Vector3 target)
+		{
+			var isBlocked = raycastHit.IsBlocked();
+			var maxDistance = (target - origin).magnitude;
+			var distance = isBlocked ? raycastHit.distance : maxDistance;
+			var adjustmentPoint = Vector3.Lerp(origin, target, distance / maxDistance);
+
+			return new Hit(
+				isBlocked, maxDistance, distance, origin, target,
+				raycastHit.normal, raycastHit.point, adjustmentPoint,
+				raycastHit, raycastHit.transform, raycastHit.collider, raycastHit.rigidbody
+			);
+		}
+
+		#endregion
+		#region Properties
+
+		public override Vector3 direction => (target - origin).normalized;
+
 		#endregion
 		#region Methods
+
+		public Vector3 GetAdjustmentPoint(float minDistance = 0f)
+		{
+			if (distance < minDistance)
+				return origin + direction * minDistance;
+			else
+				return Vector3.Lerp(origin, target, distance / maxDistance); ;
+		}
 
 		protected override PhysicMaterial GetPhysicMaterial(in Collider collider) =>
 			collider.material;
@@ -285,14 +328,14 @@ namespace Mithril
 
 		#region Static
 
-		public static Hit none => new Hit();
+		public static Hit none => new();
 
 		private static Hit[] _HitArray(RaycastHit[] hits, Vector3 origin, Vector3 target)
 		{
 			Hit[] result = new Hit[hits.Length];
 
 			for (int i = 0; i < result.Length; i++)
-				result[i] = new Hit(hits[i], origin, target);
+				result[i] = Create(hits[i], origin, target);
 
 			return result;
 		}
@@ -314,10 +357,9 @@ namespace Mithril
 
 		public static Hit Linecast(Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			RaycastHit __hit;
-			Physics.Linecast(origin, target, out __hit, layerMask, queryTriggerInteraction);
+			Physics.Linecast(origin, target, out RaycastHit hit, layerMask, queryTriggerInteraction);
 
-			return new Hit(__hit, origin, target);
+			return Create(hit, origin, target);
 		}
 
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, int, QueryTriggerInteraction)"/>
@@ -329,7 +371,11 @@ namespace Mithril
 		///</param>
 
 		public static Hit Linecast(Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			Linecast(origin, origin + direction.normalized * maxDistance, layerMask, queryTriggerInteraction);
+			Linecast(
+				origin,
+				origin + direction.normalized * maxDistance,
+				layerMask, queryTriggerInteraction
+			);
 
 		/// <inheritdoc cref="Linecast(Vector3, Vector3, float, int, QueryTriggerInteraction)"/>
 		/// <param name="ray">
@@ -505,7 +551,7 @@ namespace Mithril
 			RaycastHit hit;
 			Physics.BoxCast(origin, halfExtents, direction, out hit, orientation, maxDistance, layerMask, queryTriggerInteraction);
 
-			return new Hit(hit, origin, origin + direction * maxDistance);
+			return Create(hit, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
@@ -606,7 +652,7 @@ namespace Mithril
 			RaycastHit hit;
 			Physics.SphereCast(origin, radius, direction, out hit, maxDistance, layerMask, queryTriggerInteraction);
 
-			return new Hit(hit, origin, origin + direction * maxDistance);
+			return Create(hit, origin, origin + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="SphereCast"/>
@@ -673,7 +719,7 @@ namespace Mithril
 			Physics.CapsuleCast(point1, point2, radius, direction, out __hit, maxDistance, layerMask, queryTriggerInteraction);
 
 			Vector3 __midpoint = Math.Midpoint(point1, point2);
-			return new Hit(__hit, __midpoint, __midpoint + direction * maxDistance);
+			return Create(__hit, __midpoint, __midpoint + direction * maxDistance);
 		}
 
 		/// <inheritdoc cref="CapsuleCast"/>
@@ -738,6 +784,11 @@ namespace Mithril
 			_hit.rigidbody
 		)
 		{ }
+
+		#endregion
+		#region Properties
+
+		public override Vector2 direction => (target - origin).normalized;
 
 		#endregion
 		#region Methods

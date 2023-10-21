@@ -60,10 +60,8 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
-		protected override void OnValidate()
+		private void OnValidate()
 		{
-			base.OnValidate();
-
 			skinWidth = _skinWidth;
 		}
 

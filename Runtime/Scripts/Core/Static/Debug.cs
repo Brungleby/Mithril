@@ -24,8 +24,8 @@ namespace Mithril
 
 	public static class DebugDraw
 	{
-		public static readonly Color BLOCKING_COLOR = Color.red;
-		public static readonly Color CAST_COLOR = Color.cyan;
+		public static readonly Color BLOCK_COLOR = Color.red;
+		public static readonly Color CAST_COLOR = Color.green;
 
 		#region Drawing Methods
 
@@ -107,6 +107,20 @@ namespace Mithril
 		}
 
 		#endregion
+		#region DrawWireBox
+
+		public static void DrawWireBox(Vector3 position, Quaternion rotation, Vector3 size, Color color)
+		{
+			Handles.color = color;
+
+			Matrix4x4 angleMatrix = Matrix4x4.TRS(position, rotation, Handles.matrix.lossyScale);
+			using (new Handles.DrawingScope(angleMatrix))
+			{
+				Handles.DrawWireCube(Vector3.zero, size);
+			}
+		}
+
+		#endregion
 		#region DrawWireCapsule
 
 		public static void DrawWireCapsule(Vector3 point1, Vector3 point2, Vector3 forward, float radius, float height, Color color)
@@ -159,7 +173,7 @@ namespace Mithril
 
 			Vector3 closestPoint = hit.isBlocked ? hit.adjustmentPoint : hit.target;
 			Gizmos.DrawLine(hit.origin, closestPoint);
-			Color __resultColor = hit.isBlocked ? BLOCKING_COLOR : CAST_COLOR;
+			Color __resultColor = hit.isBlocked ? BLOCK_COLOR : CAST_COLOR;
 			Gizmos.color = __resultColor;
 
 			DrawWireCapsule
@@ -202,7 +216,7 @@ namespace Mithril
 				Gizmos.color = CAST_COLOR;
 				Gizmos.DrawLine(origin, hit.point);
 
-				Gizmos.color = BLOCKING_COLOR;
+				Gizmos.color = BLOCK_COLOR;
 				Gizmos.DrawSphere(hit.point, pointSize);
 
 				Gizmos.DrawLine(hit.point, target);
@@ -234,15 +248,36 @@ namespace Mithril
 
 		public static void DrawLinecast(this Hit hit, float pointSize = 0.1f)
 		{
-			try
+			Gizmos.color = CAST_COLOR;
+			Gizmos.DrawLine(hit.origin, hit.adjustmentPoint);
+
+			if (hit.isBlocked)
 			{
-				hit.hit.DrawLinecast(hit.origin, hit.target, pointSize);
+				Gizmos.color = BLOCK_COLOR;
+				Gizmos.DrawSphere(hit.adjustmentPoint, pointSize);
+				Gizmos.DrawSphere(hit.point, pointSize);
+				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
 			}
-			catch { }
 		}
 
 		#endregion
+		#region DrawBoxCast
 
+		public static void DrawBoxCast(this Hit hit, Quaternion orientation, Vector3 size)
+		{
+			DrawWireBox(hit.origin, orientation, size, CAST_COLOR);
+			Gizmos.DrawLine(hit.origin, hit.adjustmentPoint);
+
+			if (hit.isBlocked)
+			{
+				Gizmos.color = BLOCK_COLOR;
+				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
+			}
+
+			DrawWireBox(hit.adjustmentPoint, orientation, size, CAST_COLOR);
+		}
+
+		#endregion
 		#region DrawSphereCast
 
 		/// <summary>
@@ -270,7 +305,7 @@ namespace Mithril
 			{
 				Gizmos.DrawLine(origin, hitPoint);
 
-				Gizmos.color = BLOCKING_COLOR;
+				Gizmos.color = BLOCK_COLOR;
 				Gizmos.DrawWireSphere(target, sphereRadius);
 				Gizmos.DrawLine(hitPoint, target);
 
@@ -308,7 +343,7 @@ namespace Mithril
 
 			Gizmos.DrawLine(hit.origin, closestPoint);
 
-			Gizmos.color = hit.isBlocked ? BLOCKING_COLOR : CAST_COLOR;
+			Gizmos.color = hit.isBlocked ? BLOCK_COLOR : CAST_COLOR;
 			Gizmos.DrawWireSphere(closestPoint, radius);
 
 			if (hit.isBlocked)

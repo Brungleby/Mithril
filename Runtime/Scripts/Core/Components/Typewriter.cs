@@ -48,6 +48,7 @@ namespace Mithril
 		/// The affected Text component.
 		///</summary>
 
+		[AutoAssign(typeof(TMP_Text))]
 		[Tooltip("The affected Text component.")]
 		[SerializeField]
 
@@ -164,8 +165,6 @@ namespace Mithril
 
 		protected override void Awake()
 		{
-			Text ??= GetComponent<TMP_Text>();
-
 			base.Awake();
 
 			Clear();

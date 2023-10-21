@@ -78,13 +78,7 @@ namespace Mithril.Pawn
 
 		protected override void Awake()
 		{
-
 			base.Awake();
-		}
-
-		protected override void Init()
-		{
-			base.Init();
 
 			frictionUser = GetFrictionUser();
 			_lateFixedUpdater = new LateFixedUpdater(this);

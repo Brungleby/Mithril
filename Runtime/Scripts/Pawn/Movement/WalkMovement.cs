@@ -263,9 +263,9 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
-		protected override void Init()
+		protected override void Awake()
 		{
-			base.Init();
+			base.Awake();
 
 			walkRotation ??= GetComponent<WalkRotation>();
 

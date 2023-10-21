@@ -117,10 +117,6 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 5aa94933-f7ad-4e37-ba9f-63c0ed733db8
-    m_ActionName: Pawn 3D/Command Line[/Keyboard/backquote]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5878587526035118450}
         m_TargetAssemblyTypeName: Mithril.Modules.WalkMovementBase`7[[UnityEngine.Collider,
@@ -189,22 +185,6 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 4e83e852-2f2b-4917-b368-52951ec750ab
     m_ActionName: Pawn 3D/Crouch[/Keyboard/leftCtrl,/XInputControllerWindows/leftStickPress]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 5cdb5d75-c5f8-4732-8fe6-8ceb4e993aff
-    m_ActionName: Console/Toggle Open[/Keyboard/backquote]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: d21a425b-b717-4cce-bc62-7b9f5906c04b
-    m_ActionName: Console/Command Line History Up[/Keyboard/upArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 4407cccd-9c4f-49a6-bbf2-8691c88cdd20
-    m_ActionName: Console/Command Line History Down[/Keyboard/downArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 0bb3e699-b91b-4d97-8946-fe59c1d65503
-    m_ActionName: Console/Command Line Autocomplete[/Keyboard/tab]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Pawn 3D
@@ -251,7 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aead92eebe955324a963c28e0bfcc92e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _deceleration: 10
+  _deceleration: 25
   _airbornePercent: 0.25
   enableRotateWithGround: 1
 --- !u!114 &6495237474478591189
@@ -269,6 +249,8 @@ MonoBehaviour:
   layers:
     serializedVersion: 2
     m_Bits: 1
+  colliderTemplate: {fileID: 0}
+  DisableTemplateOnAwake: 0
   maxStepHeight: 0.3
   onGrounded:
     m_PersistentCalls:
