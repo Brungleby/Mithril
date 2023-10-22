@@ -418,8 +418,14 @@ namespace Mithril
 		/// <summary>
 		/// Casts a sphere out from a single location and returns a Linecast to the closest point on the nearest <see cref="Collider"/> it reaches.
 		///</summary>
+		/// <param name="concaveMinDifference">
+		/// __TODO_ANNOTATE__
+		///</param>
+		/// <param name="concaveMaxIterations">
+		/// __TODO_ANNOTATE__
+		///</param>
 
-		public static Collider SphereExpansionOverlap(Vector3 origin, float radius, float complexMinDifference, int complexMaxDepth, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		public static Collider SphereExpansionOverlap(Vector3 origin, float radius, int layerMask, float concaveMinDifference = 0f, int concaveMaxIterations = 4, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			/**	Get all overlapping objects.
 			*/
@@ -448,16 +454,17 @@ namespace Mithril
 					float minRadius = 0f;
 					float maxRadius = radius;
 
-					for (int j = 0; j <= complexMaxDepth && maxRadius - minRadius >= complexMinDifference; j++)
+					for (int j = 0; j <= concaveMaxIterations && maxRadius - minRadius >= concaveMinDifference; j++)
 					{
 						float iRadius = Mathf.Lerp(minRadius, maxRadius, 0.5f);
 						HashSet<Collider> iOverlaps = new();
 						iOverlaps.AddAll(SphereExpansionOverlapAll(origin, iRadius, layerMask, queryTriggerInteraction));
-						bool isOverlapping = iOverlaps.Contains(colliders[i]);
 
-						(isOverlapping ? ref maxRadius : ref minRadius) = iRadius;
+						if (iOverlaps.Contains(colliders[i]))
+							maxRadius = iRadius;
+						else
+							minRadius = iRadius;
 					}
-
 					distance = maxRadius;
 				}
 
@@ -477,16 +484,21 @@ namespace Mithril
 
 			return mostestClosest;
 		}
-
+		public static Collider SphereExpansionOverlap(Vector3 origin, SphereInfo info, int layerMask, float concaveMinDifference = 0f, int concaveIterations = 4, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) => SphereExpansionOverlap(origin, info.radius, layerMask, concaveMinDifference, concaveIterations, queryTriggerInteraction);
 
 		#endregion
 		#region SphereExpansionOverlapAll
 
 		public static Collider[] SphereExpansionOverlapAll(Vector3 origin, float radius, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			Physics.OverlapSphere(origin, radius, layerMask, queryTriggerInteraction);
+		public static Collider[] SphereExpansionOverlapAll(Vector3 origin, SphereInfo info, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) => SphereExpansionOverlapAll(origin, info.radius, layerMask, queryTriggerInteraction);
 
 		#endregion
 		#region SphereExpansionCast
+
+		/// <summary>
+		/// Casts a sphere out from an <paramref name="origin"/> and returns the hit of the closest collider. ONLY WORKS ON CONVEX COLLIDERS.
+		///</summary>
 
 		public static Hit SphereExpansionCast(Vector3 origin, float radius, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
@@ -529,7 +541,8 @@ namespace Mithril
 
 			return Linecast(origin, closestCollider.Item1 + direction * extraDistance, layerMask, queryTriggerInteraction);
 		}
-		// public static Hit SphereExpansionCast(Vector3 origin, float radius, int layerMask)
+		/// <inheritdoc cref="SphereExpansionCast"/>
+		public static Hit SphereExpansionCast(Vector3 origin, SphereInfo info, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) => SphereExpansionCast(origin, info.radius, layerMask, queryTriggerInteraction);
 
 		#endregion
 
