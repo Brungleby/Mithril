@@ -507,7 +507,7 @@ namespace Mithril
 			var colliders = SphereExpansionOverlapAll(origin, radius, layerMask, queryTriggerInteraction);
 
 			if (colliders.Length == 0)
-				return null;
+				return none;
 
 			/**	Iterate through each collider that was hit and determine the distance from the origin for each one.
 			*/
