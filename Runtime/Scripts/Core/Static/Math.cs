@@ -543,10 +543,77 @@ namespace Mithril
 			a.x.Approx(b.x, d) && a.y.Approx(b.y, d) && a.z.Approx(b.z, d);
 
 		#endregion
+		#region Closest
+
+		/// <returns>
+		/// The value in <paramref name="values"/> that is closest to the <paramref name="target"/> value.
+		///</returns>
+		public static float Closest(this IEnumerable<float> values, float target)
+		{
+			float minDistance = float.MaxValue;
+			float result = 0f;
+
+			foreach (var iValue in values)
+			{
+				var iDist = (target - iValue).Abs();
+				if (iDist > minDistance) continue;
+
+				minDistance = iDist;
+				result = iValue;
+			}
+
+			if (minDistance == float.MaxValue) throw new Exception($"Enumerable {values} must contain at least one element to find the closest value.");
+
+			return result;
+		}
+		/// <returns>
+		/// The position in <paramref name="positions"/> that is closest to the <paramref name="target"/> position.
+		///</returns>
+		public static Vector2 Closest(this IEnumerable<Vector2> positions, Vector2 target)
+		{
+			float minDistance = float.MaxValue;
+			Vector2 result = Vector2.zero;
+
+			foreach (var iPosition in positions)
+			{
+				var iDist = Vector2.SqrMagnitude(target - iPosition);
+				if (iDist > minDistance) continue;
+
+				minDistance = iDist;
+				result = iPosition;
+			}
+
+			if (minDistance == float.MaxValue) throw new Exception($"Enumerable {positions} must contain at least one element to find the closest value.");
+
+			return result;
+		}
+		/// <returns>
+		/// The position in <paramref name="positions"/> that is closest to the <paramref name="target"/> position.
+		///</returns>
+		public static Vector3 Closest(this IEnumerable<Vector3> positions, Vector3 target)
+		{
+			float minDistance = float.MaxValue;
+			Vector3 result = Vector3.zero;
+
+			foreach (var iPosition in positions)
+			{
+				var iDist = Vector3.SqrMagnitude(target - iPosition);
+				if (iDist > minDistance) continue;
+
+				minDistance = iDist;
+				result = iPosition;
+			}
+
+			if (minDistance == float.MaxValue) throw new Exception($"Enumerable {positions} must contain at least one element to find the closest value.");
+
+			return result;
+		}
+
+		#endregion
 		#region Average
 
 		public static float Average(this IEnumerable<float> values) =>
-			System.Linq.Enumerable.Average(values);
+			Enumerable.Average(values);
 
 		public static Vector2 Average(this IEnumerable<Vector2> positions) =>
 			new(
