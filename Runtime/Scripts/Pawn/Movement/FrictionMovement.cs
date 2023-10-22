@@ -76,6 +76,12 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
+		protected virtual void OnValidate()
+		{
+			if (Application.isPlaying)
+				Awake();
+		}
+
 		protected override void Awake()
 		{
 			base.Awake();
