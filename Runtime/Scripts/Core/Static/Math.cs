@@ -158,6 +158,15 @@ namespace Mithril
 			Mathf.CeilToInt(value);
 
 		#endregion
+		#region Wrap
+
+		public static int Wrap(this int value, int min, int max) =>
+			(value - min) % (max - min + 1) + min;
+
+		public static float Wrap(this float value, float min, float max) =>
+			(value - min) % (max - min) + min;
+
+		#endregion
 		#region Clamp
 
 		/// <returns>
