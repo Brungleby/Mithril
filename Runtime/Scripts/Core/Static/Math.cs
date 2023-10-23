@@ -163,13 +163,15 @@ namespace Mithril
 		/// <summary>
 		/// Keeps the <paramref name="value"/> constrained within the <paramref name="min"/> and <paramref name="max"/> by wrapping the value around to the other side if it goes under or over. This does NOT include the max number.
 		///</summary>
-		public static int Wrap(this int value, int min, int max) =>
-			(value - min) % (max - min) + min;
+		public static int Wrap(this int value, int min, int max)
+		{
+			int range = max - min + 1;
+			return ((value - min) % range + range) % range + min;
+		}
 		/// <summary>
 		/// Keeps the <paramref name="value"/> constrained within 0 and <paramref name="max"/> by wrapping the value around to the other side if it goes under or over. This does NOT include the max number.
 		///</summary>
-		public static int Wrap(this int value, int max) =>
-			value % max;
+		public static int Wrap(this int value, int max) => value.Wrap(0, max);
 
 		public static float Wrap(this float value, float min, float max) =>
 			(value - min) % (max - min) + min;
