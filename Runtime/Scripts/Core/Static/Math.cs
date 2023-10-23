@@ -162,9 +162,13 @@ namespace Mithril
 
 		public static int Wrap(this int value, int min, int max) =>
 			(value - min) % (max - min + 1) + min;
+		public static int Wrap(this int value, int max) =>
+			value % (max + 1);
 
 		public static float Wrap(this float value, float min, float max) =>
 			(value - min) % (max - min) + min;
+		public static float Wrap(this float value, float max) =>
+			value % max;
 
 		#endregion
 		#region Clamp
