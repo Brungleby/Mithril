@@ -22,7 +22,7 @@ namespace Mithril
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class SpringArm<TCollider, THit, TShapeInfo> : ShapeSensorComponent<TCollider, THit, TShapeInfo>
+	public abstract class SpringArm<TCollider, THit, TShapeInfo> : CasterComponent<TCollider, THit, TShapeInfo>
 	where TCollider : Component
 	where THit : HitBase, new()
 	where TShapeInfo : ShapeInfoBase

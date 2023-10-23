@@ -1,5 +1,5 @@
 
-/** SensorModule.cs
+/** CasterComponent.cs
 *
 *	Created by LIAM WOFFORD.
 *
@@ -10,21 +10,20 @@
 #region Includes
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 #endregion
 
 namespace Mithril
 {
-	#region CasterModule
+	#region CasterComponent
 
 	/// <summary>
 	/// This is the base class for any module that creates a sensation by firing a cast to produce a <see cref="Hit"/>.
 	///</summary>
-
 	[DefaultExecutionOrder(-10)]
-
-	public abstract class SensorComponent : MithrilComponent
+	public abstract class CasterComponent : MithrilComponent
 	{
 		#region Fields
 
@@ -38,23 +37,16 @@ namespace Mithril
 		#endregion
 	}
 
-	public abstract class SensorComponent<THit> : SensorComponent
-	where THit : HitBase, new()
-	{
-
-	}
-
 	#endregion
-	#region ShapeCasterModuleBase
+	#region CasterComponent<TCollider, THit, TShapeInfo>
 
 	/// <summary>
 	/// The base class for a sensor that uses a collider component as the shape for its cast.
 	///</summary>
 
-	public abstract class ShapeSensorComponent<TCollider, THit, TShapeInfo> :
-	SensorComponent<THit>, IColliderUser<TCollider>
-	where THit : HitBase, new()
+	public abstract class CasterComponent<TCollider, THit, TShapeInfo> : CasterComponent, IColliderUser<TCollider>
 	where TCollider : Component
+	where THit : HitBase, new()
 	where TShapeInfo : ShapeInfoBase
 	{
 		[SerializeField]

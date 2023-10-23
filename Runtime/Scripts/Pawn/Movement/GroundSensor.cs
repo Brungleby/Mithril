@@ -21,7 +21,7 @@ namespace Mithril.Pawn
 	#region GroundSensorBase
 
 	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit, TShapeInfo> :
-	ShapeSensorComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
+	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
 	where THit : HitBase, new()
 	where TCollider : Component
 	where TVector : unmanaged
