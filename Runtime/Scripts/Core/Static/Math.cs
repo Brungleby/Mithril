@@ -161,22 +161,24 @@ namespace Mithril
 		#region Wrap
 
 		/// <summary>
-		/// Keeps the <paramref name="value"/> constrained within the <paramref name="min"/> and <paramref name="max"/> by wrapping the value around to the other side if it goes under or over. This does NOT include the max number.
+		/// Keeps the <paramref name="value"/> constrained within a <paramref name="min"/> and a <paramref name="max"/> by wrapping the value around to the other side if it goes under or over. This does NOT include the max number.
 		///</summary>
 		public static int Wrap(this int value, int min, int max)
 		{
-			int range = max - min + 1;
+			int range = max - min;
 			return ((value - min) % range + range) % range + min;
 		}
-		/// <summary>
-		/// Keeps the <paramref name="value"/> constrained within 0 and <paramref name="max"/> by wrapping the value around to the other side if it goes under or over. This does NOT include the max number.
-		///</summary>
+		/// <inheritdoc cref="Wrap(int, int, int)"/>
 		public static int Wrap(this int value, int max) => value.Wrap(0, max);
 
-		public static float Wrap(this float value, float min, float max) =>
-			(value - min) % (max - min) + min;
-		public static float Wrap(this float value, float max) =>
-			value % max;
+		/// <inheritdoc cref="Wrap(int, int, int)"/>
+		public static float Wrap(this float value, float min, float max)
+		{
+			float range = max - min;
+			return ((value - min) % range + range) % range + min;
+		}
+		/// <inheritdoc cref="Wrap(float, float, float)"/>
+		public static float Wrap(this float value, float max) => value.Wrap(0f, max);
 
 		#endregion
 		#region Clamp
