@@ -82,7 +82,10 @@ namespace Mithril
 			anchor.localRotation = transform.localRotation;
 			anchor.localScale = Vector3.one;
 
-			transform.SetParent(ActualParent ?? GameObject.FindWithTag("World Context").transform);
+			var ActualParentObject = ActualParent.gameObject ?? GameObject.FindWithTag("World Context");
+			if (ActualParentObject == null) return;
+
+			transform.SetParent(ActualParentObject.transform);
 		}
 
 		private void Update()
