@@ -25,10 +25,6 @@ namespace Mithril
 	{
 		#region Fields
 
-		public Transform ActualParent;
-
-		[Space]
-
 		public bool followPosition = true;
 
 		[Min(0f)]
@@ -82,10 +78,7 @@ namespace Mithril
 			anchor.localRotation = transform.localRotation;
 			anchor.localScale = Vector3.one;
 
-			var ActualParentObject = ActualParent.gameObject ?? GameObject.FindWithTag("World Context");
-			if (ActualParentObject == null) return;
-
-			transform.SetParent(ActualParentObject.transform);
+			transform.SetParent(null);
 		}
 
 		private void Update()
