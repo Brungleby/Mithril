@@ -299,7 +299,7 @@ namespace Mithril
 
 			return new Hit(
 				isBlocked, maxDistance, distance, origin, target,
-				raycastHit.normal, raycastHit.point, adjustmentPoint,
+				raycastHit.normal, isBlocked ? raycastHit.point : target, adjustmentPoint,
 				raycastHit, raycastHit.transform, raycastHit.collider, raycastHit.rigidbody
 			);
 		}
