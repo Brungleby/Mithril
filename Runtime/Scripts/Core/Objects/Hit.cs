@@ -257,6 +257,7 @@ namespace Mithril
 
 	public sealed class Hit : Hit<RaycastHit, Collider, Rigidbody, Vector3>
 	{
+
 		#region Constructors
 
 		public Hit() : base() { }
@@ -311,6 +312,16 @@ namespace Mithril
 
 		#endregion
 		#region Methods
+
+		public void Draw()
+		{
+			DebugDraw.DrawLinecast(this);
+		}
+
+		public void AddToDrawStack(DebugDrawEnvironment.DrawType type, float duration = 1f)
+		{
+			DebugDrawEnvironment.Add(this, type, duration);
+		}
 
 		public Vector3 GetAdjustmentPoint(float minDistance = 0f)
 		{
@@ -773,7 +784,8 @@ namespace Mithril
 	}
 
 	#endregion
-	#region (sealed) Hit2D
+
+	#region Hit2D
 
 	public sealed class Hit2D : Hit<RaycastHit2D, Collider2D, Rigidbody2D, Vector2>
 	{
