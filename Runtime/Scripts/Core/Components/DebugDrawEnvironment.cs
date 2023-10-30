@@ -44,9 +44,6 @@ namespace Mithril
 			base.Awake();
 
 			inst = this;
-
-			var hit = Hit.Linecast(Vector3.zero, Vector3.one, 1 << 32);
-			hit.AddToDrawStack(DrawType.SingleUpdate);
 		}
 
 		private static void Create()
@@ -89,14 +86,14 @@ namespace Mithril
 		private void OnDrawGizmos()
 		{
 			foreach (var iHit in durationBasedHits)
-				iHit.Item1.Draw();
+				iHit.Item1.OnDrawGizmos();
 
 			foreach (var iHit in singleFrameHits)
-				iHit.Draw();
+				iHit.OnDrawGizmos();
 			singleFrameHits.Clear();
 
 			foreach (var iHit in persistentHits)
-				iHit.Draw();
+				iHit.OnDrawGizmos();
 		}
 	}
 

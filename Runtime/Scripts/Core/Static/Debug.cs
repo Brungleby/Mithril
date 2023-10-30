@@ -58,7 +58,6 @@ namespace Mithril
 		}
 
 		#endregion
-
 		#region DrawArrow
 
 		/// <summary>
@@ -81,17 +80,17 @@ namespace Mithril
 		{
 			if (direction.Approx(Vector3.zero)) return;
 
-			Gizmos.DrawLine(origin, origin + (direction * (1f - headHight)));
+			Gizmos.DrawLine(origin, origin + direction * (1f - headHight));
+
+			if (headHight <= 0f) return;
 
 			Vector3 location = origin + direction;
-			Quaternion rotation;
-			if (Math.Approx(direction, Vector3.zero))
-				rotation = Quaternion.identity;
-			else
-				rotation = Quaternion.LookRotation(-direction.normalized, Vector3.up);
+			Quaternion rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+
 			Gizmos.matrix = Matrix4x4.TRS(location, rotation, Vector3.one);
 
-			Gizmos.DrawFrustum(Vector3.zero, headWidth, direction.magnitude * headHight, 0.0f, 1.0f);
+			Gizmos.DrawFrustum(Vector3.zero, headWidth, direction.magnitude * -headHight, 0.0f, 1.0f);
+
 			Gizmos.matrix = Matrix4x4.identity;
 		}
 
@@ -103,7 +102,7 @@ namespace Mithril
 		public static void DrawArrow(Vector3 origin, Vector3 direction, Color color, float headHight = 0.25f, float headWidth = 25f)
 		{
 			Gizmos.color = color;
-			DrawArrow(origin, direction);
+			DrawArrow(origin, direction, headHight, headWidth);
 		}
 
 		#endregion
@@ -123,10 +122,15 @@ namespace Mithril
 		#endregion
 		#region DrawWireCapsule
 
-		public static void DrawWireCapsule(Vector3 point1, Vector3 point2, Vector3 forward, float radius, float height, Color color)
+		public static void DrawWireCapsule(Vector3 point1, Vector3 point2, float radius, Color color)
 		{
 			var midpoint = Math.Midpoint(point1, point2);
-			var rotation = Quaternion.LookRotation(forward, point2 - point1);
+
+			var lookRot = Quaternion.LookRotation(point1 - point2, Vector3.up);
+			var rotRot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
+			var rotation = lookRot * rotRot;
+
+			var height = (point1 - point2).magnitude;
 
 			DrawWireCapsule(midpoint, rotation, radius, height, color);
 		}
@@ -139,7 +143,7 @@ namespace Mithril
 			Matrix4x4 angleMatrix = Matrix4x4.TRS(position, rotation, Handles.matrix.lossyScale);
 			using (new Handles.DrawingScope(angleMatrix))
 			{
-				var pointOffset = (height - (radius * 2)) / 2;
+				var pointOffset = (height - (radius * 2f)) * 0.5f;
 
 				//draw sideways
 				Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.left, Vector3.back, -180, radius);
@@ -156,201 +160,6 @@ namespace Mithril
 				Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, radius);
 			}
 #endif
-		}
-
-		public static void DrawCapsuleCast(this Hit hit, Vector3 forward, Vector3 up, float radius, float height)
-		{
-			Gizmos.color = CAST_COLOR;
-			DrawWireCapsule
-			(
-				hit.origin + up * height / 2f,
-				hit.origin - up * height / 2f,
-				forward,
-				radius,
-				height,
-				CAST_COLOR
-			);
-
-			Vector3 closestPoint = hit.isBlocked ? hit.adjustmentPoint : hit.target;
-			Gizmos.DrawLine(hit.origin, closestPoint);
-			Color __resultColor = hit.isBlocked ? BLOCK_COLOR : CAST_COLOR;
-			Gizmos.color = __resultColor;
-
-			DrawWireCapsule
-			(
-				closestPoint + up * height / 2f,
-				closestPoint - up * height / 2f,
-				forward,
-				radius,
-				height,
-				__resultColor
-			);
-
-			if (hit.isBlocked)
-				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
-		}
-
-		#endregion
-		#region DrawLinecast
-
-		/// <summary>
-		/// Draws a representation of a linecast after it has been performed.
-		///</summary>
-		/// <param name="origin">
-		/// The start position used to define the performed linecast.
-		///</param>
-		/// <param name="target">
-		/// The end position used to define the performed linecast.
-		///</param>
-		/// <param name="hit">
-		/// The result RaycastHit obtained after performing the linecast.
-		///</param>
-		/// <param name="pointSize">
-		/// The size to draw the point to represent any hit position.
-		///</param>
-
-		public static void DrawLinecast(this RaycastHit hit, Vector3 origin, Vector3 target, float pointSize = 0.1f)
-		{
-			if (hit.IsBlocked())
-			{
-				Gizmos.color = CAST_COLOR;
-				Gizmos.DrawLine(origin, hit.point);
-
-				Gizmos.color = BLOCK_COLOR;
-				Gizmos.DrawSphere(hit.point, pointSize);
-
-				Gizmos.DrawLine(hit.point, target);
-			}
-			else
-			{
-				Gizmos.color = CAST_COLOR;
-				Gizmos.DrawLine(origin, target);
-			}
-		}
-
-		/// <inheritdoc cref="DrawLinecast(RaycastHit, Vector3, Vector3, float)"/>
-		/// <param name="ray">
-		/// The ray used to define the performed linecast.
-		///</param>
-		/// <param name="distance">
-		/// The float distance used to define the performed linecast.
-		///</param>
-
-		public static void DrawLinecast(this RaycastHit hit, Ray ray, float distance, float pointSize = 0.1f)
-		{
-			hit.DrawLinecast(ray.origin, ray.origin + ray.direction * distance, pointSize);
-		}
-
-		/// <inheritdoc cref="DrawLinecast(RaycastHit, Vector3, Vector3, float)"/>
-		/// <param name="hit">
-		/// The result <see cref="HitInfo"/> obtained after performing the linecast.
-		///</param>
-
-		public static void DrawLinecast(this Hit hit, float pointSize = 0.1f)
-		{
-			Gizmos.color = CAST_COLOR;
-			Gizmos.DrawLine(hit.origin, hit.adjustmentPoint);
-
-			if (hit.isBlocked)
-			{
-				Gizmos.color = BLOCK_COLOR;
-				Gizmos.DrawSphere(hit.adjustmentPoint, pointSize);
-				Gizmos.DrawSphere(hit.point, pointSize);
-				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
-			}
-		}
-
-		#endregion
-		#region DrawBoxCast
-
-		public static void DrawBoxCast(this Hit hit, Quaternion orientation, Vector3 size)
-		{
-			DrawWireBox(hit.origin, orientation, size, CAST_COLOR);
-			Gizmos.DrawLine(hit.origin, hit.adjustmentPoint);
-
-			if (hit.isBlocked)
-			{
-				Gizmos.color = BLOCK_COLOR;
-				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
-			}
-
-			DrawWireBox(hit.adjustmentPoint, orientation, size, CAST_COLOR);
-		}
-
-		#endregion
-		#region DrawSphereCast
-
-		/// <summary>
-		/// Draws a representation of a spherecast after it has been performed.
-		///</summary>
-		/// <param name="origin">
-		/// The start position used to define the performed spherecast.
-		///</param>
-		/// <param name="target">
-		/// The end position used to define the performed spherecast.
-		///</param>
-		/// <param name="sphereRadius">
-		/// The sphere radius used to define the performed spherecast.
-		///</param>
-		/// <param name="hitPoint">
-		/// The position of the hit point resulting from the performed spherecast.
-		///</param>
-
-		public static void DrawSphereCast(Vector3 origin, Vector3 target, float sphereRadius, Vector3 hitPoint)
-		{
-			Gizmos.color = CAST_COLOR;
-			Gizmos.DrawWireSphere(origin, sphereRadius);
-
-			if (!Math.Approx(hitPoint, target, 0.01f))
-			{
-				Gizmos.DrawLine(origin, hitPoint);
-
-				Gizmos.color = BLOCK_COLOR;
-				Gizmos.DrawWireSphere(target, sphereRadius);
-				Gizmos.DrawLine(hitPoint, target);
-
-				Gizmos.color = new Color(1f, 0f, 0f, 0.25f);
-				Gizmos.DrawSphere(hitPoint, sphereRadius);
-			}
-			else
-			{
-				Gizmos.DrawLine(origin, target);
-				Gizmos.DrawWireSphere(target, sphereRadius);
-			}
-		}
-
-		/// <inheritdoc cref="DrawSphereCast(Vector3, Vector3, float, Vector3)"/>
-		/// <param name="hit">
-		/// The result <see cref="RaycastHit"/> obtained after performing the spherecast.
-		///</param>
-
-		public static void DrawSphereCast(this RaycastHit hit, Vector3 origin, Vector3 target, float sphereRadius)
-		{
-			DrawSphereCast(origin, target, sphereRadius, hit.point);
-		}
-
-		/// <inheritdoc cref="DrawSphereCast(Vector3, Vector3, float, Vector3)"/>
-		/// <param name="hit">
-		/// The result <see cref="HitInfo"/> obtained after performing the spherecast.
-		///</param>
-
-		public static void DrawSphereCast(this Hit hit, float radius)
-		{
-			Gizmos.color = CAST_COLOR;
-			Gizmos.DrawWireSphere(hit.origin, radius);
-
-			Vector3 closestPoint = hit.isBlocked ? hit.adjustmentPoint : hit.target;
-
-			Gizmos.DrawLine(hit.origin, closestPoint);
-
-			Gizmos.color = hit.isBlocked ? BLOCK_COLOR : CAST_COLOR;
-			Gizmos.DrawWireSphere(closestPoint, radius);
-
-			if (hit.isBlocked)
-			{
-				Gizmos.DrawLine(hit.adjustmentPoint, hit.target);
-			}
-
 		}
 
 		#endregion

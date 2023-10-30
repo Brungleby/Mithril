@@ -128,8 +128,8 @@ namespace Mithril
 			var info = (BoxInfo)shapeInfo;
 			return Hit.BoxCast(
 				transform.position,
-				info.size / 2f,
 				transform.rotation,
+				info.size / 2f,
 				transform.forward,
 				maxDistance,
 				layers

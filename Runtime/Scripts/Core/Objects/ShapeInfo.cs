@@ -29,7 +29,8 @@ namespace Mithril
 			throw new NotImplementedException();
 		}
 
-		// public abstract void Draw();
+		public abstract void Draw(Vector3 position, Color color);
+		public void Draw(Vector3 position) => Draw(position, Color.white);
 	}
 
 	public abstract class ShapeInfo<TVector> : ShapeInfoBase
@@ -41,6 +42,7 @@ namespace Mithril
 		{
 			this.center = center;
 		}
+
 	}
 
 	public abstract class ShapeInfo : ShapeInfo<Vector3>
@@ -90,6 +92,11 @@ namespace Mithril
 			this.normal = normal;
 			this.distance = distance;
 		}
+
+		public override void Draw(Vector3 position, Color color)
+		{
+			// DebugDraw.DrawArrow(position + center, normal * distance, color, 0f);
+		}
 	}
 
 	#endregion
@@ -98,9 +105,11 @@ namespace Mithril
 	public sealed class BoxInfo : ShapeInfo
 	{
 		public readonly Vector3 size;
+		public readonly Quaternion rotation;
 
-		public BoxInfo(Vector3 center, Vector3 size) : base(center)
+		public BoxInfo(Vector3 center, Quaternion rotation, Vector3 size) : base(center)
 		{
+			this.rotation = rotation;
 			this.size = size;
 		}
 		public BoxInfo(BoxCollider collider) : base(collider.center)
@@ -109,6 +118,11 @@ namespace Mithril
 		}
 
 		public static implicit operator BoxInfo(BoxCollider collider) => new(collider);
+
+		public override void Draw(Vector3 position, Color color)
+		{
+			DebugDraw.DrawWireBox(position + center, rotation, size * 2f, color);
+		}
 	}
 
 	#endregion
@@ -128,6 +142,12 @@ namespace Mithril
 		}
 
 		public static implicit operator SphereInfo(SphereCollider collider) => new(collider);
+
+		public override void Draw(Vector3 position, Color color)
+		{
+			Gizmos.color = color;
+			Gizmos.DrawWireSphere(position + center, radius);
+		}
 	}
 
 	#endregion
@@ -135,24 +155,40 @@ namespace Mithril
 
 	public sealed class CapsuleInfo : ShapeInfo
 	{
+		public readonly Quaternion rotation;
 		public readonly float radius;
 		public readonly float height;
 		public readonly int direction;
 
-		public CapsuleInfo(Vector3 center, float radius, float height, int direction) : base(center)
+		public CapsuleInfo(Vector3 center, Quaternion rotation, float radius, float height, int direction) : base(center)
 		{
+			this.rotation = rotation;
 			this.radius = radius;
 			this.height = height;
+			this.direction = direction;
+		}
+		public CapsuleInfo(Vector3 point1, Vector3 point2, float radius, int direction) : base(Vector3.zero)
+		{
+			var lookRot = Quaternion.LookRotation(point1 - point2, Vector3.up);
+			var rotRot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
+
+			rotation = lookRot * rotRot;
+			this.radius = radius;
+			height = (point1 - point2).magnitude + radius * 2f;
 			this.direction = direction;
 		}
 		public CapsuleInfo(CapsuleCollider collider) : base(collider.center)
 		{
 			radius = collider.radius;
-			height = collider.height;
 			direction = collider.direction;
 		}
 
 		public static implicit operator CapsuleInfo(CapsuleCollider collider) => new(collider);
+
+		public override void Draw(Vector3 position, Color color)
+		{
+			DebugDraw.DrawWireCapsule(position, rotation, radius, height, color);
+		}
 	}
 
 	#endregion
@@ -175,6 +211,11 @@ namespace Mithril
 		}
 
 		public static implicit operator BoxInfo2D(BoxCollider2D collider) => new(collider);
+
+		public override void Draw(Vector3 position, Color color)
+		{
+
+		}
 	}
 
 	#endregion
@@ -194,6 +235,11 @@ namespace Mithril
 		}
 
 		public static implicit operator CircleInfo2D(CircleCollider2D collider) => new(collider);
+
+		public override void Draw(Vector3 position, Color color)
+		{
+
+		}
 	}
 
 	#endregion
@@ -221,6 +267,11 @@ namespace Mithril
 		}
 
 		public static implicit operator CapsuleInfo2D(CapsuleCollider2D collider) => new(collider);
+
+		public override void Draw(Vector3 position, Color color)
+		{
+
+		}
 	}
 
 	#endregion

@@ -110,7 +110,7 @@ namespace Mithril
 #if UNITY_EDITOR
 			if (hitToDraw == null) return;
 			var hit = (Hit)(HitBase)hitToDraw;
-			DebugDraw.DrawLinecast(hit);
+			hit.OnDrawGizmos();
 #endif
 		}
 	}
