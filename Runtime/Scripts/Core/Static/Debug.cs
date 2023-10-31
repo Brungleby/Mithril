@@ -125,11 +125,7 @@ namespace Mithril
 		public static void DrawWireCapsule(Vector3 point1, Vector3 point2, float radius, Color color)
 		{
 			var midpoint = Math.Midpoint(point1, point2);
-
-			var lookRot = Quaternion.LookRotation(point1 - point2, Vector3.up);
-			var rotRot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
-			var rotation = lookRot * rotRot;
-
+			var rotation = Geometry.GetCapsuleRotation(point1, point2);
 			var height = (point1 - point2).magnitude;
 
 			DrawWireCapsule(midpoint, rotation, radius, height, color);

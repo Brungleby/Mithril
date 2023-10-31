@@ -58,17 +58,13 @@ namespace Mithril
 
 		public static Vector3 GetDirectionAxis(this CapsuleCollider capsule)
 		{
-			switch (capsule.direction)
+			return capsule.direction switch
 			{
-				case 0: /**	X-Axis	*/
-					return capsule.transform.right;
-				case 1: /**	Y-Axis	*/
-					return capsule.transform.up;
-				case 2: /**	Z-Axis	*/
-					return capsule.transform.forward;
-				default:
-					throw new UnityException($"Capsule direction is not valid. Check your index when querying the capsule on {capsule.gameObject.name}");
-			}
+				0 => capsule.transform.right,
+				1 => capsule.transform.up,
+				2 => capsule.transform.forward,
+				_ => throw new UnityException($"Capsule direction is not valid. Check your index when querying the capsule on {capsule.gameObject.name}"),
+			};
 		}
 
 		/// <returns>
@@ -98,6 +94,15 @@ namespace Mithril
 
 		public static Vector3 GetTailPositionUncapped(this CapsuleCollider capsule) =>
 			capsule.transform.position + capsule.center - capsule.GetDirectionAxis() * capsule.GetHalfHeightUncapped();
+
+		/// <returns>
+		/// A valid rotation to set the capsule defined by the given two points to.
+		///</returns>
+
+		public static Quaternion GetCapsuleRotation(Vector3 point1, Vector3 point2) =>
+			Quaternion.LookRotation(point1 - point2, Vector3.up) *
+			Quaternion.FromToRotation(Vector3.forward, Vector3.up)
+		;
 
 		#endregion
 	}

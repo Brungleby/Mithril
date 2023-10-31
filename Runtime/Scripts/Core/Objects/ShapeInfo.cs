@@ -169,10 +169,7 @@ namespace Mithril
 		}
 		public CapsuleInfo(Vector3 point1, Vector3 point2, float radius, int direction) : base(Vector3.zero)
 		{
-			var lookRot = Quaternion.LookRotation(point1 - point2, Vector3.up);
-			var rotRot = Quaternion.FromToRotation(Vector3.forward, Vector3.up);
-
-			rotation = lookRot * rotRot;
+			rotation = Geometry.GetCapsuleRotation(point1, point2);
 			this.radius = radius;
 			height = (point1 - point2).magnitude + radius * 2f;
 			this.direction = direction;
