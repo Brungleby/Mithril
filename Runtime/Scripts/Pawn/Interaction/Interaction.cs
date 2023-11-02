@@ -23,9 +23,6 @@ namespace Mithril
 
 	public class Interaction : object
 	{
-		public static readonly Interaction success = new Interaction(true, true);
-		public static readonly Interaction failure = new Interaction(false, true);
-		public static readonly Interaction silent = new Interaction(true, false);
 		public static readonly Interaction ignore = new Interaction(false, false);
 
 		public readonly bool isSuccess;

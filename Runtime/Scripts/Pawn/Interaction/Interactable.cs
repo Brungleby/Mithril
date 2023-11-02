@@ -41,7 +41,7 @@ namespace Mithril
 		/// True if the interaction was successful. False if it failed for some restrictive reason.
 		///</returns>
 
-		protected virtual Interaction OnInteract(Interactor user) => Interaction.success;
+		protected virtual Interaction OnInteract(Interactor user) => new(true);
 	}
 
 	#endregion
