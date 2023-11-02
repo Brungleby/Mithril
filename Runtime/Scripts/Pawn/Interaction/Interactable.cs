@@ -28,9 +28,9 @@ namespace Mithril
 		public UnityEvent onInteract;
 
 		[SerializeField]
-		private string tooltipText;
+		private string customTooltip;
 
-		public virtual string tooltip => tooltipText;
+		public virtual string tooltip => customTooltip;
 
 		internal Interaction _OnInteract(Interactor user)
 		{
