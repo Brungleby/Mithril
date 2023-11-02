@@ -10,6 +10,7 @@
 #region Includes
 
 using UnityEngine;
+using UnityEngine.Events;
 using InputContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 #endregion
@@ -18,15 +19,27 @@ namespace Mithril
 {
 	#region Interactor
 
+	/// <summary>
+	/// A component that allows a player to interact with <see cref="InteractableSimple"/>s via an input event.
+	///</summary>
+
 	public class Interactor : CasterComponent
 	{
 		[Min(0f)]
 		[SerializeField]
 		public float sensorLength = 1f;
 
+		[Header("Events")]
+
+		/// <summary>
+		/// This event is called when the focused interactable changes.
+		///</summary>
+		[Tooltip("This event is called when the focused interactable changes.")]
+		[SerializeField]
+		public UnityEvent<Interactable> onFocusChanged;
+
 		[Header("Audio")]
 
-		[AutoAssign]
 		[SerializeField]
 		public AudioSource audioSource;
 
@@ -36,7 +49,17 @@ namespace Mithril
 		[SerializeField]
 		public AudioClip SFXFailure;
 
-		public Interactable focus { get; private set; }
+		private Interactable _focus;
+		public Interactable focus
+		{
+			get => _focus; private set
+			{
+				if (_focus == value) return;
+				_focus = value;
+
+				_OnFocusChanged();
+			}
+		}
 
 		public virtual void OnInteract(InputContext context)
 		{
@@ -67,6 +90,13 @@ namespace Mithril
 			var hit = Hit.Linecast(transform.position, transform.forward, sensorLength, layers);
 			hit.Draw(DebugDrawEnvironment.DrawType.SingleUpdate);
 			return hit.collider?.GetComponent<Interactable>();
+		}
+
+		protected virtual void OnFocusChanged() { }
+		private void _OnFocusChanged()
+		{
+			OnFocusChanged();
+			onFocusChanged.Invoke(_focus);
 		}
 	}
 

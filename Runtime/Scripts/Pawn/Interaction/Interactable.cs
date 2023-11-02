@@ -22,10 +22,12 @@ namespace Mithril
 	/// Defines what happens when an <see cref="Interactor"/> interacts with this.
 	///</summary>
 
-	public class Interactable : MithrilComponent
+	public abstract class Interactable : MithrilComponent
 	{
 		[SerializeField]
 		public UnityEvent onInteract;
+
+		public virtual string tooltip { get; }
 
 		internal Interaction _OnInteract(Interactor user)
 		{
@@ -42,6 +44,21 @@ namespace Mithril
 		///</returns>
 
 		protected virtual Interaction OnInteract(Interactor user) => new(true);
+	}
+
+	#endregion
+	#region InteractableSimple
+
+	/// <summary>
+	/// Simple <see cref="Interactable"/> that provides a serialized field for its tooltip.
+	///</summary>
+
+	public class InteractableSimple : Interactable
+	{
+		[SerializeField]
+		public string tooltipText;
+
+		public override string tooltip => tooltipText;
 	}
 
 	#endregion

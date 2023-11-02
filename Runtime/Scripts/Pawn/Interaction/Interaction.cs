@@ -23,7 +23,7 @@ namespace Mithril
 
 	public class Interaction : object
 	{
-		public static readonly Interaction ignore = new Interaction(false, false);
+		public static readonly Interaction ignore = new(false, false);
 
 		public readonly bool isSuccess;
 		public readonly bool doFeedback;
