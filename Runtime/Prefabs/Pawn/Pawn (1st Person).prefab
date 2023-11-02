@@ -185,6 +185,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 4e83e852-2f2b-4917-b368-52951ec750ab
     m_ActionName: Pawn 3D/Crouch[/Keyboard/leftCtrl,/XInputControllerWindows/leftStickPress]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2380358156515269523}
+        m_TargetAssemblyTypeName: Mithril.Interactor, Mithril.Pawn
+        m_MethodName: OnInteract
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 659e3dbf-3349-44be-ae81-ab439370d8ac
+    m_ActionName: Pawn 3D/Interact[/Keyboard/e,/XInputControllerWindows/buttonWest]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Pawn 3D
@@ -432,6 +448,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6979945804257503084, guid: 132cd6d078c81ba468071fdc5e14834c, type: 3}
   m_PrefabInstance: {fileID: 8374578589160304310}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2380358156515269523 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6138619573927556389, guid: 132cd6d078c81ba468071fdc5e14834c, type: 3}
+  m_PrefabInstance: {fileID: 8374578589160304310}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e596bd5a8113c246bf9de0cd42113bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5414663514383092387 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4547726447911855125, guid: 132cd6d078c81ba468071fdc5e14834c, type: 3}

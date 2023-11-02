@@ -23,10 +23,15 @@ namespace Mithril.Item
 	///</summary>
 
 	[Serializable]
-	public class Item : ScriptableObject
+	[CreateAssetMenu(fileName = "New Item", menuName = "Mithril/Item", order = 1)]
+	public class ItemData : ScriptableObject
 	{
 		[SerializeField]
-		public GameObject prefab;
+		public string title = "Item";
+
+		[Min(0)]
+		[SerializeField]
+		public int maxQuantity = 1;
 	}
 
 	#endregion
