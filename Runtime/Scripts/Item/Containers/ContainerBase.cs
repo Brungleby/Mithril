@@ -31,7 +31,7 @@ namespace Mithril.Inventory
 		/// <summary>
 		/// If there are currently no items in this container.
 		///</summary>
-		bool isEmpty { get; }
+		bool isEmpty => count == 0;
 
 		/// <summary>
 		/// Destroys all items in this container.
@@ -103,10 +103,13 @@ namespace Mithril.Inventory
 	#endregion
 	#region ContainerBase<TItem>
 
+	/// <summary>
+	/// Base class for a data structure that contains a variety of items.
+	///</summary>
+
 	public abstract class ContainerBase<TItem> : MithrilComponent, IContainer<TItem>
 	{
 		public abstract int count { get; }
-		public abstract bool isEmpty { get; }
 
 		public abstract bool Add(TItem item);
 		public abstract void Clear();

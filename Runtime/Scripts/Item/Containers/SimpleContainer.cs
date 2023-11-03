@@ -30,7 +30,6 @@ namespace Mithril.Inventory
 		private List<TItem> contents;
 
 		public sealed override int count => contents.Count;
-		public sealed override bool isEmpty => count == 0;
 		public bool isFull
 		{
 			get

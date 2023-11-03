@@ -41,7 +41,7 @@ namespace Mithril.Inventory
 				return result;
 			}
 		}
-		public sealed override bool isEmpty
+		public bool isEmpty
 		{
 			get
 			{
@@ -72,7 +72,7 @@ namespace Mithril.Inventory
 
 		public sealed override bool Add(TItem item)
 		{
-			if (isFull) return false;
+			if (isFull && !contents.Contains(item)) return false;
 			contents[item]++;
 			return true;
 		}
