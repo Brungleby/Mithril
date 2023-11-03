@@ -14,24 +14,33 @@ using UnityEngine;
 
 #endregion
 
-namespace Mithril.Item
+namespace Mithril.Inventory
 {
-	#region Item
+	#region Item<TQuantity>
 
 	/// <summary>
-	/// __TODO_ANNOTATE__
+	/// Stores static data for an item type with a generic quantity type.
 	///</summary>
 
-	[Serializable]
-	[CreateAssetMenu(fileName = "New Item", menuName = "Mithril/Item", order = 1)]
-	public class ItemData : ScriptableObject
+	public abstract class Item<TQuantity> : ScriptableObject
+	where TQuantity : unmanaged, IComparable<TQuantity>
 	{
 		[SerializeField]
 		public string title = "Item";
 
 		[Min(0)]
 		[SerializeField]
-		public int maxQuantity = 1;
+		public TQuantity capacity;
+	}
+
+	#endregion
+	#region Item
+
+	[Serializable]
+	[CreateAssetMenu(fileName = "New Item", menuName = "Mithril/Item", order = 1)]
+	public class Item : Item<int>
+	{
+
 	}
 
 	#endregion
