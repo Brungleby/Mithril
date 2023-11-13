@@ -27,7 +27,9 @@ namespace Mithril.Inventory
 		[Min(-1)]
 		public int capacity = -1;
 
-		private List<TItem> contents;
+		[SerializeField]
+		private List<TItem> _contents = new();
+		public List<TItem> contents => _contents;
 
 		public sealed override int count => contents.Count;
 		public bool isFull
