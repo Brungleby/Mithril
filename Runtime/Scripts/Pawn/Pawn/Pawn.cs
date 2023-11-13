@@ -17,6 +17,9 @@ namespace Mithril.Pawn
 {
 	#region PawnBase
 
+	/// <summary>
+	/// Base class for some kind of controllable unit with a single collider from which we will reference all movement.
+	///</summary>
 	public abstract class PawnBase : MithrilComponent
 	{
 		#region Fields
@@ -26,18 +29,18 @@ namespace Mithril.Pawn
 		///</summary>
 		[Tooltip("Transform from which to base our input around. This should be the player's currently active camera.")]
 		[SerializeField]
-
 		public Transform viewTransform;
 
 		/// <summary>
-		/// Denotes the thickness around this <see cref="UnityEngine.Collider"/> that can be cast in a <see cref="PawnSensorBase"/>.
+		/// Denotes the thickness around this <see cref="UnityEngine.Collider"/> that can be cast in a <see cref="CasterComponent"/>.
 		///</summary>
-		[Tooltip("This value is used in PawnSensor components. It denotes the thickness around this Pawn's Collider that will be cast. Smaller numbers are stiffer but more accurate, larger numbers are looser but less accurate.")]
+		[Tooltip("This value is used in sensor components. It denotes the thickness around this Pawn's Collider that will be cast. Smaller numbers are stiffer but more accurate, larger numbers are looser but less accurate.")]
 		[Min(0f)]
 		[SerializeField]
-
 		private float _skinWidth = 0.01f;
-		public float skinWidth { get => _skinWidth; set => _skinWidth = value.Clamp(0f, maxSkinWidth); }
+
+		/// <inheritdoc cref="_skinWidth"/>
+		public float skinWidth { get => _skinWidth; set => _skinWidth = value.Max(0f); }
 
 		#endregion
 		#region Members
@@ -45,25 +48,16 @@ namespace Mithril.Pawn
 		/// <summary>
 		/// Record of <see cref="Time.fixedDeltaTime"/> from the previous frame.
 		///</summary>
-
 		protected float fixedDeltaTime_Previous { get; private set; }
 
 		#endregion
 		#region Properties
 
-		protected abstract float maxSkinWidth { get; }
-
 		public abstract float height { get; set; }
-
 		public abstract float speed { get; set; }
 
 		#endregion
 		#region Methods
-
-		private void OnValidate()
-		{
-			skinWidth = _skinWidth;
-		}
 
 		protected virtual void FixedUpdate()
 		{
@@ -85,16 +79,15 @@ namespace Mithril.Pawn
 	{
 		#region Members
 
-		[SerializeField]
+#pragma warning disable
 		[AutoAssign]
+		[SerializeField]
 		private TColliderBase _collider;
-#pragma warning disable
 		public new TColliderBase collider => _collider;
-#pragma warning restore
-		[SerializeField]
+
 		[AutoAssign]
+		[SerializeField]
 		private TRigidbody _rigidbody;
-#pragma warning disable
 		public new TRigidbody rigidbody => _rigidbody;
 #pragma warning restore
 
@@ -195,8 +188,8 @@ namespace Mithril.Pawn
 	{
 		#region Properties
 
-		public override Vector3 right => transform.right;
-		public override Vector3 up => -Physics.gravity.normalized;
+		public sealed override Vector3 right => transform.right;
+		public sealed override Vector3 up => -Physics.gravity.normalized;
 
 		/// <summary>
 		/// When inputting controls to this Pawn, this is the direction which this Pawn perceives as right.

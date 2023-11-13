@@ -36,8 +36,6 @@ namespace Mithril.Pawn
 			set => collider.height = value;
 		}
 
-		protected override float maxSkinWidth => collider.radius;
-
 		public float skinnedRadius => collider.radius + skinWidth;
 
 		#endregion
