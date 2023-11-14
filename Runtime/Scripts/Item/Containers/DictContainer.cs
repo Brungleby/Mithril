@@ -28,7 +28,9 @@ namespace Mithril.Inventory
 		[Min(-1)]
 		public int capacity = -1;
 
-		private Dictionary<TItem, int> contents;
+		[SerializeField]
+		private MapField<TItem, int> _contents;
+		private MapField<TItem, int> contents => _contents;
 
 		public sealed override int count => contents.Count;
 		public int quantity
