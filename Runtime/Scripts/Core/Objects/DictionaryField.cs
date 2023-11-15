@@ -20,36 +20,29 @@ using UnityEngine;
 namespace Mithril
 {
 	/// <summary>
-	/// A map that can be serialized and modified in the Unity Editor.
+	/// A dictionary the can be edited in-editor.
 	///</summary>
 	[Serializable]
 	public sealed class DictionaryField<TKey, TValue> : object, IDictionary<TKey, TValue>, ISerializationCallbackReceiver
 	{
+		#region Members
+
+		[SerializeField]
+		private List<KeyValuePairField<TKey, TValue>> _contents = new();
+
+		private Dictionary<TKey, TValue> _dict = new();
+
+		#endregion
+		#region Methods
+
 		#region Constructors
 
 		public DictionaryField() { }
-
 		public DictionaryField(IDictionary<TKey, TValue> dict)
 		{
 			foreach (var iKey in dict.Keys)
 				_dict[iKey] = dict[iKey];
 		}
-
-		#endregion
-		#region Fields
-
-		[SerializeField]
-		private List<KeyValuePairField<TKey, TValue>> _contents = new();
-
-		[SerializeField]
-		private int _contentsLength;
-
-		#endregion
-		#region Members
-
-		private Dictionary<TKey, TValue> _dict = new();
-
-		public int val = 11;
 
 		#endregion
 		#region IDictionary Overrides
@@ -83,16 +76,19 @@ namespace Mithril
 
 		IEnumerator IEnumerable.GetEnumerator() => _dict.GetEnumerator();
 
+		#endregion
+		#region ISerializationCallbackReceiver Overrides
+
 		public void OnAfterDeserialize()
 		{
 			_dict.Clear();
-			_contentsLength = _contents.Count;
 
 			foreach (var iKVPair in _contents)
 			{
-				if (iKVPair.key == null) continue;
+				if (iKVPair.key == null || _dict.ContainsKey(iKVPair.key)) continue;
 				_dict[iKVPair.key] = iKVPair.value;
 			}
+
 		}
 
 		public void OnBeforeSerialize()
@@ -100,6 +96,7 @@ namespace Mithril
 #if UNITY_EDITOR
 			ValidateGenerics();
 #endif
+			var length = _contents.Count;
 			_contents.Clear();
 
 			foreach (var iKVPair in _dict)
@@ -107,11 +104,13 @@ namespace Mithril
 #if UNITY_EDITOR
 			/**	Add placeholder entries
 			*/
-			for (var i = _dict.Count; i < _contentsLength; i++)
+			for (var i = _dict.Count; i < length; i++)
 				_contents.Add(new(default, default));
 #endif
 		}
 
+		#endregion
+#if UNITY_EDITOR
 		private void ValidateGenerics()
 		{
 			if (typeof(TKey).GetCustomAttribute<SerializableAttribute>() == null)
@@ -119,7 +118,7 @@ namespace Mithril
 			if (typeof(TValue).GetCustomAttribute<SerializableAttribute>() == null)
 				Debug.LogWarning($"Type {typeof(TValue)} in {this} is not serializable.");
 		}
-
+#endif
 		#endregion
 	}
 

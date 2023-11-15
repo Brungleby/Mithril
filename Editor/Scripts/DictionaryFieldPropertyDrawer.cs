@@ -29,30 +29,7 @@ namespace Mithril.Editor
 	{
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			EditorGUI.BeginProperty(position, label, property);
-
-			var contentsProp = property.FindPropertyRelative("_contents");
-
-			var validationDict = new Dictionary<object, object>();
-			for (var i = 0; i < contentsProp.arraySize; i++)
-			{
-				var iKeyProp = contentsProp.GetArrayElementAtIndex(i).FindPropertyRelative("key");
-				var iKey = iKeyProp.boxedValue;
-				var iValue = contentsProp.GetArrayElementAtIndex(i).FindPropertyRelative("value").boxedValue;
-
-				if (iKey == default) continue;
-				if (validationDict.ContainsKey(iKey))
-				{
-					iKeyProp.boxedValue = default;
-				}
-				else
-				{
-					validationDict[iKey] = iValue;
-				}
-			}
-
-			EditorGUI.PropertyField(position, contentsProp, label);
-			EditorGUI.EndProperty();
+			EditorGUI.PropertyField(position, property.FindPropertyRelative("_contents"), label);
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
