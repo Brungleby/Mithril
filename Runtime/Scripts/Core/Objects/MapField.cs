@@ -30,19 +30,12 @@ namespace Mithril
 		{
 			_dict = new();
 			foreach (var iPair in _fieldContents)
-			{
-#if UNITY_EDITOR
-				if (_dict.ContainsKey(iPair.key))
-					Debug.LogWarning($"An entry for '{iPair.key}' already exists in {this}.");
-#endif
 				_dict[iPair.key] = iPair.value;
-			}
 		}
 
 		public MapField(FieldKeyValuePair<TKey, TValue>[] pairs)
 		{
 			_dict = new();
-
 			_fieldContents = pairs;
 			foreach (var item in _fieldContents)
 				_dict.Add(item.key, item.value);
