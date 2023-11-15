@@ -30,7 +30,7 @@ namespace Mithril.Inventory
 
 		[SerializeField]
 		private MapField<TItem, int> _contents;
-		private MapField<TItem, int> contents => _contents;
+		public MapField<TItem, int> contents => _contents;
 
 		public sealed override int count => contents.Count;
 		public int quantity

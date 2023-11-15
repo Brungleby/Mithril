@@ -11,7 +11,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 
 #endregion
@@ -29,14 +29,15 @@ namespace Mithril
 		public MapField()
 		{
 			_dict = new();
+			Debug.Log($"{_fieldContents.Count}");
 			foreach (var iPair in _fieldContents)
 				_dict[iPair.key] = iPair.value;
 		}
 
-		public MapField(FieldKeyValuePair<TKey, TValue>[] pairs)
+		public MapField(IEnumerable<FieldKeyValuePair<TKey, TValue>> pairs)
 		{
 			_dict = new();
-			_fieldContents = pairs;
+			_fieldContents = pairs.ToList();
 			foreach (var item in _fieldContents)
 				_dict.Add(item.key, item.value);
 		}
@@ -52,7 +53,7 @@ namespace Mithril
 		#region Fields
 
 		[SerializeField]
-		private FieldKeyValuePair<TKey, TValue>[] _fieldContents = new FieldKeyValuePair<TKey, TValue>[0];
+		private List<FieldKeyValuePair<TKey, TValue>> _fieldContents = new();
 
 		#endregion
 		#region Members
