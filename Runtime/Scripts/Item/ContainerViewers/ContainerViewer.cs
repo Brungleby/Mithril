@@ -20,7 +20,6 @@ namespace Mithril.Inventory
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
-
 	public abstract class ContainerViewer<TContainer, TItem> : MithrilComponent
 	where TContainer : ContainerBase<TItem>
 	{

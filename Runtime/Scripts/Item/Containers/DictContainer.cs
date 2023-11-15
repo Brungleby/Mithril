@@ -29,7 +29,7 @@ namespace Mithril.Inventory
 		public int capacity = -1;
 
 		[SerializeField]
-		public DictionaryField<TItem, int> contents;
+		public DictionaryField<TItem, int> contents = new();
 
 		public sealed override int count => contents.Count;
 		public int quantity
@@ -109,14 +109,6 @@ namespace Mithril.Inventory
 				quantity--;
 			}
 			return quantity;
-		}
-
-		protected override void Awake()
-		{
-			base.Awake();
-
-			// Debug.Log($"{contents.fieldContents.Count}");
-			Debug.Log($"{contents.Count}");
 		}
 	}
 

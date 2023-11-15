@@ -38,7 +38,6 @@ namespace Mithril.Inventory
 
 		public override void Refresh()
 		{
-
 			/** <<============================================================>> **/
 
 			var i = -1;
@@ -56,8 +55,6 @@ namespace Mithril.Inventory
 			foreach (var iItem in focus.contents)
 			{
 				var obj = Instantiate(prefabListing, transform);
-
-				Debug.Log($"{iItem.Key.title}, {iItem.Value}");
 
 				var textComponents = obj.GetComponentsInChildren<TMP_Text>();
 				foreach (var iText in textComponents)
