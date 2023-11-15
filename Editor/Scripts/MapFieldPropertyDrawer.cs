@@ -26,14 +26,18 @@ namespace Mithril.Editor
 	public sealed class MapFieldPropertyDrawer : PropertyDrawer
 	{
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-		{           // Example: Displaying a property field for a specific property of MyCustomClass
-			SerializedProperty customProperty = property.FindPropertyRelative("_FieldPairs");
+		{
+			EditorGUI.BeginProperty(position, label, property);
+
+			SerializedProperty customProperty = property.FindPropertyRelative("_fieldContents");
 			EditorGUI.PropertyField(position, customProperty, label);
+
+			EditorGUI.EndProperty();
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			return EditorGUI.GetPropertyHeight(property.FindPropertyRelative("_FieldPairs"));
+			return EditorGUI.GetPropertyHeight(property.FindPropertyRelative("_fieldContents"));
 		}
 	}
 
