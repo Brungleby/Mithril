@@ -53,8 +53,6 @@ namespace Mithril.Inventory
 
 			/** <<============================================================>> **/
 
-			Debug.Log($"{focus.contents.Count}");
-
 			foreach (var iItem in focus.contents)
 			{
 				var obj = Instantiate(prefabListing, transform);

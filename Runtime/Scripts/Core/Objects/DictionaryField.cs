@@ -9,9 +9,10 @@
 
 #region Includes
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 #endregion
@@ -21,30 +22,15 @@ namespace Mithril
 	/// <summary>
 	/// A map that can be serialized and modified in the Unity Editor.
 	///</summary>
-	[System.Serializable]
-	public sealed class MapField<TKey, TValue> : object, IDictionary<TKey, TValue>
+	[Serializable]
+	public sealed class DictionaryField<TKey, TValue> : object, IDictionary<TKey, TValue>, ISerializationCallbackReceiver
 	{
 		#region Constructors
 
-		public MapField()
-		{
-			_dict = new();
-			Debug.Log($"{_fieldContents.Count}");
-			foreach (var iPair in _fieldContents)
-				_dict[iPair.key] = iPair.value;
-		}
+		public DictionaryField() { }
 
-		public MapField(IEnumerable<FieldKeyValuePair<TKey, TValue>> pairs)
+		public DictionaryField(IDictionary<TKey, TValue> dict)
 		{
-			_dict = new();
-			_fieldContents = pairs.ToList();
-			foreach (var item in _fieldContents)
-				_dict.Add(item.key, item.value);
-		}
-
-		public MapField(IDictionary<TKey, TValue> dict)
-		{
-			_dict = new();
 			foreach (var iKey in dict.Keys)
 				_dict[iKey] = dict[iKey];
 		}
@@ -53,12 +39,17 @@ namespace Mithril
 		#region Fields
 
 		[SerializeField]
-		private List<FieldKeyValuePair<TKey, TValue>> _fieldContents = new();
+		private List<KeyValuePairField<TKey, TValue>> _contents = new();
+
+		[SerializeField]
+		private int _contentsLength;
 
 		#endregion
 		#region Members
 
-		private Dictionary<TKey, TValue> _dict;
+		private Dictionary<TKey, TValue> _dict = new();
+
+		public int val = 11;
 
 		#endregion
 		#region IDictionary Overrides
@@ -92,14 +83,61 @@ namespace Mithril
 
 		IEnumerator IEnumerable.GetEnumerator() => _dict.GetEnumerator();
 
+		public void OnAfterDeserialize()
+		{
+			_dict.Clear();
+			_contentsLength = _contents.Count;
+
+			foreach (var iKVPair in _contents)
+			{
+				if (iKVPair.key == null) continue;
+				_dict[iKVPair.key] = iKVPair.value;
+			}
+		}
+
+		public void OnBeforeSerialize()
+		{
+#if UNITY_EDITOR
+			ValidateGenerics();
+#endif
+			_contents.Clear();
+
+			foreach (var iKVPair in _dict)
+				_contents.Add(new(iKVPair.Key, iKVPair.Value));
+#if UNITY_EDITOR
+			/**	Add placeholder entries
+			*/
+			for (var i = _dict.Count; i < _contentsLength; i++)
+				_contents.Add(new(default, default));
+#endif
+		}
+
+		private void ValidateGenerics()
+		{
+			if (typeof(TKey).GetCustomAttribute<SerializableAttribute>() == null)
+				Debug.LogWarning($"Type {typeof(TKey)} in {this} is not serializable.");
+			if (typeof(TValue).GetCustomAttribute<SerializableAttribute>() == null)
+				Debug.LogWarning($"Type {typeof(TValue)} in {this} is not serializable.");
+		}
+
 		#endregion
 	}
 
-	[System.Serializable]
-	public sealed class FieldKeyValuePair<K, V> : object
+	[Serializable]
+	public sealed class KeyValuePairField<TKey, TValue> : object
 	{
-		public K key;
-		public V value;
-	}
+		public KeyValuePairField(TKey key, TValue value)
+		{
+			this.key = key;
+			this.value = value;
+		}
 
+		public TKey key;
+		public TValue value;
+
+		public override string ToString()
+		{
+			return $"({key}: {value})";
+		}
+	}
 }

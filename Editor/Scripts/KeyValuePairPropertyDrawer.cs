@@ -19,7 +19,7 @@ namespace Mithril.Editor
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
-	[CustomPropertyDrawer(typeof(FieldKeyValuePair<,>))]
+	[CustomPropertyDrawer(typeof(KeyValuePairField<,>))]
 	public sealed class KeyValuePairPropertyDrawer : SingleLinePropertyDrawer
 	{
 		protected override (string, float)[] propertyWidths => new (string, float)[] { ("key", 0.5f), ("value", 0.5f) };
