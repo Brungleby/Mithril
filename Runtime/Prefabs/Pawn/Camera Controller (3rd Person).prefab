@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200212716943213935}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.0000000074505797, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6979945804257503084}
   - component: {fileID: 4547726447911855125}
-  - component: {fileID: 6936512597192491623}
+  - component: {fileID: 7868970160820822159}
   m_Layer: 2
   m_Name: Camera Controller (3rd Person)
   m_TagString: Untagged
@@ -85,7 +85,7 @@ MonoBehaviour:
   _minPitchLimit: -90
   _maxPitchLimit: 90
   defaultCursorLockState: 1
---- !u!114 &6936512597192491623
+--- !u!114 &7868970160820822159
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -242,7 +242,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8572250139360343818}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: -0, y: 1, z: -0.0000000074505797, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

@@ -70,10 +70,13 @@ namespace Mithril
 			base.Awake();
 
 			anchor = new GameObject($"{gameObject.name} [Anchor]").transform;
-			anchor.SetParent(null);
+			anchor.SetParent(transform.parent);
 
-			anchor.position = transform.position;
-			anchor.rotation = transform.rotation;
+			anchor.localPosition = transform.localPosition;
+			anchor.localRotation = transform.localRotation;
+			anchor.localScale = transform.localScale;
+
+			transform.SetParent(null);
 		}
 
 		private void Update()
@@ -82,33 +85,30 @@ namespace Mithril
 			{
 				if (enablePositionLag)
 				{
-					var targetPosition = transform.parent.position;
-					var deltaPosition = targetPosition - anchor.position;
+					var targetPosition = anchor.position;
+					var deltaPosition = targetPosition - transform.position;
 
 					Vector3 startPosition;
 					if (deltaPosition.magnitude >= positionMaxDistance)
 						startPosition = targetPosition - deltaPosition.normalized * positionMaxDistance;
 					else
-						startPosition = anchor.position;
+						startPosition = transform.position;
 
-					anchor.position = Vector3.SmoothDamp(startPosition, targetPosition, ref _positionVelocity, positionLagTime);
+					transform.position = Vector3.SmoothDamp(startPosition, targetPosition, ref _positionVelocity, positionLagTime);
 				}
 				else
-					anchor.position = transform.parent.position;
+					transform.position = anchor.position;
 			}
 
 			if (followRotation)
 			{
 				if (enableRotationLag)
 				{
-					anchor.eulerAngles = Math.SmoothDampEulerAngles(anchor.eulerAngles, transform.parent.eulerAngles, ref _rotationVelocity, _rotationLagTime);
+					transform.eulerAngles = Math.SmoothDampEulerAngles(transform.eulerAngles, anchor.eulerAngles, ref _rotationVelocity, _rotationLagTime);
 				}
 				else
-					anchor.rotation = transform.rotation;
+					transform.rotation = anchor.rotation;
 			}
-
-			transform.position = anchor.position;
-			transform.rotation = anchor.rotation;
 		}
 
 		#endregion

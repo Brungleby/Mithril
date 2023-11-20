@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae9abecd45b1aed4bb01cf69ce2931a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewTransform: {fileID: 3591493241586269314}
+  viewTransform: {fileID: 8137128552417718169}
   _skinWidth: 0.025
   _collider: {fileID: 4448567594642361772}
   _rigidbody: {fileID: 2407763584986205095}
@@ -554,3 +554,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fae36ccedf0f5014182afd99515d92c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &8137128552417718169 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2442869538472326263, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
+  m_PrefabInstance: {fileID: 5839536669321599982}
+  m_PrefabAsset: {fileID: 0}
