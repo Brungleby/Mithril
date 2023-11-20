@@ -20,7 +20,7 @@ namespace Mithril
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
-
+	[DefaultExecutionOrder(11)]
 	public sealed class FollowerComponent : MithrilComponent
 	{
 		#region Fields
@@ -69,16 +69,11 @@ namespace Mithril
 		{
 			base.Awake();
 
-			var anchorObject = new GameObject($"{gameObject.name} [Leader]");
+			anchor = new GameObject($"{gameObject.name} [Anchor]").transform;
+			anchor.SetParent(null);
 
-			anchor = anchorObject.transform;
-			anchor.SetParent(transform.parent);
-
-			anchor.localPosition = transform.localPosition;
-			anchor.localRotation = transform.localRotation;
-			anchor.localScale = Vector3.one;
-
-			transform.SetParent(null);
+			anchor.position = transform.position;
+			anchor.rotation = transform.rotation;
 		}
 
 		private void Update()
@@ -87,31 +82,33 @@ namespace Mithril
 			{
 				if (enablePositionLag)
 				{
-					var targetPosition = anchor.position;
-					var deltaPosition = targetPosition - transform.position;
+					var targetPosition = transform.parent.position;
+					var deltaPosition = targetPosition - anchor.position;
 
 					Vector3 startPosition;
 					if (deltaPosition.magnitude >= positionMaxDistance)
-						startPosition = targetPosition - deltaPosition * positionMaxDistance;
+						startPosition = targetPosition - deltaPosition.normalized * positionMaxDistance;
 					else
-						startPosition = transform.position;
+						startPosition = anchor.position;
 
-					transform.position = Vector3.SmoothDamp(startPosition, targetPosition, ref _positionVelocity, positionLagTime);
+					anchor.position = Vector3.SmoothDamp(startPosition, targetPosition, ref _positionVelocity, positionLagTime);
 				}
 				else
-					transform.position = anchor.position;
+					anchor.position = transform.parent.position;
 			}
 
 			if (followRotation)
 			{
 				if (enableRotationLag)
 				{
-					transform.eulerAngles = Math.SmoothDampEulerAngles(transform.eulerAngles, anchor.eulerAngles, ref _rotationVelocity, _rotationLagTime);
+					anchor.eulerAngles = Math.SmoothDampEulerAngles(anchor.eulerAngles, transform.parent.eulerAngles, ref _rotationVelocity, _rotationLagTime);
 				}
 				else
-					transform.rotation = anchor.rotation;
+					anchor.rotation = transform.rotation;
 			}
 
+			transform.position = anchor.position;
+			transform.rotation = anchor.rotation;
 		}
 
 		#endregion
