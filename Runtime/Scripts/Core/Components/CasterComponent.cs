@@ -65,11 +65,6 @@ namespace Mithril
 #endif
 		private Func<THit> m_Sense;
 
-		protected virtual void OnValidate()
-		{
-			m_Sense = GetSenseMethod(shapeInfo);
-		}
-
 		protected override void Awake()
 		{
 			base.Awake();
