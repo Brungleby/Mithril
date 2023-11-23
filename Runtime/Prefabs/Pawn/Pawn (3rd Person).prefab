@@ -252,6 +252,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f98c6077bd9f68f42bebcdce23a3b72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawEnabled: 0
+  drawOnSelectedOnly: 1
   layers:
     serializedVersion: 2
     m_Bits: 1
