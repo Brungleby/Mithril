@@ -18,9 +18,8 @@ namespace Mithril
 	#region FollowerComponent
 
 	/// <summary>
-	/// __TODO_ANNOTATE__
+	/// This component detaches its gameObject from its parent and follows it gradually.
 	///</summary>
-	[DefaultExecutionOrder(11)]
 	public sealed class FollowerComponent : MithrilComponent
 	{
 		#region Fields
