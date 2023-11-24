@@ -24,7 +24,7 @@ namespace Mithril.Animation
 	public abstract class AnimationScript : MithrilComponent
 	{
 		[AutoAssign]
-		public Animator animator { get; private set; }
+		public Animator animator { get; protected set; }
 	}
 
 	#endregion
