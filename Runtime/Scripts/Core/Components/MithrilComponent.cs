@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.Mathematics;
 using UnityEngine;
 
 #endregion
@@ -31,7 +32,7 @@ namespace Mithril
 
 		#region AutoAssignAttribute
 
-		[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+		[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
 		protected sealed class AutoAssignAttribute : Attribute
 		{
 			public Type assignType { get; }
@@ -67,6 +68,7 @@ namespace Mithril
 			var fieldsToAssign = GetType().GetFields(AUTO_ASSIGN_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AutoAssignAttribute>() != null);
 			foreach (var iField in fieldsToAssign)
 			{
+				if (iField.IsPrivate) Debug.LogWarning($"Field '{GetType().Name}.{iField.Name}' is private. It will not be auto-assigned in derived classes. Using a protected field instead will resolve this issue.");
 				if (iField.GetValue(this) != null) continue;
 
 				var iAttribute = iField.GetCustomAttribute<AutoAssignAttribute>();
@@ -76,6 +78,13 @@ namespace Mithril
 			var propertiesToAssign = GetType().GetProperties(AUTO_ASSIGN_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AutoAssignAttribute>() != null);
 			foreach (var iProperty in propertiesToAssign)
 			{
+				if (!iProperty.CanWrite)
+				{
+					Debug.LogError($"Property '{iProperty.Name}' in {GetType().Name} cannot be auto-assigned because it is either missing a setter or its setter is private. Using a protected set will resolve this issue.");
+					continue;
+				}
+				if (iProperty.GetSetMethod(true).IsPrivate) Debug.LogWarning($"Property setter '{GetType().Name}.{iProperty.Name}' is private. It will not be auto-assigned in derived classes. Using a protected setter instead will resolve this issue.");
+
 				var iAttribute = iProperty.GetCustomAttribute<AutoAssignAttribute>();
 				iProperty.SetValue(this, GetAutoAssignValue(iAttribute, iProperty.PropertyType));
 			}
@@ -88,7 +97,7 @@ namespace Mithril
 			if (!verifyType.IsAssignableFrom(assignType))
 				throw new InvalidCastException($"AssignOnAwake Type ({assignType.Name}) must be of type ({verifyType.Name}).");
 
-			return GetComponent(assignType) ?? throw new NullReferenceException($"AssignOnAwake: Null reference found for type ({assignType.Name})");
+			return GetComponent(assignType) ?? GetComponentInParent(assignType) ?? throw new NullReferenceException($"AssignOnAwake: Null reference found for type ({assignType.Name})");
 		}
 
 		#endregion
