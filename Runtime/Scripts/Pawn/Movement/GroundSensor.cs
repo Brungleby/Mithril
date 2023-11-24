@@ -115,6 +115,10 @@ namespace Mithril.Pawn
 		#endregion
 		#region Properties
 
+#if UNITY_EDITOR
+		protected override THit hitToDraw => _directHit;
+#endif
+
 		public abstract TGenericCollider hitCollider { get; }
 		public abstract TRigidbody hitRigidbody { get; }
 
@@ -276,8 +280,10 @@ namespace Mithril.Pawn
 		protected override Rigidbody GetLastKnownRigidbody() =>
 			directHit.rigidbody;
 #if UNITY_EDITOR
-		private void OnDrawGizmos()
+		protected override void OnDrawGizmos()
 		{
+			base.OnDrawGizmos();
+
 			if (!Application.isPlaying) return;
 
 			// Gizmos.color = isGrounded ? Color.green : Color.red;

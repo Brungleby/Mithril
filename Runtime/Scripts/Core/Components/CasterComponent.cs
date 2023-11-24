@@ -26,6 +26,15 @@ namespace Mithril
 	public abstract class CasterComponent : MithrilComponent
 	{
 		#region Fields
+#if UNITY_EDITOR
+		[Header("Draw Settings [Editor]")]
+
+		[SerializeField]
+		public bool drawEnabled = false;
+		[SerializeField]
+		public bool drawOnSelectedOnly = true;
+#endif
+		[Header("Sensor")]
 
 		/// <summary>
 		/// Layers that this component can sense.
@@ -33,6 +42,30 @@ namespace Mithril
 		[Tooltip("Layers that this component can sense.")]
 		[SerializeField]
 		public LayerMask layers;
+
+		#endregion
+		#region Methods
+
+		protected virtual void OnDrawGizmosSelected()
+		{
+#if UNITY_EDITOR
+			if (drawOnSelectedOnly) _OnDrawGizmosDynamic();
+#endif
+		}
+
+		protected virtual void OnDrawGizmos()
+		{
+#if UNITY_EDITOR
+			if (!drawOnSelectedOnly) _OnDrawGizmosDynamic();
+#endif
+		}
+#if UNITY_EDITOR
+		private void _OnDrawGizmosDynamic()
+		{
+			if (drawEnabled) OnDrawGizmosDynamic();
+		}
+#endif
+		protected virtual void OnDrawGizmosDynamic() { }
 
 		#endregion
 	}
@@ -105,7 +138,7 @@ namespace Mithril
 			throw new NotImplementedException();
 		}
 
-		protected virtual void OnDrawGizmosSelected()
+		protected override void OnDrawGizmosDynamic()
 		{
 #if UNITY_EDITOR
 			if (hitToDraw == null) return;
