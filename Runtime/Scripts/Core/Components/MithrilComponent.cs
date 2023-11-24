@@ -65,10 +65,12 @@ namespace Mithril
 
 		private void AutoAssignComponents()
 		{
+			var shouldWarnPrivate = !GetType().IsSealed;
+
 			var fieldsToAssign = GetType().GetFields(AUTO_ASSIGN_FIELD_FLAGS).Where(i => i.GetCustomAttribute<AutoAssignAttribute>() != null);
 			foreach (var iField in fieldsToAssign)
 			{
-				if (iField.IsPrivate) Debug.LogWarning($"Field '{GetType().Name}.{iField.Name}' is private. It will not be auto-assigned in derived classes. Using a protected field instead will resolve this issue.");
+				if (shouldWarnPrivate && iField.IsPrivate) Debug.LogWarning($"Field '{GetType().Name}.{iField.Name}' is private. It will not be auto-assigned in derived classes. Using a protected field instead will resolve this issue.");
 				if (iField.GetValue(this) != null) continue;
 
 				var iAttribute = iField.GetCustomAttribute<AutoAssignAttribute>();
@@ -83,7 +85,7 @@ namespace Mithril
 					Debug.LogError($"Property '{iProperty.Name}' in {GetType().Name} cannot be auto-assigned because it is either missing a setter or its setter is private. Using a protected set will resolve this issue.");
 					continue;
 				}
-				if (iProperty.GetSetMethod(true).IsPrivate) Debug.LogWarning($"Property setter '{GetType().Name}.{iProperty.Name}' is private. It will not be auto-assigned in derived classes. Using a protected setter instead will resolve this issue.");
+				if (shouldWarnPrivate && iProperty.GetSetMethod(true).IsPrivate) Debug.LogWarning($"Property setter '{GetType().Name}.{iProperty.Name}' is private. It will not be auto-assigned in derived classes. Using a protected setter instead will resolve this issue.");
 
 				var iAttribute = iProperty.GetCustomAttribute<AutoAssignAttribute>();
 				iProperty.SetValue(this, GetAutoAssignValue(iAttribute, iProperty.PropertyType));
