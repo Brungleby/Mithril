@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2407763584986205095}
   - component: {fileID: 2586102079730116738}
   - component: {fileID: 1060274819488854090}
+  - component: {fileID: 528686458584715392}
   - component: {fileID: 1623627632555501964}
   - component: {fileID: 3072084320034200326}
   - component: {fileID: 6495237474478591189}
@@ -212,6 +213,20 @@ MonoBehaviour:
   _skinWidth: 0.025
   _collider: {fileID: 4448567594642361772}
   _rigidbody: {fileID: 2407763584986205095}
+--- !u!114 &528686458584715392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18976946840638697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4eac42898f9d462e83ff6856f35c632, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ground: {fileID: 0}
+  enableRotateWithGround: 1
 --- !u!114 &1623627632555501964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,7 +254,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _deceleration: 10
   _airbornePercent: 0.25
-  enableRotateWithGround: 1
 --- !u!114 &6495237474478591189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,7 +503,7 @@ PrefabInstance:
       objectReference: {fileID: 1060274819488854090}
     - target: {fileID: 5024830088495140236, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.4999998
+      value: 3.5000007
       objectReference: {fileID: 0}
     - target: {fileID: 6979945804257503084, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_RootOrder

@@ -22,7 +22,7 @@ namespace Mithril.Pawn
 	/// This component translates input to movement along the ground in the world.
 	///</summary>
 
-	public abstract class WalkMovementBase<TCollider, TRigidbody, TPawn, TFriction, TGround, TMoveVector, TInputVector> :
+	public abstract class WalkMovementBase<TCollider, TRigidbody, TPawn, TPhysics, TFriction, TGround, TMoveVector, TInputVector> :
 	MovementComponent<TPawn, TCollider, TRigidbody, TMoveVector>,
 	IFrictionCustomUser<TMoveVector>,
 	IGroundUser<TGround>,
@@ -105,6 +105,7 @@ namespace Mithril.Pawn
 		#region Members
 
 		[AutoAssign] public GravityResponse<TCollider, TRigidbody, TMoveVector> gravity { get; protected set; }
+		[AutoAssign] public TPhysics physics { get; protected set; }
 		[AutoAssign] public TFriction friction { get; protected set; }
 		[AutoAssign] public TGround ground { get; protected set; }
 
@@ -168,7 +169,7 @@ namespace Mithril.Pawn
 	[RequireComponent(typeof(GroundSensor))]
 	[RequireComponent(typeof(FrictionMovement))]
 
-	public sealed class WalkMovement : WalkMovementBase<Collider, Rigidbody, CapsulePawn, FrictionMovement, GroundSensor, Vector3, Vector2>
+	public sealed class WalkMovement : WalkMovementBase<Collider, Rigidbody, CapsulePawn, PawnPhysics, FrictionMovement, GroundSensor, Vector3, Vector2>
 	{
 		#region Fields
 
@@ -292,7 +293,7 @@ namespace Mithril.Pawn
 
 				var __perceivedVelocity =
 					(ground.isGrounded ? pawn.velocity : pawn.lateralVelocity)
-					- friction.groundVelocity;
+					- physics.groundVelocity;
 
 				walkAccelVector = CalculateAcceleration(walkAccelVector, __perceivedVelocity);
 

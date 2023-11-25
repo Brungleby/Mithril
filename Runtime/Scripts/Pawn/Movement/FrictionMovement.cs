@@ -22,7 +22,7 @@ namespace Mithril.Pawn
 	/// Simulates deceleration along a plane.
 	///</summary>
 
-	public abstract class FrictionMovementBase<TPawn, TGround, TCollider, TRigidbody, TVector> : MovementComponent<TPawn, TCollider, TRigidbody, TVector>, IFrictionCustomUser<TVector>, ILateFixedUpdaterComponent
+	public abstract class FrictionMovementBase<TPawn, TPhysics, TGround, TCollider, TRigidbody, TVector> : MovementComponent<TPawn, TCollider, TRigidbody, TVector>, IFrictionCustomUser<TVector>
 	where TPawn : PawnBase<TCollider, TRigidbody, TVector>
 	where TVector : unmanaged
 	{
@@ -51,16 +51,13 @@ namespace Mithril.Pawn
 		#endregion
 		#region Members
 
-		private LateFixedUpdater _lateFixedUpdater;
-
 		[AutoAssign]
 		public TGround ground { get; protected set; }
-		protected IFrictionCustomUser<TVector> frictionUser { get; private set; }
 
-		protected TransformData _earlyGroundTransform;
-		protected TRigidbody _earlyGroundRigidbody;
-		protected TRigidbody _lastFrameRigidbody;
-		protected TVector _lastFramePosition;
+		[AutoAssign]
+		public TPhysics physics { get; protected set; }
+
+		protected IFrictionCustomUser<TVector> frictionUser { get; private set; }
 
 		#endregion
 		#region Properties
@@ -70,41 +67,18 @@ namespace Mithril.Pawn
 		public abstract float surfaceStrength { get; }
 
 		public abstract TVector frictionVelocity { get; }
-		public TVector groundVelocity { get; private set; }
-		protected TVector _lastGroundVelocity;
 
 		#endregion
 		#region Methods
-
-		protected virtual void OnValidate()
-		{
-			if (Application.isPlaying)
-				Awake();
-		}
 
 		protected override void Awake()
 		{
 			base.Awake();
 
 			frictionUser = GetFrictionUser();
-			_lateFixedUpdater = new LateFixedUpdater(this);
 		}
-
-		protected virtual void OnEnable()
-		{
-			_lateFixedUpdater.SetupCoroutine();
-		}
-
-		protected override void FixedUpdate()
-		{
-			groundVelocity = CalculateGroundVelocity();
-		}
-
-		public abstract void LateFixedUpdate();
 
 		protected abstract TVector CalculateDeceleration(in TVector currentVelocity);
-
-		protected abstract TVector CalculateGroundVelocity();
 
 		private IFrictionCustomUser<TVector> GetFrictionUser()
 		{
@@ -134,18 +108,8 @@ namespace Mithril.Pawn
 	#endregion
 	#region FrictionMovement
 
-	public sealed class FrictionMovement : FrictionMovementBase<Pawn, GroundSensor, Collider, Rigidbody, Vector3>
+	public sealed class FrictionMovement : FrictionMovementBase<Pawn, PawnPhysics, GroundSensor, Collider, Rigidbody, Vector3>
 	{
-		#region Fields
-
-		/// <summary>
-		/// If enabled, the rigidbody will rotate along with the ground beneath it. Otherwise, it will maintain its rotation.
-		///</summary>
-		[Tooltip("If enabled, the rigidbody will rotate along with the ground beneath it. Otherwise, it will maintain its rotation.")]
-
-		public bool enableRotateWithGround = true;
-
-		#endregion
 		#region Properties
 
 		public override float surfaceStrength
@@ -173,92 +137,24 @@ namespace Mithril.Pawn
 
 		protected override void FixedUpdate()
 		{
-			try
-			{
-				var __groundRigidbody = ground.hitRigidbody;
-
-				/** <<============================================================>> **/
-				/**	Account for changes in velocity of the ground
-				*	This method factors in both linear and angular velocity.
-				*/
-
-				if (__groundRigidbody != null && _lastFrameRigidbody == null)
-					rigidbody.velocity -= __groundRigidbody.GetPointVelocity(rigidbody.position);
-
-				else if (__groundRigidbody == null && _lastFrameRigidbody != null)
-				{
-					_lastGroundVelocity = _lastFrameRigidbody.GetPointVelocity(rigidbody.position);
-					rigidbody.velocity += _lastGroundVelocity;
-				}
-
-				/** <<============================================================>> **/
-
-				if (__groundRigidbody != null)
-				{
-					_earlyGroundRigidbody = __groundRigidbody;
-					_earlyGroundTransform = new TransformData(__groundRigidbody.position, __groundRigidbody.rotation, __groundRigidbody.transform.lossyScale);
-					_lastFrameRigidbody = __groundRigidbody;
-				}
-				else
-					_lastFrameRigidbody = null;
-			}
-			catch
-			{
-				_lastFrameRigidbody = null;
-				_earlyGroundRigidbody = null;
-			}
-
-			_lastFramePosition = rigidbody.position;
-
-			base.FixedUpdate();
-
-			var __motionVector = CalculateDeceleration(frictionUser.frictionVelocity - groundVelocity);
-			rigidbody.AddForce(__motionVector, ForceMode.Acceleration);
-		}
-
-		public override void LateFixedUpdate()
-		{
-			try
-			{
-				var __groundRigidbody = ground.hitRigidbody;
-
-				if (__groundRigidbody == null || __groundRigidbody != _earlyGroundRigidbody) return;
-
-				var __deltaRotation = __groundRigidbody.rotation * Quaternion.Inverse(_earlyGroundTransform.rotation);
-				__deltaRotation = __deltaRotation.ProjectRotationOnAxis(pawn.up);
-
-				var __pivotPosition = __deltaRotation * (rigidbody.position - __groundRigidbody.position) + __groundRigidbody.position;
-
-				var __deltaPosition = __groundRigidbody.position - _earlyGroundTransform.position;
-				var __newPosition = __pivotPosition + __deltaPosition;
-
-				rigidbody.MovePosition(__newPosition);
-
-				/** <<============================================================>> **/
-
-				if (enableRotateWithGround)
-					rigidbody.MoveRotation(rigidbody.rotation * __deltaRotation);
-			}
-			catch { }
+			var motionVector = CalculateDeceleration(frictionUser.frictionVelocity - physics.groundVelocity);
+			rigidbody.AddForce(motionVector, ForceMode.Acceleration);
 		}
 
 		protected override Vector3 CalculateDeceleration(in Vector3 currentVelocity)
 		{
-			var __result = -currentVelocity.normalized * strength * Time.fixedDeltaTime;
-			var __velocitySign = currentVelocity.Sign();
+			var result = -currentVelocity.normalized * strength * Time.fixedDeltaTime;
+			var velocitySign = currentVelocity.Sign();
 
-			if (__velocitySign.x != 0f && __velocitySign.x != Mathf.Sign(__result.x + currentVelocity.x))
-				__result.x = -currentVelocity.x;
-			if (__velocitySign.y != 0f && __velocitySign.y != Mathf.Sign(__result.y + currentVelocity.y))
-				__result.y = -currentVelocity.y;
-			if (__velocitySign.z != 0f && __velocitySign.z != Mathf.Sign(__result.z + currentVelocity.z))
-				__result.z = -currentVelocity.z;
+			if (velocitySign.x != 0f && velocitySign.x != Mathf.Sign(result.x + currentVelocity.x))
+				result.x = -currentVelocity.x;
+			if (velocitySign.y != 0f && velocitySign.y != Mathf.Sign(result.y + currentVelocity.y))
+				result.y = -currentVelocity.y;
+			if (velocitySign.z != 0f && velocitySign.z != Mathf.Sign(result.z + currentVelocity.z))
+				result.z = -currentVelocity.z;
 
-			return __result / Time.fixedDeltaTime;
+			return result / Time.fixedDeltaTime;
 		}
-
-		protected override Vector3 CalculateGroundVelocity() =>
-			ground.lastKnownRigidbody != null && !ground.isGrounded ? _lastGroundVelocity : default;
 
 		#endregion
 	}
