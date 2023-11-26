@@ -225,7 +225,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4eac42898f9d462e83ff6856f35c632, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ground: {fileID: 0}
   enableRotateWithGround: 1
 --- !u!114 &1623627632555501964
 MonoBehaviour:
@@ -252,6 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aead92eebe955324a963c28e0bfcc92e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _customFrictionUser: {fileID: 5878587526035118450}
   _deceleration: 10
   _airbornePercent: 0.25
 --- !u!114 &6495237474478591189

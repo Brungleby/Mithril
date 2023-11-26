@@ -29,6 +29,13 @@ namespace Mithril.Pawn
 		#region Fields
 
 		/// <summary>
+		/// Custom component used to calculate friction.
+		///</summary>
+		[Tooltip("Custom component used to calculate friction.")]
+		[SerializeField]
+		private Component _customFrictionUser;
+
+		/// <summary>
 		/// Self-explanatory. This is the rate of the pawn's speed decrease over time.
 		///</summary>
 		[Tooltip("Self-explanatory. This is the rate of the pawn's speed decrease over time.")]
@@ -75,32 +82,11 @@ namespace Mithril.Pawn
 		{
 			base.Awake();
 
-			frictionUser = GetFrictionUser();
+			try { frictionUser = (IFrictionCustomUser<TVector>)_customFrictionUser; }
+			catch { frictionUser = this; }
 		}
 
 		protected abstract TVector CalculateDeceleration(in TVector currentVelocity);
-
-		private IFrictionCustomUser<TVector> GetFrictionUser()
-		{
-			var __components = GetComponents<IFrictionCustomUser<TVector>>();
-
-			IFrictionCustomUser<TVector> __result = null;
-			foreach (var iUser in __components)
-			{
-				if (__result == null)
-				{
-					__result = iUser;
-					continue;
-				}
-
-				if (__result.Equals(this))
-				{
-					return iUser;
-				}
-			}
-
-			return __result;
-		}
 
 		#endregion
 	}
