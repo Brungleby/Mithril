@@ -40,10 +40,12 @@ namespace Mithril
 
 			EditorGUI.BeginProperty(position, label, property);
 			{
+				float clampWidth = 16f + EditorGUIUtility.standardVerticalSpacing;
+
 				Rect labelRect = new(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
 				Rect iLabelRect = new(x1 - IO_LABEL_WIDTH, y1, IO_LABEL_WIDTH, EditorGUIUtility.singleLineHeight);
 				Rect oLabelRect = new(x1 - IO_LABEL_WIDTH, y2, IO_LABEL_WIDTH, EditorGUIUtility.singleLineHeight);
-				Rect clampLabelRect = new(position.x + 16f + EditorGUIUtility.standardVerticalSpacing, y2, 40f, fieldHeight);
+				Rect clampLabelRect = new(position.x + clampWidth + EditorGUIUtility.standardVerticalSpacing * 2f, y2, 40f, fieldHeight);
 
 				EditorGUI.LabelField(labelRect, label);
 				EditorGUI.LabelField(clampLabelRect, "Clamp");
@@ -51,7 +53,7 @@ namespace Mithril
 				EditorGUI.LabelField(oLabelRect, "Out");
 
 				var clampToggle = property.FindPropertyRelative("clamp");
-				Rect clampToggleRect = new(position.x, y2, 16f + EditorGUIUtility.standardVerticalSpacing + 40f, fieldHeight);
+				Rect clampToggleRect = new(position.x + EditorGUIUtility.standardVerticalSpacing * 2f, y2, clampWidth + 40f, fieldHeight);
 
 				var inMin = property.FindPropertyRelative("inMin");
 				Rect inMinRect = new(x1, y1, halfFieldWidth, fieldHeight);
