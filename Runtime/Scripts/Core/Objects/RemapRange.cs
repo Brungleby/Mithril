@@ -40,6 +40,8 @@ namespace Mithril
 		}
 
 		public float Evaluate(float value) => value.Remap(inMin, inMax, outMin, outMax, clamp);
+		public float EvaluateIn(float value) => value.Remap(inMin, inMax, 0f, 1f, clamp);
+		public float EvaluateOut(float value) => value.Remap(0f, 1f, outMin, outMax, clamp);
 	}
 
 	#endregion
