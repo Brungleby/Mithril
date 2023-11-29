@@ -10,7 +10,6 @@
 #region Includes
 
 using System;
-using UnityEngine;
 
 #endregion
 

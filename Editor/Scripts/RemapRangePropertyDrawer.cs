@@ -28,8 +28,7 @@ namespace Mithril
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			float labelWidth = EditorGUIUtility.labelWidth;
-			float fieldWidth = position.width - labelWidth - EditorGUIUtility.standardVerticalSpacing;
+			float fieldWidth = position.width - EditorGUIUtility.labelWidth - EditorGUIUtility.standardVerticalSpacing;
 			float halfFieldWidth = fieldWidth * 0.5f - EditorGUIUtility.standardVerticalSpacing;
 
 			float fieldHeight = EditorGUIUtility.singleLineHeight;
