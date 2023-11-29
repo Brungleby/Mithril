@@ -78,7 +78,7 @@ namespace Mithril.Pawn
 		///</summary>
 		[Tooltip("Max speed will be multiplied by this curve depending on our directional slope angle. Upper and lower X limits are -90 and +90.")]
 		public AnimationCurve speedByFloorAngle = new(
-			new Keyframe[] { new Keyframe(-90f, 1f), new Keyframe(0f, 1f), new Keyframe(+90f, 1f) }
+			new Keyframe[] { new(-90f, 1f), new(0f, 1f), new(+90f, 1f) }
 		);
 
 		/** <<============================================================>> **/
@@ -87,7 +87,7 @@ namespace Mithril.Pawn
 		///</summary>
 		[Tooltip("Acceleration will be multiplied by this curve depending on our directional slope angle. Upper and lower X limits are -90 and +90.")]
 		public AnimationCurve accelByFloorAngle = new(
-			new Keyframe[] { new Keyframe(-90f, 1f), new Keyframe(0f, 1f), new Keyframe(+90f, 1f) }
+			new Keyframe[] { new(-90f, 1f), new(0f, 1f), new(+90f, 1f) }
 		);
 
 		/** <<============================================================>> **/

@@ -203,7 +203,7 @@ MonoBehaviour:
     m_ActionName: Pawn 3D/Interact[/Keyboard/e,/XInputControllerWindows/buttonWest]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Pawn 3D
+  m_DefaultActionMap: Pawn Character
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &1060274819488854090
@@ -247,9 +247,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aead92eebe955324a963c28e0bfcc92e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _customFrictionUser: {fileID: 5878587526035118450}
   _deceleration: 25
   _airbornePercent: 0.25
-  enableRotateWithGround: 1
 --- !u!114 &6495237474478591189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +262,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f98c6077bd9f68f42bebcdce23a3b72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawEnabled: 0
+  drawOnSelectedOnly: 1
   layers:
     serializedVersion: 2
     m_Bits: 1
