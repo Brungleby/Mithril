@@ -179,16 +179,14 @@ namespace Mithril.Pawn
 		/// Reference to a corresponding WalkRotation component.
 		///</summary>
 		[Tooltip("Reference to a corresponding WalkRotation component.")]
-
 		public WalkRotation walkRotation;
 
 		/// <summary>
-		/// If enabled, this pawn will only walk straight forward. You may wish to enable this if you have a separate rotation component.
+		/// If enabled, this pawn will only walk in the direction it is facing. Allows for more control of how movement feels when used in conjunction with a WalkRotation component.
 		///</summary>
-		[Tooltip("If enabled, this pawn will only walk straight forward. You may wish to enable this if you have a separate rotation component.")]
+		[Tooltip("If enabled, this pawn will only walk in the direction it is facing. Allows for more control of how movement feels when used in conjunction with a WalkRotation component.")]
 		[SerializeField]
-
-		public bool enableWalkForwardOnly = false;
+		public bool forwardOnly = false;
 
 		#endregion
 		#region Properties
@@ -282,7 +280,7 @@ namespace Mithril.Pawn
 			{
 				#region Determine Walk Vector Direction
 
-				Vector3 __flatWalkDirection = enableWalkForwardOnly ? pawn.forward : inputVector.normalized;
+				Vector3 __flatWalkDirection = forwardOnly ? pawn.forward : inputVector.normalized;
 				if (ground.isGrounded)
 					walkAccelVector = Vector3.Cross(Vector3.Cross(pawn.up, __flatWalkDirection), ground.upPrecise).normalized;
 				else
