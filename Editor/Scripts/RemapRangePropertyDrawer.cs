@@ -24,28 +24,37 @@ namespace Mithril
 	[CustomPropertyDrawer(typeof(RemapRange))]
 	public sealed class RemapRangePropertyDrawer : PropertyDrawer
 	{
-		private const float IO_LABEL_WIDTH = 28f;
+		private const float IO_LABEL_WIDTH = 24f;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			float fieldWidth = position.width - EditorGUIUtility.labelWidth - EditorGUIUtility.standardVerticalSpacing;
-			float halfFieldWidth = fieldWidth * 0.5f - EditorGUIUtility.standardVerticalSpacing;
+			float fieldWidth = position.width - EditorGUIUtility.labelWidth - IO_LABEL_WIDTH - EditorGUIUtility.standardVerticalSpacing * 2f;
+			float halfFieldWidth = fieldWidth * 0.5f - EditorGUIUtility.standardVerticalSpacing * 2f;
 
 			float fieldHeight = EditorGUIUtility.singleLineHeight;
 
-			float x1 = position.x + EditorGUIUtility.labelWidth + EditorGUIUtility.standardVerticalSpacing;
+			float x0 = position.x + EditorGUIUtility.labelWidth + EditorGUIUtility.standardVerticalSpacing * 2f;
+			float x1 = x0 + IO_LABEL_WIDTH + EditorGUIUtility.standardVerticalSpacing * 2f;
 			float x2 = x1 + halfFieldWidth + EditorGUIUtility.standardVerticalSpacing * 2f;
+
 			float y1 = position.y;
 			float y2 = y1 + fieldHeight + EditorGUIUtility.standardVerticalSpacing;
 
 			EditorGUI.BeginProperty(position, label, property);
 			{
-				float clampWidth = 16f + EditorGUIUtility.standardVerticalSpacing;
 
 				Rect labelRect = new(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
-				Rect iLabelRect = new(x1 - IO_LABEL_WIDTH, y1, IO_LABEL_WIDTH, EditorGUIUtility.singleLineHeight);
-				Rect oLabelRect = new(x1 - IO_LABEL_WIDTH, y2, IO_LABEL_WIDTH, EditorGUIUtility.singleLineHeight);
-				Rect clampLabelRect = new(position.x + clampWidth + EditorGUIUtility.standardVerticalSpacing * 2f, y2, 40f, fieldHeight);
+				Rect iLabelRect = new(x0, y1, IO_LABEL_WIDTH, EditorGUIUtility.singleLineHeight);
+				Rect oLabelRect = new(x0, y2, IO_LABEL_WIDTH, EditorGUIUtility.singleLineHeight);
+
+				float clampWidth = 16f + EditorGUIUtility.standardVerticalSpacing;
+				Rect clampToggleRect = new(x0 - clampWidth + EditorGUIUtility.standardVerticalSpacing, y2, clampWidth + 40f, fieldHeight);
+				Rect clampLabelRect = new(clampToggleRect.x - (EditorGUIUtility.standardVerticalSpacing + 40f), y2, 40f, fieldHeight);
+
+				Rect inMinRect = new(x1, y1, halfFieldWidth, fieldHeight);
+				Rect inMaxRect = new(x2, y1, halfFieldWidth, fieldHeight);
+				Rect outMinRect = new(x1, y2, halfFieldWidth, fieldHeight);
+				Rect outMaxRect = new(x2, y2, halfFieldWidth, fieldHeight);
 
 				EditorGUI.LabelField(labelRect, label);
 				EditorGUI.LabelField(clampLabelRect, "Clamp");
@@ -53,19 +62,14 @@ namespace Mithril
 				EditorGUI.LabelField(oLabelRect, "Out");
 
 				var clampToggle = property.FindPropertyRelative("clamp");
-				Rect clampToggleRect = new(position.x + EditorGUIUtility.standardVerticalSpacing * 2f, y2, clampWidth + 40f, fieldHeight);
 
 				var inMin = property.FindPropertyRelative("inMin");
-				Rect inMinRect = new(x1, y1, halfFieldWidth, fieldHeight);
 
 				var inMax = property.FindPropertyRelative("inMax");
-				Rect inMaxRect = new(x2, y1, halfFieldWidth, fieldHeight);
 
 				var outMin = property.FindPropertyRelative("outMin");
-				Rect outMinRect = new(x1, y2, halfFieldWidth, fieldHeight);
 
 				var outMax = property.FindPropertyRelative("outMax");
-				Rect outMaxRect = new(x2, y2, halfFieldWidth, fieldHeight);
 
 				clampToggle.boolValue = EditorGUI.Toggle(clampToggleRect, clampToggle.boolValue);
 
