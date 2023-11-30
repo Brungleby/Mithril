@@ -46,13 +46,13 @@ namespace Mithril
 		public static readonly Color DRAW_CAST_COLOR = Color.green;
 		public const float DRAW_POINT_SIZE = 0.1f;
 
-		#endregion
-
 		/// <summary>
 		/// Whether or not the cast performed actually hit anything.
 		///</summary>
 
 		public readonly bool isBlocked;
+
+		#endregion
 	}
 
 	#endregion
@@ -333,8 +333,8 @@ namespace Mithril
 
 		public override void OnDrawGizmos()
 		{
-			shapeInfo.Draw(origin, DRAW_CAST_COLOR);
-			shapeInfo.Draw(adjustmentPoint, isBlocked ? DRAW_BLOCK_COLOR : DRAW_CAST_COLOR);
+			shapeInfo?.Draw(origin, DRAW_CAST_COLOR);
+			shapeInfo?.Draw(adjustmentPoint, isBlocked ? DRAW_BLOCK_COLOR : DRAW_CAST_COLOR);
 
 			Gizmos.color = DRAW_CAST_COLOR;
 			Gizmos.DrawLine(origin, adjustmentPoint);
@@ -777,8 +777,8 @@ namespace Mithril
 		{
 			Vector3 midpoint = Math.Midpoint(point1, point2);
 			Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, maxDistance, layerMask, queryTriggerInteraction);
-			var shape = new CapsuleInfo(point1, point2, radius, 0);
 
+			var shape = new CapsuleInfo(point1, point2, radius, 0);
 			return Create(hit, shape, midpoint, midpoint + direction * maxDistance);
 		}
 
@@ -787,8 +787,8 @@ namespace Mithril
 			Vector3 midpoint = Math.Midpoint(point1, point2);
 			Vector3 delta = target - midpoint;
 			Physics.CapsuleCast(point1, point2, radius, delta.normalized, out RaycastHit hit, delta.magnitude, layerMask, queryTriggerInteraction);
-			var shape = new CapsuleInfo(point1, point2, radius, 0);
 
+			var shape = new CapsuleInfo(point1, point2, radius, 0);
 			return Create(hit, shape, midpoint, target);
 		}
 

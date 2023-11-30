@@ -95,14 +95,25 @@ namespace Mithril.Pawn
 		public GravityResponse<TColliderBase, TRigidbody, TVector> gravityResponse { get; protected set; }
 
 		/// <summary>
+		/// Record of the pawn's position from the previous frame.
+		///</summary>
+		public TVector previousPosition { get; protected set; } = default;
+
+		/// <summary>
 		/// Record of <see cref="velocity"/> from the previous frame.
 		///</summary>
+		public TVector previousVelocity { get; protected set; } = default;
 
-		protected TVector _velocity_Previous = default;
 
 		#endregion
 
 		#region Properties
+
+		/// <summary>
+		/// World position of this pawn.
+		///</summary>
+
+		public abstract TVector position { get; }
 
 		/// <summary>
 		/// When inputting controls to this Pawn, this is the direction which this Pawn perceives as right.
@@ -145,11 +156,12 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
-		protected override void FixedUpdate()
+		protected sealed override void FixedUpdate()
 		{
 			base.FixedUpdate();
 
-			_velocity_Previous = velocity;
+			previousPosition = position;
+			previousVelocity = velocity;
 		}
 
 		/** <<============================================================>> **/
@@ -187,6 +199,8 @@ namespace Mithril.Pawn
 	public abstract class Pawn : PawnBase<Collider, Rigidbody, Vector3>
 	{
 		#region Properties
+
+		public sealed override Vector3 position => transform.position;
 
 		public sealed override Vector3 right => transform.right;
 		public sealed override Vector3 up => -Physics.gravity.normalized;
@@ -263,7 +277,7 @@ namespace Mithril.Pawn
 
 		public sealed override Vector3 acceleration
 		{
-			get => (velocity - _velocity_Previous) / fixedDeltaTime_Previous;
+			get => (velocity - previousVelocity) / fixedDeltaTime_Previous;
 			set => throw new System.NotImplementedException();
 		}
 
@@ -347,7 +361,7 @@ namespace Mithril.Pawn
 
 		public sealed override Vector2 acceleration
 		{
-			get => (velocity - _velocity_Previous) / fixedDeltaTime_Previous;
+			get => (velocity - previousVelocity) / fixedDeltaTime_Previous;
 			set => throw new System.NotImplementedException();
 		}
 

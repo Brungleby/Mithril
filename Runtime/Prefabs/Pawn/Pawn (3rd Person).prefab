@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewTransform: {fileID: 8137128552417718169}
-  _skinWidth: 0.025
+  _skinWidth: 0.08
   _collider: {fileID: 4448567594642361772}
   _rigidbody: {fileID: 2407763584986205095}
 --- !u!114 &528686458584715392
@@ -365,7 +365,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   _verticalSpeedPercentOnLand: 1
   walkRotation: {fileID: 2694657013946085606}
-  enableWalkForwardOnly: 0
+  forwardOnly: 0
 --- !u!114 &2694657013946085606
 MonoBehaviour:
   m_ObjectHideFlags: 0

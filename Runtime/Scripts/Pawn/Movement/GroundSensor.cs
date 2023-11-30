@@ -64,8 +64,8 @@ namespace Mithril.Pawn
 		/// This is a secondary hit which is calculated by casting the skinned collider a short distance downward. It is only performed if we are airborne.
 		///</summary>
 
-		private THit _landingHit;
-		private TVector _previousPosition;
+		protected THit _landingHit;
+		protected TVector _previousPosition;
 
 		/// <summary>
 		/// This is a tertiary hit which is calculated by casting a line directly underneath the collider. It is only performed if we are grounded.
@@ -256,14 +256,11 @@ namespace Mithril.Pawn
 
 		protected override Hit SenseLandingHit()
 		{
-			var bufferHeight = 1f;
-			return Hit.CapsuleCast
-			(
-				collider.GetHeadPositionUncapped() + pawn.up * bufferHeight,
-				collider.GetTailPositionUncapped() + pawn.up * bufferHeight,
-				collider.radius,
-				-pawn.up, bufferHeight + pawn.skinWidth, layers
-			);
+			Debug.Log($"{pawn.verticalVelocityRelative}");
+			if (pawn.verticalVelocityRelative > 1f) return Hit.none;
+
+			var target = collider.transform.position - pawn.up * pawn.skinWidth;
+			return Hit.CapsuleCast(collider, pawn.previousPosition, target, layers);
 		}
 
 		protected override Hit SenseInfoHit() => Hit.SphereCast
@@ -287,6 +284,8 @@ namespace Mithril.Pawn
 			base.OnDrawGizmos();
 
 			if (!Application.isPlaying) return;
+
+			_landingHit?.OnDrawGizmos();
 
 			// Gizmos.color = isGrounded ? Color.green : Color.red;
 			// Gizmos.DrawSphere(collider.GetTailPosition(), 0.1f);
