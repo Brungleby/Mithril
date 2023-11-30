@@ -635,7 +635,7 @@ namespace Mithril
 		///</param>
 
 		public static Hit BoxCast(BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			BoxCast(box.transform.position + box.center, box.transform.rotation, box.size / 2f, direction, maxDistance, layerMask, queryTriggerInteraction);
+			BoxCast(box.transform.position + box.center, box.transform.rotation, box.size * 0.5f, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCast(BoxCollider, Vector3, float, int, QueryTriggerInteraction)"/>
 
@@ -671,7 +671,7 @@ namespace Mithril
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
 
 		public static Hit[] BoxCastAll(BoxCollider box, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			BoxCastAll(box.transform.position + box.center, box.transform.rotation, box.size / 2f, direction, maxDistance, layerMask, queryTriggerInteraction);
+			BoxCastAll(box.transform.position + box.center, box.transform.rotation, box.size * 0.5f, direction, maxDistance, layerMask, queryTriggerInteraction);
 
 		/// <inheritdoc cref="BoxCastAll"/>
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Quaternion, Vector3, float, int, QueryTriggerInteraction)"/>
@@ -692,7 +692,7 @@ namespace Mithril
 		/// <inheritdoc cref="BoxCast(Vector3, Vector3, Vector3, int, QueryTriggerInteraction)"/>
 
 		public static Hit[] BoxCastAll(BoxCollider box, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
-			BoxCastAll(box.transform.position + box.center, box.size / 2f, box.transform.rotation, target, layerMask, queryTriggerInteraction);
+			BoxCastAll(box.transform.position + box.center, box.size * 0.5f, box.transform.rotation, target, layerMask, queryTriggerInteraction);
 
 		#endregion
 
@@ -775,25 +775,39 @@ namespace Mithril
 
 		public static Hit CapsuleCast(Vector3 point1, Vector3 point2, float radius, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, maxDistance, layerMask, queryTriggerInteraction);
 			Vector3 midpoint = Math.Midpoint(point1, point2);
+			Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, maxDistance, layerMask, queryTriggerInteraction);
 			var shape = new CapsuleInfo(point1, point2, radius, 0);
 
 			return Create(hit, shape, midpoint, midpoint + direction * maxDistance);
 		}
 
+		public static Hit CapsuleCast(Vector3 point1, Vector3 point2, float radius, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		{
+			Vector3 midpoint = Math.Midpoint(point1, point2);
+			Vector3 delta = target - midpoint;
+			Physics.CapsuleCast(point1, point2, radius, delta.normalized, out RaycastHit hit, delta.magnitude, layerMask, queryTriggerInteraction);
+			var shape = new CapsuleInfo(point1, point2, radius, 0);
+
+			return Create(hit, shape, midpoint, target);
+		}
+
+		/// <inheritdoc cref="CapsuleCast"/>
+
 		public static Hit CapsuleCast(Vector3 position, Quaternion rotation, float radius, float height, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			var pointWidth = (height - radius * 2f).Max();
-			var pointOffset = rotation * Vector3.up * pointWidth * 0.5f;
-
-			// Physics.CapsuleCast(position + pointOffset, position - pointOffset, radius, direction, out RaycastHit hit, maxDistance, layerMask, queryTriggerInteraction);
-
-			// var shape = new CapsuleInfo(Vector3.zero, rotation, radius, height, 0);
-
-			// return Create(hit, shape, position, position + direction * maxDistance);
+			var pointOffset = rotation * Vector3.up * (height - radius * 2f).Max() * 0.5f;
 
 			return CapsuleCast(position + pointOffset, position - pointOffset, radius, direction, maxDistance, layerMask, queryTriggerInteraction);
+		}
+
+		/// <inheritdoc cref="CapsuleCast"/>
+
+		public static Hit CapsuleCast(Vector3 position, Quaternion rotation, float radius, float height, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+		{
+			var pointOffset = rotation * Vector3.up * (height - radius * 2f).Max() * 0.5f;
+
+			return CapsuleCast(position + pointOffset, position - pointOffset, radius, target, layerMask, queryTriggerInteraction);
 		}
 
 		/// <inheritdoc cref="CapsuleCast"/>
@@ -803,6 +817,15 @@ namespace Mithril
 
 		public static Hit CapsuleCast(CapsuleCollider capsule, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
 			CapsuleCast(capsule.GetTailPositionUncapped(), capsule.GetHeadPositionUncapped(), capsule.radius, direction, maxDistance, layerMask, queryTriggerInteraction);
+
+		public static Hit CapsuleCast(CapsuleCollider capsule, Vector3 origin, Vector3 direction, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			CapsuleCast(origin + capsule.GetTailPositionUncappedLocal(), origin + capsule.GetHeadPositionUncappedLocal(), capsule.radius, direction, maxDistance, layerMask, queryTriggerInteraction);
+
+		public static Hit CapsuleCast(CapsuleCollider capsule, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			CapsuleCast(capsule.GetTailPositionUncapped(), capsule.GetHeadPositionUncapped(), capsule.radius, target, layerMask, queryTriggerInteraction);
+
+		public static Hit CapsuleCast(CapsuleCollider capsule, Vector3 origin, Vector3 target, int layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal) =>
+			CapsuleCast(origin + capsule.GetTailPositionUncappedLocal(), origin + capsule.GetHeadPositionUncappedLocal(), capsule.radius, target, layerMask, queryTriggerInteraction);
 
 		#endregion
 		#region CapsuleCastAll

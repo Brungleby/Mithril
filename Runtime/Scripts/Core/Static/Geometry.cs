@@ -68,32 +68,60 @@ namespace Mithril
 		}
 
 		/// <returns>
+		/// The local position of the head (top) of the <paramref name="capsule"/>.
+		///</returns>
+
+		public static Vector3 GetHeadPositionLocal(this CapsuleCollider capsule) =>
+			capsule.center + capsule.GetDirectionAxis() * capsule.GetHalfHeight();
+
+		/// <returns>
 		/// The world position of the head (top) of the <paramref name="capsule"/>.
 		///</returns>
 
 		public static Vector3 GetHeadPosition(this CapsuleCollider capsule) =>
-			capsule.transform.position + capsule.center + capsule.GetDirectionAxis() * capsule.GetHalfHeight();
+			capsule.transform.position + capsule.GetHeadPositionLocal();
+
+		/// <returns>
+		/// The local position of the Tail (bottom) of the <paramref name="capsule"/>.
+		///</returns>
+
+		public static Vector3 GetTailPositionLocal(this CapsuleCollider capsule) =>
+			capsule.center - capsule.GetDirectionAxis() * capsule.GetHalfHeight();
 
 		/// <returns>
 		/// The world position of the Tail (bottom) of the <paramref name="capsule"/>.
 		///</returns>
 
 		public static Vector3 GetTailPosition(this CapsuleCollider capsule) =>
-			capsule.transform.position + capsule.center - capsule.GetDirectionAxis() * capsule.GetHalfHeight();
+			capsule.transform.position + capsule.GetTailPositionLocal();
 
 		/// <returns>
-		/// The world position of the uncapped head (upper sphere's origin) of the <paramref name="capsule"/>.
+		/// The local position of the uncapped head (top) of the <paramref name="capsule"/>.
+		///</returns>
+
+		public static Vector3 GetHeadPositionUncappedLocal(this CapsuleCollider capsule) =>
+			capsule.center + capsule.GetDirectionAxis() * capsule.GetHalfHeightUncapped();
+
+		/// <returns>
+		/// The world position of the uncapped head (top) of the <paramref name="capsule"/>.
 		///</returns>
 
 		public static Vector3 GetHeadPositionUncapped(this CapsuleCollider capsule) =>
-			capsule.transform.position + capsule.center + capsule.GetDirectionAxis() * capsule.GetHalfHeightUncapped();
+			capsule.transform.position + capsule.GetHeadPositionUncappedLocal();
 
 		/// <returns>
-		/// The world position of the uncapped Tail (lower sphere's origin) of the <paramref name="capsule"/>.
+		/// The local position of the uncapped tail (bottom) of the <paramref name="capsule"/>.
+		///</returns>
+
+		public static Vector3 GetTailPositionUncappedLocal(this CapsuleCollider capsule) =>
+			capsule.center - capsule.GetDirectionAxis() * capsule.GetHalfHeightUncapped();
+
+		/// <returns>
+		/// The world position of the uncapped tail (bottom) of the <paramref name="capsule"/>.
 		///</returns>
 
 		public static Vector3 GetTailPositionUncapped(this CapsuleCollider capsule) =>
-			capsule.transform.position + capsule.center - capsule.GetDirectionAxis() * capsule.GetHalfHeightUncapped();
+			capsule.transform.position + capsule.GetTailPositionUncappedLocal();
 
 		/// <returns>
 		/// A valid rotation to set the capsule defined by the given two points to.

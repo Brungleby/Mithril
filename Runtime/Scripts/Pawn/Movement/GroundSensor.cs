@@ -32,11 +32,9 @@ namespace Mithril.Pawn
 		/// <summary>
 		/// Maximum length/size of the cast.
 		///</summary>
-
 		[Tooltip("Maximum length/size of the cast.")]
 		[Min(0f)]
 		[SerializeField]
-
 		public float maxStepHeight = 1f;
 
 		#endregion
@@ -67,6 +65,7 @@ namespace Mithril.Pawn
 		///</summary>
 
 		private THit _landingHit;
+		private TVector _previousPosition;
 
 		/// <summary>
 		/// This is a tertiary hit which is calculated by casting a line directly underneath the collider. It is only performed if we are grounded.
@@ -228,41 +227,44 @@ namespace Mithril.Pawn
 
 		protected override Hit SenseDirectHit()
 		{
-			float __upOffset = (maxStepHeight - collider.radius).Max(pawn.skinWidth);
+			float upOffset = (maxStepHeight - collider.radius).Max(pawn.skinWidth);
 
-			var __hits = Hit.CapsuleCastAll(
-				collider.GetHeadPositionUncapped() + pawn.up * __upOffset,
-				collider.GetTailPositionUncapped() + pawn.up * __upOffset,
+			var hits = Hit.CapsuleCastAll(
+				collider.GetHeadPositionUncapped() + pawn.up * upOffset,
+				collider.GetTailPositionUncapped() + pawn.up * upOffset,
 				collider.radius,
-				-pawn.up, maxStepHeight + __upOffset, layers
+				-pawn.up, maxStepHeight + upOffset, layers
 			).ToList();
-			__hits.Sort();
+			hits.Sort();
 
-			foreach (var iHit in __hits)
+			foreach (var iHit in hits)
 			{
-				var __lateralPercentFromTail = (Vector3.Scale(iHit.point - collider.GetTailPosition(), Vector3.one - pawn.up).magnitude / collider.radius).Clamp();
+				var lateralPercentFromTail = (Vector3.Scale(iHit.point - collider.GetTailPosition(), Vector3.one - pawn.up).magnitude / collider.radius).Clamp();
+				var groundAngle = Mathf.Asin(lateralPercentFromTail) * Mathf.Rad2Deg;
 
-				var __groundAngle = Mathf.Asin(__lateralPercentFromTail) * Mathf.Rad2Deg;
-
-				if (__groundAngle <= maxWalkableAngle)
+				if (groundAngle <= maxWalkableAngle)
 					return iHit;
 			}
 
 			return Hit.CapsuleCast(
-				collider.GetHeadPositionUncapped() + pawn.up * __upOffset,
-				collider.GetTailPositionUncapped() + pawn.up * __upOffset,
+				collider.GetHeadPositionUncapped() + pawn.up * upOffset,
+				collider.GetTailPositionUncapped() + pawn.up * upOffset,
 				collider.radius,
-				-pawn.up, maxStepHeight + __upOffset, layers
+				-pawn.up, maxStepHeight + upOffset, layers
 			);
 		}
 
-		protected override Hit SenseLandingHit() => Hit.CapsuleCast
+		protected override Hit SenseLandingHit()
+		{
+			var bufferHeight = 1f;
+			return Hit.CapsuleCast
 			(
-				collider.GetHeadPositionUncapped() + pawn.up * pawn.skinWidth,
-				collider.GetTailPositionUncapped() + pawn.up * pawn.skinWidth,
+				collider.GetHeadPositionUncapped() + pawn.up * bufferHeight,
+				collider.GetTailPositionUncapped() + pawn.up * bufferHeight,
 				collider.radius,
-				-pawn.up, pawn.skinWidth * 2f, layers
+				-pawn.up, bufferHeight + pawn.skinWidth, layers
 			);
+		}
 
 		protected override Hit SenseInfoHit() => Hit.SphereCast
 			(
