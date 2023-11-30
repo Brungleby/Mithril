@@ -38,6 +38,7 @@ namespace Mithril
 		protected internal class TimerPropertyDrawer : PropertyDrawer
 		{
 			protected const float TOGGLE_WIDTH = 16f;
+			protected const float DURATION_WIDTH = 50f;
 
 			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 			{
@@ -54,15 +55,15 @@ namespace Mithril
 				var x1 = x0 + w0 + EditorGUIUtility.standardVerticalSpacing * 2f;
 				var r1 = new Rect(x1, position.y, w1, position.height);
 
+				var duration = property.FindPropertyRelative("duration");
+				var w3 = DURATION_WIDTH;
+				var x3 = position.x + position.width - w3;
+				var r3 = new Rect(x3, position.y, w3, position.height);
+
 				var durationLabel = new GUIContent("Duration");
 				var w2 = EditorStyles.label.CalcSize(durationLabel).x;
-				var x2 = x1 + w1 + EditorGUIUtility.standardVerticalSpacing;
+				var x2 = x3 - (w2 + EditorGUIUtility.standardVerticalSpacing);
 				var r2 = new Rect(x2, position.y, w2, position.height);
-
-				var duration = property.FindPropertyRelative("duration");
-				var w3 = position.width - (EditorGUIUtility.labelWidth + w0 + w1 + w2 + EditorGUIUtility.standardVerticalSpacing * 6f);
-				var x3 = x2 + w2 + EditorGUIUtility.standardVerticalSpacing * 2f;
-				var r3 = new Rect(x3, position.y, w3, position.height);
 
 				/** <<============================================================>> **/
 
@@ -220,8 +221,6 @@ namespace Mithril
 		[CustomPropertyDrawer(typeof(CurveTimer))]
 		protected internal class CurveTimerPropertyDrawer : TimerPropertyDrawer
 		{
-			protected const float DURATION_WIDTH = 50f;
-
 			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 			{
 				EditorGUI.BeginProperty(position, label, property);
