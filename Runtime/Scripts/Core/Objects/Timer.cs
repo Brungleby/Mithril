@@ -22,93 +22,60 @@ using UnityEngine.UIElements;
 
 namespace Mithril
 {
-	#region (class) Timer
+	#region Timer
 
 	/// <summary>
 	/// This is an object that can be used as a shorthand for creating animations within an existing script.
 	///</summary>
-
 	[Serializable]
-
-	public sealed class Timer : object
+	public class Timer : object
 	{
 		#region Inners
 
-		#region Editor
+		#region PropertyDrawer
 #if UNITY_EDITOR
 		[CustomPropertyDrawer(typeof(Timer))]
-		private sealed class PropertyDrawer : UnityEditor.PropertyDrawer
+		protected internal class TimerPropertyDrawer : PropertyDrawer
 		{
-			public static readonly float PROPERTY_SPACING = 3f;
+			protected const float TOGGLE_WIDTH = 16f;
 
 			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 			{
 				EditorGUI.BeginProperty(position, label, property);
+				EditorGUI.LabelField(position, label);
+
+				var isLoopingLabel = new GUIContent("Loop");
+				var w0 = EditorStyles.label.CalcSize(isLoopingLabel).x;
+				var x0 = position.x + EditorGUIUtility.labelWidth + EditorGUIUtility.standardVerticalSpacing;
+				var r0 = new Rect(x0, position.y, w0, position.height);
+
+				var isLooping = property.FindPropertyRelative("isLooping");
+				var w1 = TOGGLE_WIDTH;
+				var x1 = x0 + w0 + EditorGUIUtility.standardVerticalSpacing * 2f;
+				var r1 = new Rect(x1, position.y, w1, position.height);
+
+				var durationLabel = new GUIContent("Duration");
+				var w2 = EditorStyles.label.CalcSize(durationLabel).x;
+				var x2 = x1 + w1 + EditorGUIUtility.standardVerticalSpacing;
+				var r2 = new Rect(x2, position.y, w2, position.height);
+
+				var duration = property.FindPropertyRelative("duration");
+				var w3 = position.width - (EditorGUIUtility.labelWidth + w0 + w1 + w2 + EditorGUIUtility.standardVerticalSpacing * 6f);
+				var x3 = x2 + w2 + EditorGUIUtility.standardVerticalSpacing * 2f;
+				var r3 = new Rect(x3, position.y, w3, position.height);
 
 				/** <<============================================================>> **/
 
-				var loopsProperty = property.FindPropertyRelative("isLooping");
-				var curveProperty = property.FindPropertyRelative("curve");
-				var valueProperty = property.FindPropertyRelative("duration");
-
-				/** <<============================================================>> **/
-
-				var loopsTooltip = new GUIContent(string.Empty, loopsProperty.tooltip);
-				var curveTooltip = new GUIContent(string.Empty, curveProperty.tooltip);
-				var valueTooltip = new GUIContent(string.Empty, valueProperty.tooltip);
-
-				/** <<============================================================>> **/
-
-				position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
-
-				float loopsWidth = 14f;
-
-				float curveLeft = loopsWidth + PROPERTY_SPACING;
-
-				float valueWidth = 30f;
-				float valueLeft = position.width - valueWidth;
-
-				float curveWidth = position.width - loopsWidth - valueWidth - PROPERTY_SPACING * 2f;
-
-				Rect loopsRect = new Rect(position.x, position.y, loopsWidth, position.height);
-				Rect curveRect = new Rect(position.x + curveLeft, position.y, curveWidth, position.height);
-				Rect valueRect = new Rect(position.x + valueLeft, position.y, valueWidth, position.height);
-
-				/** <<============================================================>> **/
-
-				EditorGUI.PropertyField(loopsRect, loopsProperty, loopsTooltip);
-				EditorGUI.PropertyField(curveRect, curveProperty, curveTooltip);
-				EditorGUI.PropertyField(valueRect, valueProperty, valueTooltip);
-
-				/** <<============================================================>> **/
+				EditorGUI.LabelField(r0, isLoopingLabel);
+				isLooping.boolValue = EditorGUI.Toggle(r1, isLooping.boolValue);
+				EditorGUI.LabelField(r2, durationLabel);
+				duration.floatValue = EditorGUI.FloatField(r3, duration.floatValue);
 
 				EditorGUI.EndProperty();
 			}
 		}
 #endif
 		#endregion
-
-		#endregion
-		#region Construction
-
-		// public Timer(int loopCount, float duration)
-		// {
-		// 	this._isPlaying = false;
-		// 	this._whenStarted = 0f;
-
-		// 	this.loopCount = loopCount;
-		// 	this.duration = duration;
-		// 	this._Curves = new AnimationCurve[0];
-
-		// 	this._OnStart = new UnityEvent();
-		// 	this._OnCease = new UnityEvent();
-		// 	this._OnUpdate = new UnityEvent<float>();
-		// 	this._OnCycle = new UnityEvent<int>();
-		// }
-		// public Timer()
-		// {
-		// 	duration = 0f;
-		// }
 
 		#endregion
 		#region Fields
@@ -128,34 +95,27 @@ namespace Mithril
 		public float duration = 1.0f;
 
 		/// <summary>
-		/// The list of curves that this <see cref="Timer"/> oversees.
-		///</summary>
-		[Tooltip("The list of curves that this Timer oversees.")]
-		[SerializeField]
-		public AnimationCurve curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-
-		/// <summary>
 		/// This event is called when this <see cref="Timer"/> is manually Started.
 		///</summary>
 		[Tooltip("This event is called when this Timer is manually Started.")]
 		[SerializeField]
-		private UnityEvent _OnStart = new UnityEvent();
-		public UnityEvent onStart => _OnStart;
+		private UnityEvent _onStart = new();
+		public UnityEvent onStart => _onStart;
 
 		/// <summary>
 		/// This event is called after this <see cref="Timer"/> has started and has reached its full duration.
 		///</summary>
 		[Tooltip("This event is called after this Timer has started and has reached its full duration.")]
 		[SerializeField]
-		private UnityEvent _OnCease = new UnityEvent();
-		public UnityEvent onCease => _OnCease;
+		private UnityEvent _onCease = new();
+		public UnityEvent onCease => _onCease;
 
 		/// <summary>
 		/// This event is called each time this <see cref="Timer"/> has started and has reached its duration, if it is set to loop.
 		///</summary>
 		[Tooltip("This event is called each time this Timer has started and has reached its duration, if it is set to loop.")]
 		[SerializeField]
-		private UnityEvent<int> _onCycle = new UnityEvent<int>();
+		private UnityEvent<int> _onCycle = new();
 		public UnityEvent<int> onCycle => _onCycle;
 
 
@@ -189,7 +149,7 @@ namespace Mithril
 		{
 			Restart();
 			_loopCount = 0;
-			_OnStart.Invoke();
+			_onStart.Invoke();
 		}
 
 		/// <summary>
@@ -203,13 +163,13 @@ namespace Mithril
 		}
 
 		/// <summary>
-		/// Calling this method will stop this <see cref="Timer"/> and trigger its <see cref="_OnCease"/> event.
+		/// Calling this method will stop this <see cref="Timer"/> and trigger its <see cref="_onCease"/> event.
 		///</summary>
 
 		public void Cease()
 		{
 			Cancel();
-			_OnCease.Invoke();
+			_onCease.Invoke();
 		}
 
 		/// <summary>
@@ -247,10 +207,79 @@ namespace Mithril
 			}
 		}
 
+		#endregion
+	}
+	#endregion
+	#region CurveTimer
+
+	[Serializable]
+	public class CurveTimer : Timer
+	{
+		#region Inner
+
+		[CustomPropertyDrawer(typeof(CurveTimer))]
+		protected internal class CurveTimerPropertyDrawer : TimerPropertyDrawer
+		{
+			protected const float DURATION_WIDTH = 50f;
+
+			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+			{
+				EditorGUI.BeginProperty(position, label, property);
+				EditorGUI.LabelField(position, label);
+
+				var isLoopingLabel = new GUIContent("Loop");
+				var w0 = EditorStyles.label.CalcSize(isLoopingLabel).x;
+				var x0 = position.x + EditorGUIUtility.labelWidth + EditorGUIUtility.standardVerticalSpacing;
+				var r0 = new Rect(x0, position.y, w0, position.height);
+
+				var isLooping = property.FindPropertyRelative("isLooping");
+				var w1 = TOGGLE_WIDTH;
+				var x1 = x0 + w0 + EditorGUIUtility.standardVerticalSpacing * 2f;
+				var r1 = new Rect(x1, position.y, w1, position.height);
+
+				var w3 = DURATION_WIDTH;
+
+				var curve = property.FindPropertyRelative("curve");
+				var w2 = position.width - (EditorGUIUtility.labelWidth + w0 + w1 + w3 + EditorGUIUtility.standardVerticalSpacing * 6f);
+				var x2 = x1 + w1 + EditorGUIUtility.standardVerticalSpacing;
+				var r2 = new Rect(x2, position.y, w2, position.height);
+
+				var duration = property.FindPropertyRelative("duration");
+				var x3 = x2 + w2 + EditorGUIUtility.standardVerticalSpacing * 2f;
+				var r3 = new Rect(x3, position.y, w3, position.height);
+
+				/** <<============================================================>> **/
+
+				EditorGUI.LabelField(r0, isLoopingLabel);
+				isLooping.boolValue = EditorGUI.Toggle(r1, isLooping.boolValue);
+				curve.animationCurveValue = EditorGUI.CurveField(r2, curve.animationCurveValue);
+				duration.floatValue = EditorGUI.FloatField(r3, duration.floatValue);
+
+				EditorGUI.EndProperty();
+			}
+		}
+
+		#endregion
+		#region Fields
+
+		/// <summary>
+		/// The list of curves that this <see cref="Timer"/> oversees.
+		///</summary>
+		[Tooltip("The list of curves that this Timer oversees.")]
+		[SerializeField]
+		public AnimationCurve curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+		#endregion
+		#region Methods
+
 		public float curveValue =>
 			curve.Evaluate(currentTime);
 
+		public float Evaluate(float value) =>
+			curve.Evaluate(value);
+
 		#endregion
 	}
+
 	#endregion
 }

@@ -32,6 +32,9 @@ namespace Mithril
 			_owner = (ILateFixedUpdaterComponent)owner;
 		}
 
+		/// <summary>
+		/// Call this method on the owner's OnEnable method.
+		///</summary>
 		public void SetupCoroutine()
 		{
 			((MonoBehaviour)_owner).StartCoroutine(_SetupCoroutine());

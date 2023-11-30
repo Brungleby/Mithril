@@ -21,7 +21,7 @@ namespace Mithril.Pawn
 	#region GroundSensorBase
 
 	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit, TShapeInfo> :
-	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
+	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>, ILateFixedUpdaterComponent
 	where THit : HitBase, new()
 	where TCollider : Component
 	where TVector : unmanaged
@@ -37,11 +37,17 @@ namespace Mithril.Pawn
 		[SerializeField]
 		public float maxStepHeight = 1f;
 
+		[Range(0f, 1f)]
+		public float disableGroundCheckDuration = 0.2f;
+
 		#endregion
 		#region Members
 
 		[HideInInspector] public UnityEvent onGrounded = new();
 		[HideInInspector] public UnityEvent onAirborne = new();
+
+		private LateFixedUpdater _lateFixedUpdater;
+		private float _whenTemporarilyDisabled;
 
 		[AutoAssign]
 		public TPawn pawn { get; protected set; }
@@ -139,6 +145,18 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
+		protected override void Awake()
+		{
+			base.Awake();
+
+			_lateFixedUpdater = new(this);
+		}
+
+		protected virtual void OnEnable()
+		{
+			_lateFixedUpdater.SetupCoroutine();
+		}
+
 		protected virtual void OnDisable()
 		{
 			isGrounded = false;
@@ -147,7 +165,12 @@ namespace Mithril.Pawn
 
 		protected virtual void FixedUpdate()
 		{
-			if (temporarilyDisabled) return;
+			if (temporarilyDisabled)
+			{
+				if (Time.time > _whenTemporarilyDisabled + disableGroundCheckDuration)
+					temporarilyDisabled = false;
+				return;
+			}
 
 			_directHit = SenseDirectHit();
 
@@ -167,13 +190,22 @@ namespace Mithril.Pawn
 					isGrounded = false;
 				}
 			}
-			else
+		}
+
+		public void LateFixedUpdate()
+		{
+			if (!isGrounded)
 			{
 				_landingHit = SenseLandingHit();
 
 				if (_landingHit.isBlocked)
 					isGrounded = true;
 			}
+		}
+
+		public void TemporarilyDisable()
+		{
+			temporarilyDisabled = true;
 		}
 
 		protected abstract THit SenseDirectHit();
@@ -256,11 +288,9 @@ namespace Mithril.Pawn
 
 		protected override Hit SenseLandingHit()
 		{
-			Debug.Log($"{pawn.verticalVelocityRelative}");
-			if (pawn.verticalVelocityRelative > 1f) return Hit.none;
-
+			var origin = pawn.previousPosition + pawn.up * pawn.skinWidth;
 			var target = collider.transform.position - pawn.up * pawn.skinWidth;
-			return Hit.CapsuleCast(collider, pawn.previousPosition, target, layers);
+			return Hit.CapsuleCast(collider, origin, target, layers);
 		}
 
 		protected override Hit SenseInfoHit() => Hit.SphereCast
