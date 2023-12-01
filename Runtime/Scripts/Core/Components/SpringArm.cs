@@ -60,8 +60,10 @@ namespace Mithril
 		public float distanceFromOrigin =>
 			transform.localPosition.magnitude;
 
-		private void OnValidate()
+		protected override void OnValidate()
 		{
+			base.OnValidate();
+
 			if (transform.childCount == 1)
 			{
 				child = transform.GetChild(0);
