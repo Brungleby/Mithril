@@ -30,12 +30,28 @@ namespace Mithril.Pawn
 		#region Fields
 
 		/// <summary>
+		/// Timer controlling temporary disablement.
+		///</summary>
+		[Tooltip("Timer controlling temporary disablement.")]
+		[SerializeField]
+		private Timer _temporarilyDisabledTimer = new() { duration = 0.2f };
+		public Timer temporarilyDisableTimer => _temporarilyDisabledTimer;
+
+		/// <summary>
 		/// Maximum length/size of the cast.
 		///</summary>
 		[Tooltip("Maximum length/size of the cast.")]
 		[Min(0f)]
 		[SerializeField]
 		public float maxStepHeight = 1f;
+
+		/// <summary>
+		/// Maximum angle considered ground. Any surface steeper than this angle will be considered a wall.
+		///</summary>
+		[Tooltip("Maximum angle considered ground. Any surface steeper than this angle will be considered a wall.")]
+		[Range(0f, 90f)]
+		[SerializeField]
+		public float maxGroundAngle = 70f;
 
 		#endregion
 		#region Members
@@ -101,7 +117,7 @@ namespace Mithril.Pawn
 		public bool temporarilyDisabled
 		{
 			get => _temporarilyDisabled;
-			set
+			protected set
 			{
 				_temporarilyDisabled = value;
 
@@ -109,6 +125,7 @@ namespace Mithril.Pawn
 					isGrounded = false;
 			}
 		}
+
 		public TRigidbody lastKnownRigidbody { get; private set; }
 
 		#endregion
@@ -139,6 +156,14 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
+		protected override void Awake()
+		{
+			base.Awake();
+
+			_temporarilyDisabledTimer.onStart.AddListener(() => temporarilyDisabled = true);
+			_temporarilyDisabledTimer.onCease.AddListener(() => temporarilyDisabled = false);
+		}
+
 		protected virtual void OnDisable()
 		{
 			isGrounded = false;
@@ -147,7 +172,11 @@ namespace Mithril.Pawn
 
 		protected virtual void FixedUpdate()
 		{
-			if (temporarilyDisabled) return;
+			if (temporarilyDisabled)
+			{
+				_temporarilyDisabledTimer.Update();
+				return;
+			}
 
 			_directHit = SenseDirectHit();
 
@@ -176,6 +205,11 @@ namespace Mithril.Pawn
 			}
 		}
 
+		public void TemporarilyDisable()
+		{
+			_temporarilyDisabledTimer.Start();
+		}
+
 		protected abstract THit SenseDirectHit();
 		protected abstract THit SenseInfoHit();
 		protected abstract THit SenseLandingHit();
@@ -195,14 +229,6 @@ namespace Mithril.Pawn
 
 	public sealed class GroundSensor : GroundSensorBase<CapsulePawn, Collider, CapsuleCollider, Rigidbody, Vector3, Hit, CapsuleInfo>
 	{
-		#region Fields
-
-		[Range(0f, 90f)]
-		[SerializeField]
-
-		public float maxWalkableAngle = 70f;
-
-		#endregion
 		#region Properties
 
 		public override Collider hitCollider => directHit.collider;
@@ -242,7 +268,7 @@ namespace Mithril.Pawn
 				var lateralPercentFromTail = (Vector3.Scale(iHit.point - collider.GetTailPosition(), Vector3.one - pawn.up).magnitude / collider.radius).Clamp();
 				var groundAngle = Mathf.Asin(lateralPercentFromTail) * Mathf.Rad2Deg;
 
-				if (groundAngle <= maxWalkableAngle)
+				if (groundAngle <= maxGroundAngle)
 					return iHit;
 			}
 
