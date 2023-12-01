@@ -47,7 +47,7 @@ namespace Mithril.Pawn
 		[HideInInspector] public UnityEvent onGrounded = new();
 		[HideInInspector] public UnityEvent onAirborne = new();
 
-		private LateFixedUpdater _lateFixedUpdater;
+		// private LateFixedUpdater _lateFixedUpdater;
 
 		[AutoAssign]
 		public TPawn pawn { get; protected set; }
@@ -149,16 +149,16 @@ namespace Mithril.Pawn
 		{
 			base.Awake();
 
-			_lateFixedUpdater = new(this);
+			// _lateFixedUpdater = new(this);
 
 			_disableGroundCheckTimer.onStart.AddListener(() => { temporarilyDisabled = true; });
 			_disableGroundCheckTimer.onCease.AddListener(() => { temporarilyDisabled = false; });
 		}
 
-		protected virtual void OnEnable()
-		{
-			_lateFixedUpdater.SetupCoroutine();
-		}
+		// protected virtual void OnEnable()
+		// {
+		// 	_lateFixedUpdater.SetupCoroutine();
+		// }
 
 		protected virtual void OnDisable()
 		{
@@ -192,6 +192,8 @@ namespace Mithril.Pawn
 					isGrounded = false;
 				}
 			}
+
+			LateFixedUpdate();
 		}
 
 		public void LateFixedUpdate()
