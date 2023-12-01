@@ -37,8 +37,9 @@ namespace Mithril.Pawn
 		[SerializeField]
 		public float maxStepHeight = 1f;
 
-		[Range(0f, 1f)]
-		public float disableGroundCheckDuration = 0.2f;
+		[SerializeField]
+		private Timer _disableGroundCheckTimer = 0.2f;
+		public Timer disableGroundCheckTimer => _disableGroundCheckTimer;
 
 		#endregion
 		#region Members
@@ -47,7 +48,6 @@ namespace Mithril.Pawn
 		[HideInInspector] public UnityEvent onAirborne = new();
 
 		private LateFixedUpdater _lateFixedUpdater;
-		private float _whenTemporarilyDisabled;
 
 		[AutoAssign]
 		public TPawn pawn { get; protected set; }
@@ -150,6 +150,9 @@ namespace Mithril.Pawn
 			base.Awake();
 
 			_lateFixedUpdater = new(this);
+
+			_disableGroundCheckTimer.onStart.AddListener(() => { temporarilyDisabled = true; });
+			_disableGroundCheckTimer.onCease.AddListener(() => { temporarilyDisabled = false; });
 		}
 
 		protected virtual void OnEnable()
@@ -167,8 +170,7 @@ namespace Mithril.Pawn
 		{
 			if (temporarilyDisabled)
 			{
-				if (Time.time > _whenTemporarilyDisabled + disableGroundCheckDuration)
-					temporarilyDisabled = false;
+				_disableGroundCheckTimer.Update();
 				return;
 			}
 
@@ -194,6 +196,7 @@ namespace Mithril.Pawn
 
 		public void LateFixedUpdate()
 		{
+			if (temporarilyDisabled) return;
 			if (!isGrounded)
 			{
 				_landingHit = SenseLandingHit();
@@ -205,7 +208,7 @@ namespace Mithril.Pawn
 
 		public void TemporarilyDisable()
 		{
-			temporarilyDisabled = true;
+			_disableGroundCheckTimer.Start();
 		}
 
 		protected abstract THit SenseDirectHit();
@@ -315,19 +318,7 @@ namespace Mithril.Pawn
 
 			if (!Application.isPlaying) return;
 
-			_landingHit?.OnDrawGizmos();
-
-			// Gizmos.color = isGrounded ? Color.green : Color.red;
-			// Gizmos.DrawSphere(collider.GetTailPosition(), 0.1f);
-
-			// DebugDraw.DrawArrow(directHit.point, right * 0.25f, Color.red);
-			// DebugDraw.DrawArrow(directHit.point, up * 0.25f, Color.green);
-			// DebugDraw.DrawArrow(directHit.point, forward * 0.25f, Color.blue);
-
-			// DebugDraw.DrawCapsuleCast(directHit, pawn.forward, pawn.up, collider.radius, collider.height);
-
-			// DebugDraw.DrawSphereCast(preciseHit, pawn.skinWidth);
-			// DebugDraw.DrawLinecast(hangingHit);
+			// _landingHit?.OnDrawGizmos();
 		}
 #endif
 		#endregion

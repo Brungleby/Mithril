@@ -142,6 +142,8 @@ namespace Mithril
 		#endregion
 		#region Methods
 
+		public static implicit operator Timer(float duration) => new() { duration = duration };
+
 		/// <summary>
 		/// Call this method to begin playing this <see cref="Timer"/>.
 		///</summary>
