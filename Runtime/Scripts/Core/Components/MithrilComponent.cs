@@ -56,6 +56,7 @@ namespace Mithril
 
 #if UNITY_EDITOR
 		private bool isAwake = false;
+		protected virtual bool callAwakeOnValidate => true;
 #endif
 
 		#endregion
@@ -64,7 +65,7 @@ namespace Mithril
 		protected virtual void OnValidate()
 		{
 #if UNITY_EDITOR
-			if (Application.isPlaying && isAwake)
+			if (callAwakeOnValidate && Application.isPlaying && isAwake)
 				Awake();
 #endif
 		}
