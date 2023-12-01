@@ -318,7 +318,7 @@ namespace Mithril.Pawn
 
 			if (!Application.isPlaying) return;
 
-			// _landingHit?.OnDrawGizmos();
+			_landingHit?.OnDrawGizmos();
 		}
 #endif
 		#endregion
