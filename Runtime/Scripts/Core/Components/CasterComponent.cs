@@ -103,8 +103,7 @@ namespace Mithril
 #if UNITY_EDITOR
 			if (Application.isPlaying)
 			{
-				shapeInfo = ShapeInfoBase.CreateFrom<TShapeInfo>(collider);
-				m_Sense = GetSenseMethod(shapeInfo);
+				Awake();
 			}
 #endif
 		}
