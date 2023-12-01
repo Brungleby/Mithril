@@ -50,7 +50,9 @@ namespace Mithril
 
 		#endregion
 		#region Properties
-
+#if UNITY_EDITOR
+		protected override bool callAwakeOnValidate => true;
+#endif
 		public float falloffPercent => falloffDistance / GetColliderRadius();
 
 		#endregion
