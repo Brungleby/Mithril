@@ -43,7 +43,8 @@ namespace Mithril
 		#region Members
 
 		public static readonly Color DRAW_BLOCK_COLOR = Color.red;
-		public static readonly Color DRAW_CAST_COLOR = Color.green;
+		public static readonly Color DRAW_CLEAR_COLOR = Color.green;
+		public static readonly Color DRAW_CAST_COLOR = Color.cyan;
 		public const float DRAW_POINT_SIZE = 0.1f;
 
 		/// <summary>
@@ -334,7 +335,7 @@ namespace Mithril
 		public override void OnDrawGizmos()
 		{
 			shapeInfo?.Draw(origin, DRAW_CAST_COLOR);
-			shapeInfo?.Draw(adjustmentPoint, isBlocked ? DRAW_BLOCK_COLOR : DRAW_CAST_COLOR);
+			shapeInfo?.Draw(adjustmentPoint, isBlocked ? DRAW_BLOCK_COLOR : DRAW_CLEAR_COLOR);
 
 			Gizmos.color = DRAW_CAST_COLOR;
 			Gizmos.DrawLine(origin, adjustmentPoint);
