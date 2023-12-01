@@ -307,8 +307,6 @@ namespace Mithril.Pawn
 			base.OnDrawGizmos();
 
 			if (!Application.isPlaying) return;
-
-			_landingHit?.OnDrawGizmos();
 		}
 #endif
 		#endregion
