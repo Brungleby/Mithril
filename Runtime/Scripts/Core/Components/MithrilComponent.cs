@@ -54,13 +54,28 @@ namespace Mithril
 
 		private const BindingFlags AUTO_ASSIGN_FIELD_FLAGS = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+#if UNITY_EDITOR
+		private bool isAwake = false;
+#endif
+
 		#endregion
 		#region Methods
+
+		protected virtual void OnValidate()
+		{
+#if UNITY_EDITOR
+			if (Application.isPlaying && isAwake)
+				Awake();
+#endif
+		}
 
 		protected virtual void Awake()
 		{
 			try { AutoAssignComponents(); }
 			catch (Exception e) { Debug.LogException(e); }
+#if UNITY_EDITOR
+			isAwake = true;
+#endif
 		}
 
 		private void AutoAssignComponents()

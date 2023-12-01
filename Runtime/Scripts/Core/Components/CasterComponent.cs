@@ -98,16 +98,6 @@ namespace Mithril
 #endif
 		private Func<THit> m_Sense;
 
-		protected virtual void OnValidate()
-		{
-#if UNITY_EDITOR
-			if (Application.isPlaying)
-			{
-				Awake();
-			}
-#endif
-		}
-
 		protected override void Awake()
 		{
 			base.Awake();
