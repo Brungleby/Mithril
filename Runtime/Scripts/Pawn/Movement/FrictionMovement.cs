@@ -123,7 +123,10 @@ namespace Mithril.Pawn
 
 		protected override void FixedUpdate()
 		{
-			var motionVector = CalculateDeceleration(frictionUser.frictionVelocity - physics.groundVelocity);
+			var motionVector = CalculateDeceleration(
+				frictionUser.frictionVelocity -
+				physics.groundVelocity
+			);
 			rigidbody.AddForce(motionVector, ForceMode.Acceleration);
 		}
 
