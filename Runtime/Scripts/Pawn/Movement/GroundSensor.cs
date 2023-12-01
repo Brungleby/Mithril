@@ -21,7 +21,7 @@ namespace Mithril.Pawn
 	#region GroundSensorBase
 
 	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit, TShapeInfo> :
-	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>, ILateFixedUpdaterComponent
+	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
 	where THit : HitBase, new()
 	where TCollider : Component
 	where TVector : unmanaged
@@ -37,17 +37,11 @@ namespace Mithril.Pawn
 		[SerializeField]
 		public float maxStepHeight = 1f;
 
-		[SerializeField]
-		private Timer _disableGroundCheckTimer = 0.2f;
-		public Timer disableGroundCheckTimer => _disableGroundCheckTimer;
-
 		#endregion
 		#region Members
 
 		[HideInInspector] public UnityEvent onGrounded = new();
 		[HideInInspector] public UnityEvent onAirborne = new();
-
-		// private LateFixedUpdater _lateFixedUpdater;
 
 		[AutoAssign]
 		public TPawn pawn { get; protected set; }
@@ -145,21 +139,6 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
-		protected override void Awake()
-		{
-			base.Awake();
-
-			// _lateFixedUpdater = new(this);
-
-			_disableGroundCheckTimer.onStart.AddListener(() => { temporarilyDisabled = true; });
-			_disableGroundCheckTimer.onCease.AddListener(() => { temporarilyDisabled = false; });
-		}
-
-		// protected virtual void OnEnable()
-		// {
-		// 	_lateFixedUpdater.SetupCoroutine();
-		// }
-
 		protected virtual void OnDisable()
 		{
 			isGrounded = false;
@@ -168,11 +147,7 @@ namespace Mithril.Pawn
 
 		protected virtual void FixedUpdate()
 		{
-			if (temporarilyDisabled)
-			{
-				_disableGroundCheckTimer.Update();
-				return;
-			}
+			if (temporarilyDisabled) return;
 
 			_directHit = SenseDirectHit();
 
@@ -192,25 +167,13 @@ namespace Mithril.Pawn
 					isGrounded = false;
 				}
 			}
-
-			LateFixedUpdate();
-		}
-
-		public void LateFixedUpdate()
-		{
-			if (temporarilyDisabled) return;
-			if (!isGrounded)
+			else
 			{
 				_landingHit = SenseLandingHit();
 
 				if (_landingHit.isBlocked)
 					isGrounded = true;
 			}
-		}
-
-		public void TemporarilyDisable()
-		{
-			_disableGroundCheckTimer.Start();
 		}
 
 		protected abstract THit SenseDirectHit();
@@ -293,9 +256,8 @@ namespace Mithril.Pawn
 
 		protected override Hit SenseLandingHit()
 		{
-			var origin = pawn.previousPosition + pawn.up * pawn.skinWidth;
 			var target = collider.transform.position - pawn.up * pawn.skinWidth;
-			return Hit.CapsuleCast(collider, origin, target, layers);
+			return Hit.CapsuleCast(collider, pawn.previousPosition, target, layers);
 		}
 
 		protected override Hit SenseInfoHit() => Hit.SphereCast
