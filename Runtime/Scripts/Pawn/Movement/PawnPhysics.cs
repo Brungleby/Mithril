@@ -49,12 +49,6 @@ namespace Mithril.Pawn
 		public abstract void LateFixedUpdate();
 		protected abstract TVector CalculateGroundVelocity();
 
-		private void OnValidate()
-		{
-			if (Application.isPlaying)
-				Awake();
-		}
-
 		protected override void Awake()
 		{
 			base.Awake();

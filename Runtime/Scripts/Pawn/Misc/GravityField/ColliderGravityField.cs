@@ -56,10 +56,18 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		private void OnValidate()
+		protected override void OnValidate()
 		{
-			AssignShapedMethods();
+			base.OnValidate();
+
 			falloffDistance = _falloffDistance;
+		}
+
+		protected override void Awake()
+		{
+			base.Awake();
+
+			AssignShapedMethods();
 		}
 
 		public override Vector3 GetForceAtPosition(Vector3 position) => m_GetForceAtPosition.Invoke(position);
