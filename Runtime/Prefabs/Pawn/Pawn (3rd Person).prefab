@@ -273,14 +273,26 @@ MonoBehaviour:
     m_Bits: 1
   colliderTemplate: {fileID: 0}
   DisableTemplateOnAwake: 0
+  _temporarilyDisabledTimer:
+    isLooping: 0
+    duration: 0.2
+    _onStart:
+      m_PersistentCalls:
+        m_Calls: []
+    _onCease:
+      m_PersistentCalls:
+        m_Calls: []
+    _onCycle:
+      m_PersistentCalls:
+        m_Calls: []
   maxStepHeight: 0.3
+  maxGroundAngle: 50
   onGrounded:
     m_PersistentCalls:
       m_Calls: []
   onAirborne:
     m_PersistentCalls:
       m_Calls: []
-  maxWalkableAngle: 70
 --- !u!114 &5878587526035118450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,7 +409,6 @@ MonoBehaviour:
     autoDelay: 0.2
     persistOnDisabled: 0
   _strength: 5
-  _disableGroundCheckDelay: 0.05
 --- !u!1 &3442740954348665040
 GameObject:
   m_ObjectHideFlags: 0
