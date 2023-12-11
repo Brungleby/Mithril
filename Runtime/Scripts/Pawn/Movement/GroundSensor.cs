@@ -10,7 +10,7 @@
 #region Includes
 
 using System.Linq;
-
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -46,9 +46,9 @@ namespace Mithril.Pawn
 		public float maxStepHeight = 1f;
 
 		/// <summary>
-		/// Maximum angle considered ground. Any surface steeper than this angle will be considered a wall.
+		/// Maximum angle considered ground. Any surface steeper than this angle will be considered a wall (and also can't be walked on).
 		///</summary>
-		[Tooltip("Maximum angle considered ground. Any surface steeper than this angle will be considered a wall.")]
+		[Tooltip("Maximum angle considered ground. Any surface steeper than this angle will be considered a wall (and also can't be walked on).")]
 		[Range(0f, 90f)]
 		[SerializeField]
 		public float maxGroundAngle = 70f;
@@ -172,6 +172,8 @@ namespace Mithril.Pawn
 
 		protected virtual void FixedUpdate()
 		{
+			Debug.Log($"{angle}");
+
 			if (temporarilyDisabled)
 			{
 				_temporarilyDisabledTimer.Update();
@@ -307,6 +309,7 @@ namespace Mithril.Pawn
 			base.OnDrawGizmos();
 
 			if (!Application.isPlaying) return;
+
 		}
 #endif
 		#endregion

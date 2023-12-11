@@ -53,16 +53,6 @@ namespace Mithril.Pawn
 		private float _maxAccel = 2f;
 		public virtual float maxAccel { get => _maxAccel; set => _maxAccel = value.Max(1f); }
 
-		/** <<============================================================>> **/
-		/// <summary>
-		/// The highest angle we can walk on. Anything steeper than this will be treated as a virtual wall.
-		///</summary>
-		[Tooltip("The highest angle we can walk on. Anything steeper than this will be treated as a virtual wall.")]
-		[Range(0f, 90f)]
-		[SerializeField]
-		private float _maxFloorAngle = 55.0f;
-		public float maxFloorAngle { get => _maxFloorAngle; set => _maxFloorAngle = value.Clamp(0f, 90f); }
-
 		[Header("Fine-Tuning")]
 
 		/** <<============================================================>> **/
@@ -127,7 +117,6 @@ namespace Mithril.Pawn
 		public abstract TMoveVector frictionVelocity { get; }
 		public abstract float directionalGroundAngle { get; }
 		public abstract bool isStrafing { get; }
-		public abstract bool isOnSlope { get; }
 		protected abstract float targetWalkSpeed { get; }
 		protected abstract float targetWalkAccel { get; }
 
@@ -200,8 +189,7 @@ namespace Mithril.Pawn
 			}
 		}
 
-		public override bool isOnSlope => ground.angle > maxFloorAngle;
-		public override bool shouldUseGravity => !ground.isGrounded || isOnSlope;
+		public override bool shouldUseGravity => !ground.isGrounded;
 
 		/** <<============================================================>> **/
 
@@ -216,19 +204,8 @@ namespace Mithril.Pawn
 
 		/** <<============================================================>> **/
 
-		public override Vector3 frictionVelocity
-		{
-			get
-			{
-				if (ground.isGrounded)
-				{
-					if (isOnSlope)
-						return Vector3.zero;
-					return pawn.velocity;
-				}
-				return pawn.lateralVelocity;
-			}
-		}
+		public override Vector3 frictionVelocity =>
+			ground.isGrounded ? pawn.velocity : pawn.lateralVelocity;
 
 		public override float directionalGroundAngle =>
 			Mathf.Asin(Vector3.Dot(pawn.up, walkAccelVector.normalized)) * Mathf.Rad2Deg;
