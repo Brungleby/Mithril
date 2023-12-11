@@ -154,10 +154,6 @@ namespace Mithril.Pawn
 	/// <summary>
 	/// This component translates 2D input into 3D movement along the ground.
 	///</summary>
-
-	[RequireComponent(typeof(GroundSensor))]
-	[RequireComponent(typeof(FrictionMovement))]
-
 	public sealed class WalkMovement : WalkMovementBase<Collider, Rigidbody, CapsulePawn, PawnPhysics, FrictionMovement, GroundSensor, Vector3, Vector2>
 	{
 		#region Fields
@@ -259,7 +255,7 @@ namespace Mithril.Pawn
 
 				Vector3 __flatWalkDirection = forwardOnly ? pawn.forward : inputVector.normalized;
 				if (ground.isGrounded)
-					walkAccelVector = Vector3.Cross(Vector3.Cross(pawn.up, __flatWalkDirection), ground.upPrecise).normalized;
+					walkAccelVector = Vector3.Cross(Vector3.Cross(pawn.up, __flatWalkDirection), ground.motionUp).normalized;
 				else
 					walkAccelVector = __flatWalkDirection;
 
@@ -293,10 +289,11 @@ namespace Mithril.Pawn
 				*	Other attempts to get a more precise result have been ineffective.
 				*	Sometimes this causes the pawn to get stuck in the ground when falling at high speeds.
 				*/
-				rigidbody.MovePosition(ground.adjustmentPoint);
+				rigidbody.MovePosition(ground.motionHit.adjustmentPoint);
 
-				if (!ground.isHanging)
-					rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, ground.upPrecise);
+				if (ground.isGrounded)
+					// if (!ground.isHanging)
+					rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, ground.motionUp);
 			}
 
 			#endregion

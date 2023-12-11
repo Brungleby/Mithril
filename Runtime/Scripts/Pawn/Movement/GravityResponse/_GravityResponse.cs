@@ -27,10 +27,10 @@ namespace Mithril.Pawn
 		#region Fields
 
 		[SerializeField]
-
 		private Component _controller;
-		private IGravityHost _controllerCache;
-		public IGravityHost controller => _controllerCache;
+
+		[AutoAssign]
+		public IGravityHost controller { get; protected set; }
 
 		#endregion
 		#region Properties
@@ -45,7 +45,18 @@ namespace Mithril.Pawn
 		{
 			base.Awake();
 
-			RefreshController();
+			var pawn = GetComponent<PawnBase<TCollider, TRigidbody, TVector>>() ?? GetComponentInParent<PawnBase<TCollider, TRigidbody, TVector>>();
+
+			if (pawn != null)
+			{
+				collider = pawn.collider;
+				rigidbody = pawn.rigidbody;
+			}
+
+			if (_controller != null)
+				RefreshController();
+			else
+				_controller = (Component)controller;
 		}
 
 		public void Refresh()
@@ -57,7 +68,7 @@ namespace Mithril.Pawn
 		{
 			if (typeof(IGravityHost).IsAssignableFrom(_controller.GetType()))
 			{
-				_controllerCache = (IGravityHost)_controller;
+				controller = (IGravityHost)_controller;
 			}
 			else
 			{

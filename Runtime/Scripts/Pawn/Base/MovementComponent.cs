@@ -42,8 +42,8 @@ namespace Mithril.Pawn
 	{
 		[AutoAssign] public TPawn pawn { get; protected set; }
 #pragma warning disable
-		[AutoAssign] public new TCollider collider { get; protected set; }
-		[AutoAssign] public new TRigidbody rigidbody { get; protected set; }
+		public new TCollider collider => pawn.collider;
+		public new TRigidbody rigidbody => pawn.rigidbody;
 #pragma warning restore
 	}
 

@@ -9,17 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3627090884283546104}
+  - component: {fileID: 1060274819488854090}
   - component: {fileID: 4448567594642361772}
   - component: {fileID: 2407763584986205095}
   - component: {fileID: 2586102079730116738}
-  - component: {fileID: 1060274819488854090}
-  - component: {fileID: 528686458584715392}
-  - component: {fileID: 1623627632555501964}
-  - component: {fileID: 3072084320034200326}
-  - component: {fileID: 6495237474478591189}
-  - component: {fileID: 5878587526035118450}
-  - component: {fileID: 2694657013946085606}
-  - component: {fileID: 2652515770733665984}
   m_Layer: 3
   m_Name: Pawn (3rd Person)
   m_TagString: Untagged
@@ -45,6 +38,23 @@ Transform:
   - {fileID: 3591493241586269314}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1060274819488854090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18976946840638697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae9abecd45b1aed4bb01cf69ce2931a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewTransform: {fileID: 8137128552417718169}
+  _skinWidth: 0.08
+  _collider: {fileID: 4448567594642361772}
+  _rigidbody: {fileID: 2407763584986205095}
+  _gravity: {fileID: 5048295420138828270}
 --- !u!136 &4448567594642361772
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -122,8 +132,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5878587526035118450}
-        m_TargetAssemblyTypeName: Mithril.Modules.WalkMovementBase`7[[UnityEngine.Collider,
+      - m_Target: {fileID: 60350911580438730}
+        m_TargetAssemblyTypeName: Mithril.Pawn.WalkMovementBase`8[[UnityEngine.Collider,
           UnityEngine
         m_MethodName: OnInputWalk
         m_Mode: 0
@@ -171,8 +181,8 @@ MonoBehaviour:
     m_ActionName: Pawn 3D/Camera Mouse[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2652515770733665984}
-        m_TargetAssemblyTypeName: Mithril.Modules.ActionComponent, Mithril.Modules
+      - m_Target: {fileID: 421775411020972696}
+        m_TargetAssemblyTypeName: Mithril.Pawn.ActionComponent, Mithril.Pawn
         m_MethodName: OnInputAction
         m_Mode: 0
         m_Arguments:
@@ -198,215 +208,6 @@ MonoBehaviour:
   m_DefaultActionMap: Pawn Character
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &1060274819488854090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae9abecd45b1aed4bb01cf69ce2931a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewTransform: {fileID: 8137128552417718169}
-  _skinWidth: 0.08
-  _collider: {fileID: 4448567594642361772}
-  _rigidbody: {fileID: 2407763584986205095}
---- !u!114 &528686458584715392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4eac42898f9d462e83ff6856f35c632, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableRotateWithGround: 1
---- !u!114 &1623627632555501964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a836c6644584e2743b8809da6a0a26da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _controller: {fileID: 5878587526035118450}
---- !u!114 &3072084320034200326
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aead92eebe955324a963c28e0bfcc92e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _customFrictionUser: {fileID: 5878587526035118450}
-  _deceleration: 10
-  _airbornePercent: 0.25
---- !u!114 &6495237474478591189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f98c6077bd9f68f42bebcdce23a3b72f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layers:
-    serializedVersion: 2
-    m_Bits: 1
-  colliderTemplate: {fileID: 0}
-  DisableTemplateOnAwake: 0
-  _temporarilyDisabledTimer:
-    isLooping: 0
-    duration: 0.2
-    _onStart:
-      m_PersistentCalls:
-        m_Calls: []
-    _onCease:
-      m_PersistentCalls:
-        m_Calls: []
-    _onCycle:
-      m_PersistentCalls:
-        m_Calls: []
-  maxStepHeight: 0.3
-  maxGroundAngle: 50
-  onGrounded:
-    m_PersistentCalls:
-      m_Calls: []
-  onAirborne:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &5878587526035118450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea90c22a8df7b724587df4894ef0eb21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxSpeed: 5
-  _maxAccel: 2
-  enableSurfaceClasping: 1
-  speedByFloorAngle:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -90
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 90
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  accelByFloorAngle:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -90
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 90
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _verticalSpeedPercentOnLand: 1
-  walkRotation: {fileID: 2694657013946085606}
-  forwardOnly: 0
---- !u!114 &2694657013946085606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62adc12bdafe95041a19ede90dbf8afe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxAngularVelocity: 10
-  speed: 1000
---- !u!114 &2652515770733665984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18976946840638697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29176f4377710c145be7d9e6f20c6006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _handler:
-    actionType: 1
-    autoDelay: 0.2
-    persistOnDisabled: 0
-  _strength: 5
 --- !u!1 &3442740954348665040
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,6 +300,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5688804596171013098}
+  - component: {fileID: 427373227764705895}
+  - component: {fileID: 4873686091823375176}
+  - component: {fileID: 5048295420138828270}
+  - component: {fileID: 5142356188735533584}
+  - component: {fileID: 60350911580438730}
+  - component: {fileID: 421775411020972696}
+  - component: {fileID: 8024943362596632820}
   m_Layer: 0
   m_Name: Movement
   m_TagString: Untagged
@@ -521,6 +329,192 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3627090884283546104}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &427373227764705895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f98c6077bd9f68f42bebcdce23a3b72f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layers:
+    serializedVersion: 2
+    m_Bits: 1
+  colliderTemplate: {fileID: 0}
+  DisableTemplateOnAwake: 0
+  _temporarilyDisabledTimer:
+    isLooping: 0
+    duration: 0.2
+    _onStart:
+      m_PersistentCalls:
+        m_Calls: []
+    _onCease:
+      m_PersistentCalls:
+        m_Calls: []
+    _onCycle:
+      m_PersistentCalls:
+        m_Calls: []
+  maxGroundAngle: 50
+--- !u!114 &4873686091823375176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4eac42898f9d462e83ff6856f35c632, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableRotateWithGround: 1
+--- !u!114 &5048295420138828270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a836c6644584e2743b8809da6a0a26da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 0}
+--- !u!114 &5142356188735533584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aead92eebe955324a963c28e0bfcc92e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _customFrictionUser: {fileID: 0}
+  _deceleration: 10
+  _airbornePercent: 0.25
+--- !u!114 &60350911580438730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea90c22a8df7b724587df4894ef0eb21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxSpeed: 5
+  _maxAccel: 2
+  enableSurfaceClasping: 1
+  speedByFloorAngle:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  accelByFloorAngle:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 90
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _verticalSpeedPercentOnLand: 1
+  walkRotation: {fileID: 0}
+  forwardOnly: 0
+--- !u!114 &421775411020972696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29176f4377710c145be7d9e6f20c6006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _handler:
+    actionType: 1
+    autoDelay: 0.2
+    persistOnDisabled: 0
+  _strength: 5
+--- !u!114 &8024943362596632820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62adc12bdafe95041a19ede90dbf8afe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAngularVelocity: 10
+  speed: 1000
 --- !u!1001 &5839536669321599982
 PrefabInstance:
   m_ObjectHideFlags: 0

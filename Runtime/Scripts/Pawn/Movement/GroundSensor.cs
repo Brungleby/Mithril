@@ -22,6 +22,7 @@ namespace Mithril.Pawn
 
 	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit, TShapeInfo> :
 	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
+	where TPawn : PawnBase<TGenericCollider, TRigidbody, TVector>
 	where THit : HitBase, new()
 	where TCollider : Component
 	where TVector : unmanaged
@@ -36,15 +37,6 @@ namespace Mithril.Pawn
 		[SerializeField]
 		private Timer _temporarilyDisabledTimer = new() { duration = 0.2f };
 		public Timer temporarilyDisableTimer => _temporarilyDisabledTimer;
-
-		/// <summary>
-		/// Maximum length/size of the cast.
-		///</summary>
-		[Tooltip("Maximum length/size of the cast.")]
-		[Min(0f)]
-		[SerializeField]
-		public float maxStepHeight = 1f;
-
 		/// <summary>
 		/// Maximum angle considered ground. Any surface steeper than this angle will be considered a wall (and also can't be walked on).
 		///</summary>
@@ -56,46 +48,13 @@ namespace Mithril.Pawn
 		#endregion
 		#region Members
 
-		[HideInInspector] public UnityEvent onGrounded = new();
-		[HideInInspector] public UnityEvent onAirborne = new();
+		public UnityEvent onGrounded { get; } = new();
+		public UnityEvent onAirborne { get; } = new();
 
 		[AutoAssign]
 		public TPawn pawn { get; protected set; }
 
-		/// <summary>
-		/// This is the primary hit which uses the <see cref="collider"/> as a template. It is calculated by casting from the step height, straight down.
-		///</summary>
-
-		private THit _directHit;
-		protected THit directHit => _directHit;
-
-		/// <summary>
-		/// This is a secondary hit which is calculated by casting a small sphere just above the directHit result. It is only performed if we are grounded.
-		///</summary>
-
-		private THit _infoHit;
-		protected THit infoHit => _infoHit ?? new();
-
-		/// <summary>
-		/// This is a secondary hit which is calculated by casting the skinned collider a short distance downward. It is only performed if we are airborne.
-		///</summary>
-
-		protected THit _landingHit;
-		protected TVector _previousPosition;
-
-		/// <summary>
-		/// This is a tertiary hit which is calculated by casting a line directly underneath the collider. It is only performed if we are grounded.
-		///</summary>
-
-		private THit _hangingHit;
-		protected THit hangingHit => _hangingHit ?? new();
-
-		/// <summary>
-		/// This is a tertiary hit which is calculated by casting a small sphere along the infoHit to determine if there is or is not a wall which should block our movement.
-		///</summary>
-
-		private THit _wallHit;
-		protected THit wallHit => _wallHit ?? new();
+		public TRigidbody lastKnownRigidbody { get; private set; }
 
 		private bool _isGrounded;
 		public bool isGrounded
@@ -126,35 +85,26 @@ namespace Mithril.Pawn
 			}
 		}
 
-		public TRigidbody lastKnownRigidbody { get; private set; }
+		public THit motionHit { get; private set; }
+		public THit groundHit { get; private set; }
 
 		#endregion
 		#region Properties
 
-#if UNITY_EDITOR
-		protected override THit hitToDraw => _directHit;
-#endif
-
-		public abstract TGenericCollider hitCollider { get; }
-		public abstract TRigidbody hitRigidbody { get; }
-
+		public abstract Rigidbody hitRigidbody { get; protected set; }
 		public abstract Surface surface { get; }
 
-		public abstract TVector right { get; }
-		public abstract TVector up { get; }
+		public abstract TVector motionUp { get; }
+
 		public abstract float angle { get; }
-
-		public abstract TVector rightPrecise { get; }
-		public abstract TVector upPrecise { get; }
-		public abstract float anglePrecise { get; }
-
-		public abstract TVector adjustmentPoint { get; }
-		public abstract float stepHeight { get; }
-
-		public bool isHanging => !hangingHit.IsValidAndBlocked();
 
 		#endregion
 		#region Methods
+
+		public void TemporarilyDisable()
+		{
+			_temporarilyDisabledTimer.Start();
+		}
 
 		protected override void Awake()
 		{
@@ -172,52 +122,32 @@ namespace Mithril.Pawn
 
 		protected virtual void FixedUpdate()
 		{
-			Debug.Log($"{angle}");
-
 			if (temporarilyDisabled)
 			{
 				_temporarilyDisabledTimer.Update();
 				return;
 			}
 
-			_directHit = SenseDirectHit();
+			motionHit = GetMotionHit();
 
 			if (isGrounded)
 			{
-				if (directHit.isBlocked)
-				{
-					_infoHit = SenseInfoHit();
-					_hangingHit = SenseHangingHit();
+				groundHit = GetGroundHit();
 
-					lastKnownRigidbody = GetLastKnownRigidbody();
-				}
-				else
-				{
-					_infoHit = null;
-					_hangingHit = null;
+				if (!motionHit.isBlocked || GetAngle(groundHit) > maxGroundAngle)
 					isGrounded = false;
-				}
 			}
 			else
 			{
-				_landingHit = SenseLandingHit();
-
-				if (_landingHit.isBlocked)
+				if (motionHit.isBlocked)
 					isGrounded = true;
 			}
 		}
 
-		public void TemporarilyDisable()
-		{
-			_temporarilyDisabledTimer.Start();
-		}
+		protected abstract THit GetMotionHit();
+		protected abstract THit GetGroundHit();
 
-		protected abstract THit SenseDirectHit();
-		protected abstract THit SenseInfoHit();
-		protected abstract THit SenseLandingHit();
-		protected abstract THit SenseHangingHit();
-
-		protected abstract TRigidbody GetLastKnownRigidbody();
+		protected abstract float GetAngle(THit hit);
 
 		#endregion
 	}
@@ -233,81 +163,73 @@ namespace Mithril.Pawn
 	{
 		#region Properties
 
-		public override Collider hitCollider => directHit.collider;
-		public override Rigidbody hitRigidbody => directHit.rigidbody;
-		public override Surface surface => directHit.surface;
+		public override Rigidbody hitRigidbody { get => null; protected set => throw new System.NotImplementedException(); }
+		public override Surface surface => null;
 
-		public override Vector3 right => Vector3.Cross(up, forward);
-		public override Vector3 up => infoHit.IsValidAndBlocked() ? infoHit.normal : pawn.up;
-		public Vector3 forward => Vector3.Cross(up, pawn.up).normalized;
-		public override float angle => Mathf.Acos(Vector3.Dot(pawn.up, up).Clamp()) * Mathf.Rad2Deg;
+		public override Vector3 motionUp => motionHit.normal;
 
-		public override Vector3 rightPrecise => Vector3.Cross(upPrecise, forwardPrecise);
-		public override Vector3 upPrecise => directHit.normal;
-		public Vector3 forwardPrecise => Vector3.Cross(upPrecise, pawn.up).normalized;
-		public override float anglePrecise => Mathf.Acos(Vector3.Dot(pawn.up, up).Clamp()) * Mathf.Rad2Deg;
+		// public override Collider hitCollider => directHit.collider;
+		// public override Rigidbody hitRigidbody => directHit.rigidbody;
+		// public override Surface surface => directHit.surface;
 
-		public override Vector3 adjustmentPoint => directHit.adjustmentPoint - collider.center;
-		public override float stepHeight => Vector3.Dot(pawn.up, directHit.point - collider.GetTailPosition());
+		// public override Vector3 right => Vector3.Cross(up, forward);
+		// public override Vector3 up => infoHit.IsValidAndBlocked() ? infoHit.normal : pawn.up;
+		// public Vector3 forward => Vector3.Cross(up, pawn.up).normalized;
+		public override float angle => Mathf.Acos(Vector3.Dot(pawn.up, groundHit.normal).Clamp()) * Mathf.Rad2Deg;
+
+		// public override Vector3 rightPrecise => Vector3.Cross(upPrecise, forwardPrecise);
+		// public override Vector3 upPrecise => directHit.normal;
+		// public Vector3 forwardPrecise => Vector3.Cross(upPrecise, pawn.up).normalized;
+		// public override float anglePrecise => Mathf.Acos(Vector3.Dot(pawn.up, up).Clamp()) * Mathf.Rad2Deg;
+
+		// public override Vector3 adjustmentPoint => directHit.adjustmentPoint - collider.center;
+		// public override float stepHeight => Vector3.Dot(pawn.up, directHit.point - collider.GetTailPosition());
 
 		#endregion
 		#region Methods
 
-		protected override Hit SenseDirectHit()
+		protected override Hit GetMotionHit()
 		{
-			float upOffset = (maxStepHeight - collider.radius).Max(pawn.skinWidth);
-
-			var hits = Hit.CapsuleCastAll(
-				collider.GetHeadPositionUncapped() + pawn.up * upOffset,
-				collider.GetTailPositionUncapped() + pawn.up * upOffset,
-				collider.radius,
-				-pawn.up, maxStepHeight + upOffset, layers
-			).ToList();
-			hits.Sort();
-
-			foreach (var iHit in hits)
-			{
-				var lateralPercentFromTail = (Vector3.Scale(iHit.point - collider.GetTailPosition(), Vector3.one - pawn.up).magnitude / collider.radius).Clamp();
-				var groundAngle = Mathf.Asin(lateralPercentFromTail) * Mathf.Rad2Deg;
-
-				if (groundAngle <= maxGroundAngle)
-					return iHit;
-			}
-
+			var upOffset = pawn.up * pawn.skinWidth;
 			return Hit.CapsuleCast(
-				collider.GetHeadPositionUncapped() + pawn.up * upOffset,
-				collider.GetTailPositionUncapped() + pawn.up * upOffset,
-				collider.radius,
-				-pawn.up, maxStepHeight + upOffset, layers
+				pawn.collider.GetHeadPositionUncapped() + upOffset,
+				pawn.collider.GetTailPositionUncapped() + upOffset,
+				pawn.collider.radius,
+				-pawn.up,
+				pawn.skinWidth * 2f,
+				layers
 			);
 		}
 
-		protected override Hit SenseLandingHit()
+		protected override Hit GetGroundHit()
 		{
-			var target = collider.transform.position - pawn.up * pawn.skinWidth;
-			return Hit.CapsuleCast(collider, pawn.previousPosition, target, layers);
+			return Hit.SphereCast(
+				motionHit.point + pawn.up * pawn.skinWidth,
+				pawn.skinWidth * 0.5f,
+				-pawn.up,
+				pawn.skinWidth * 2f,
+				layers
+			);
 		}
 
-		protected override Hit SenseInfoHit() => Hit.SphereCast
-			(
-				directHit.point + (pawn.up * maxStepHeight),
-				pawn.skinWidth,
-				-pawn.up, maxStepHeight, layers
-			);
-
-		protected override Hit SenseHangingHit() => Hit.Linecast
-			(
-				collider.GetTailPosition(),
-				-pawn.up, maxStepHeight, layers
-			);
-
-		protected override Rigidbody GetLastKnownRigidbody() =>
-			directHit.rigidbody;
+		protected override float GetAngle(Hit hit)
+		{
+			return Mathf.Acos(Vector3.Dot(pawn.up, hit.normal).Clamp()) * Mathf.Rad2Deg;
+		}
 
 		private void OnDrawGizmos()
 		{
 			if (!Application.isPlaying) return;
+
+			try
+			{
+				Debug.Log($"{angle:00}");
+				motionHit.OnDrawGizmos();
+				groundHit.OnDrawGizmos();
+			}
+			catch { }
 		}
+
 		#endregion
 	}
 

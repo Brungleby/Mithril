@@ -80,19 +80,18 @@ namespace Mithril.Pawn
 		#region Members
 
 #pragma warning disable
-		[AutoAssign]
 		[SerializeField]
 		private TColliderBase _collider;
 		public new TColliderBase collider => _collider;
 
-		[AutoAssign]
 		[SerializeField]
 		private TRigidbody _rigidbody;
 		public new TRigidbody rigidbody => _rigidbody;
 #pragma warning restore
 
-		[AutoAssign]
-		public GravityResponse<TColliderBase, TRigidbody, TVector> gravityResponse { get; protected set; }
+		[SerializeField]
+		private GravityResponse<TColliderBase, TRigidbody, TVector> _gravity;
+		public GravityResponse<TColliderBase, TRigidbody, TVector> gravity { get => _gravity; set => _gravity = value; }
 
 		/// <summary>
 		/// Record of the pawn's position from the previous frame.

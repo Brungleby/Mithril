@@ -43,12 +43,12 @@ namespace Mithril.Pawn
 		#region Members
 
 		[AutoAssign] public TPawn pawn { get; protected set; }
-#pragma warning disable
-		[AutoAssign] public new TRigidbody rigidbody { get; protected set; }
-#pragma warning restore
 		[AutoAssign] public TGround ground { get; protected set; }
 
 		#endregion
+#pragma warning disable
+		public new TRigidbody rigidbody => pawn.rigidbody;
+#pragma warning restore
 
 		protected virtual TVector direction => pawn.up;
 

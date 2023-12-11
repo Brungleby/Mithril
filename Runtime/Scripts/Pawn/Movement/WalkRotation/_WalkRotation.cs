@@ -21,7 +21,7 @@ namespace Mithril.Pawn
 	/// Generic class to define how a 3D walking character rotates.
 	///</summary>
 
-	public abstract class WalkRotation : MovementComponent<Collider, Rigidbody, Vector3>
+	public abstract class WalkRotation : MovementComponent<Pawn, Collider, Rigidbody, Vector3>
 	{
 		#region Members
 
