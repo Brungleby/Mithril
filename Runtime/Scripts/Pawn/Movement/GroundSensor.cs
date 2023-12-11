@@ -303,15 +303,11 @@ namespace Mithril.Pawn
 
 		protected override Rigidbody GetLastKnownRigidbody() =>
 			directHit.rigidbody;
-#if UNITY_EDITOR
-		protected override void OnDrawGizmos()
+
+		private void OnDrawGizmos()
 		{
-			base.OnDrawGizmos();
-
 			if (!Application.isPlaying) return;
-
 		}
-#endif
 		#endregion
 	}
 

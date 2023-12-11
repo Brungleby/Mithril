@@ -26,15 +26,15 @@ namespace Mithril
 	public abstract class CasterComponent : MithrilComponent
 	{
 		#region Fields
-#if UNITY_EDITOR
-		[Header("Draw Settings [Editor]")]
+		// #if UNITY_EDITOR
+		// 		[Header("Draw Settings [Editor]")]
 
-		[SerializeField]
-		public bool drawEnabled = false;
-		[SerializeField]
-		public bool drawOnSelectedOnly = true;
-#endif
-		[Header("Sensor")]
+		// 		[SerializeField]
+		// 		public bool drawEnabled = false;
+		// 		[SerializeField]
+		// 		public bool drawOnSelectedOnly = true;
+		// #endif
+		// [Header("Sensor")]
 
 		/// <summary>
 		/// Layers that this component can sense.
@@ -46,26 +46,26 @@ namespace Mithril
 		#endregion
 		#region Methods
 
-		protected virtual void OnDrawGizmosSelected()
-		{
-#if UNITY_EDITOR
-			if (drawOnSelectedOnly) _OnDrawGizmosDynamic();
-#endif
-		}
+		// 		protected virtual void OnDrawGizmosSelected()
+		// 		{
+		// #if UNITY_EDITOR
+		// 			if (drawOnSelectedOnly) _OnDrawGizmosDynamic();
+		// #endif
+		// 		}
 
-		protected virtual void OnDrawGizmos()
-		{
-#if UNITY_EDITOR
-			if (!drawOnSelectedOnly) _OnDrawGizmosDynamic();
-#endif
-		}
-#if UNITY_EDITOR
-		private void _OnDrawGizmosDynamic()
-		{
-			if (drawEnabled) OnDrawGizmosDynamic();
-		}
-#endif
-		protected virtual void OnDrawGizmosDynamic() { }
+		// 		protected virtual void OnDrawGizmos()
+		// 		{
+		// #if UNITY_EDITOR
+		// 			if (!drawOnSelectedOnly) _OnDrawGizmosDynamic();
+		// #endif
+		// 		}
+		// #if UNITY_EDITOR
+		// 		private void _OnDrawGizmosDynamic()
+		// 		{
+		// 			if (drawEnabled) OnDrawGizmosDynamic();
+		// 		}
+		// #endif
+		// protected virtual void OnDrawGizmosDynamic() { }
 
 		#endregion
 	}
@@ -138,14 +138,14 @@ namespace Mithril
 			throw new NotImplementedException();
 		}
 
-		protected override void OnDrawGizmosDynamic()
-		{
-#if UNITY_EDITOR
-			if (hitToDraw == null) return;
-			var hit = (Hit)(HitBase)hitToDraw;
-			hit.OnDrawGizmos();
-#endif
-		}
+		// 		protected override void OnDrawGizmosDynamic()
+		// 		{
+		// #if UNITY_EDITOR
+		// 			if (hitToDraw == null) return;
+		// 			var hit = (Hit)(HitBase)hitToDraw;
+		// 			hit.OnDrawGizmos();
+		// #endif
+		// 		}
 	}
 
 	#endregion
