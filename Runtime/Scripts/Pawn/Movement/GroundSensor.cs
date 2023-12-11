@@ -35,8 +35,9 @@ namespace Mithril.Pawn
 		///</summary>
 		[Tooltip("Timer controlling temporary disablement.")]
 		[SerializeField]
-		private Timer _temporarilyDisabledTimer = new() { duration = 0.2f };
-		public Timer temporarilyDisableTimer => _temporarilyDisabledTimer;
+		private Timer _temporarilyDisableTimer = new() { duration = 0.2f };
+		public Timer temporarilyDisableTimer => _temporarilyDisableTimer;
+
 		/// <summary>
 		/// Maximum angle considered ground. Any surface steeper than this angle will be considered a wall (and also can't be walked on).
 		///</summary>
@@ -85,33 +86,33 @@ namespace Mithril.Pawn
 			}
 		}
 
-		public THit motionHit { get; private set; }
-		public THit groundHit { get; private set; }
+		internal THit motionHit { get; private set; }
+		internal THit groundHit { get; private set; }
 
 		#endregion
 		#region Properties
 
-		public abstract Rigidbody hitRigidbody { get; protected set; }
+		public abstract Rigidbody hitRigidbody { get; }
 		public abstract Surface surface { get; }
 
 		public abstract TVector motionUp { get; }
 
-		public abstract float angle { get; }
+		public float angle => GetAngle(groundHit);
 
 		#endregion
 		#region Methods
 
 		public void TemporarilyDisable()
 		{
-			_temporarilyDisabledTimer.Start();
+			_temporarilyDisableTimer.Start();
 		}
 
 		protected override void Awake()
 		{
 			base.Awake();
 
-			_temporarilyDisabledTimer.onStart.AddListener(() => temporarilyDisabled = true);
-			_temporarilyDisabledTimer.onCease.AddListener(() => temporarilyDisabled = false);
+			_temporarilyDisableTimer.onStart.AddListener(() => temporarilyDisabled = true);
+			_temporarilyDisableTimer.onCease.AddListener(() => temporarilyDisabled = false);
 		}
 
 		protected virtual void OnDisable()
@@ -124,7 +125,7 @@ namespace Mithril.Pawn
 		{
 			if (temporarilyDisabled)
 			{
-				_temporarilyDisabledTimer.Update();
+				_temporarilyDisableTimer.Update();
 				return;
 			}
 
@@ -163,10 +164,10 @@ namespace Mithril.Pawn
 	{
 		#region Properties
 
-		public override Rigidbody hitRigidbody { get => null; protected set => throw new System.NotImplementedException(); }
-		public override Surface surface => null;
+		public override Rigidbody hitRigidbody => motionHit.rigidbody;
+		public override Surface surface => motionHit.surface;
 
-		public override Vector3 motionUp => motionHit.normal;
+		public override Vector3 motionUp => motionHit.IsValidAndBlocked() ? motionHit.normal : pawn.up;
 
 		// public override Collider hitCollider => directHit.collider;
 		// public override Rigidbody hitRigidbody => directHit.rigidbody;
@@ -175,7 +176,6 @@ namespace Mithril.Pawn
 		// public override Vector3 right => Vector3.Cross(up, forward);
 		// public override Vector3 up => infoHit.IsValidAndBlocked() ? infoHit.normal : pawn.up;
 		// public Vector3 forward => Vector3.Cross(up, pawn.up).normalized;
-		public override float angle => Mathf.Acos(Vector3.Dot(pawn.up, groundHit.normal).Clamp()) * Mathf.Rad2Deg;
 
 		// public override Vector3 rightPrecise => Vector3.Cross(upPrecise, forwardPrecise);
 		// public override Vector3 upPrecise => directHit.normal;

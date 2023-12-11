@@ -481,7 +481,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _verticalSpeedPercentOnLand: 1
+  _verticalSpeedPercentOnLand: 0.2
   walkRotation: {fileID: 0}
   forwardOnly: 0
 --- !u!114 &421775411020972696
