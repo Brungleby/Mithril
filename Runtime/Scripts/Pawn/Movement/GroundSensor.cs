@@ -67,9 +67,16 @@ namespace Mithril.Pawn
 				_isGrounded = value;
 
 				if (value)
+				{
+
 					onGrounded.Invoke();
+				}
 				else
+				{
+					groundHit = null;
+
 					onAirborne.Invoke();
+				}
 			}
 		}
 
@@ -95,6 +102,7 @@ namespace Mithril.Pawn
 		public abstract Rigidbody hitRigidbody { get; }
 		public abstract Surface surface { get; }
 
+		public abstract TVector up { get; }
 		public abstract TVector motionUp { get; }
 
 		public float angle => GetAngle(groundHit);
@@ -148,7 +156,11 @@ namespace Mithril.Pawn
 		protected abstract THit GetMotionHit();
 		protected abstract THit GetGroundHit();
 
+		public float GetMotionDirectionalAngle(TVector forward) => GetDirectionalAngle(motionHit, forward);
+		public float GetGroundDirectionalAngle(TVector forward) => GetDirectionalAngle(groundHit, forward);
+
 		protected abstract float GetAngle(THit hit);
+		protected abstract float GetDirectionalAngle(THit hit, TVector forward);
 
 		#endregion
 	}
@@ -167,6 +179,7 @@ namespace Mithril.Pawn
 		public override Rigidbody hitRigidbody => motionHit.rigidbody;
 		public override Surface surface => motionHit.surface;
 
+		public override Vector3 up => groundHit.IsValidAndBlocked() ? groundHit.normal : pawn.up;
 		public override Vector3 motionUp => motionHit.IsValidAndBlocked() ? motionHit.normal : pawn.up;
 
 		// public override Collider hitCollider => directHit.collider;
@@ -217,13 +230,17 @@ namespace Mithril.Pawn
 			return Mathf.Acos(Vector3.Dot(pawn.up, hit.normal).Clamp()) * Mathf.Rad2Deg;
 		}
 
+		protected override float GetDirectionalAngle(Hit hit, Vector3 forward)
+		{
+			return Mathf.Asin(Vector3.Dot(hit.normal, forward)) * Mathf.Rad2Deg;
+		}
+
 		private void OnDrawGizmos()
 		{
 			if (!Application.isPlaying) return;
 
 			try
 			{
-				Debug.Log($"{angle:00}");
 				motionHit.OnDrawGizmos();
 				groundHit.OnDrawGizmos();
 			}

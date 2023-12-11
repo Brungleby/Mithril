@@ -249,24 +249,35 @@ namespace Mithril.Pawn
 		{
 			#region Translate Input to Motion
 
+			Vector3 motionNormal = pawn.up;
+
 			if (inputVector.magnitude > 0f)
 			{
 				#region Determine Walk Vector Direction
 
-				Vector3 __flatWalkDirection = forwardOnly ? pawn.forward : inputVector.normalized;
+				Vector3 flatWalkDirection = forwardOnly ? pawn.forward : inputVector.normalized;
 				if (ground.isGrounded)
-					walkAccelVector = Vector3.Cross(Vector3.Cross(pawn.up, __flatWalkDirection), ground.motionUp).normalized;
+				{
+					float motionAngle = -ground.GetMotionDirectionalAngle(flatWalkDirection);
+					float groundAngle = ground.GetGroundDirectionalAngle(flatWalkDirection);
+					motionNormal = motionAngle > groundAngle ? ground.motionUp : ground.up;
+					// motionNormal = ground.up;
+
+					Debug.Log($"Motion: {motionAngle:00}, Ground: {groundAngle:00}");
+
+					walkAccelVector = Vector3.Cross(Vector3.Cross(pawn.up, flatWalkDirection), motionNormal).normalized;
+				}
 				else
-					walkAccelVector = __flatWalkDirection;
+					walkAccelVector = flatWalkDirection;
 
 				#endregion
 				#region Determine and Constrain Walk Vector Magnitude
 
-				var __perceivedVelocity =
+				var perceivedVelocity =
 					(ground.isGrounded ? pawn.velocity : pawn.lateralVelocity)
 					- physics.groundVelocity;
 
-				walkAccelVector = CalculateAcceleration(walkAccelVector, __perceivedVelocity);
+				walkAccelVector = CalculateAcceleration(walkAccelVector, perceivedVelocity);
 
 				#endregion
 				#region Apply Walk Vector
@@ -293,7 +304,7 @@ namespace Mithril.Pawn
 
 				if (ground.isGrounded)
 					// if (!ground.isHanging)
-					rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, ground.motionUp);
+					rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, motionNormal);
 			}
 
 			#endregion
