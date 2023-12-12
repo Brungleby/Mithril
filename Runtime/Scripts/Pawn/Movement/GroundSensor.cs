@@ -99,7 +99,9 @@ namespace Mithril.Pawn
 		}
 
 		internal THit motionHit { get; private set; }
-		internal THit groundHit { get; private set; }
+
+		private THit _groundHit;
+		internal THit groundHit { get => _groundHit; private set => _groundHit = value; }
 
 		private bool _isHanging;
 		internal bool isHanging => isGrounded && _isHanging;
@@ -145,14 +147,10 @@ namespace Mithril.Pawn
 
 		protected virtual void FixedUpdate()
 		{
-			if (temporarilyDisabled)
-			{
-				_temporarilyDisableTimer.Update();
-				return;
-			}
+			_temporarilyDisableTimer.Update();
+			if (temporarilyDisabled) return;
 
-			motionHit = GetMotionHit();
-			groundHit = GetGroundHit();
+			motionHit = GetMotionHit(out _groundHit);
 
 			isGrounded = shouldBeGrounded;
 			_isHanging = GetIsHanging();
@@ -162,8 +160,7 @@ namespace Mithril.Pawn
 
 		public abstract TVector GetDirectionalMotionVector(TVector forward);
 
-		protected abstract THit GetMotionHit();
-		protected abstract THit GetGroundHit();
+		protected abstract THit GetMotionHit(out THit groundHit);
 		protected abstract bool GetIsHanging();
 
 		public float GetMotionDirectionalAngle(TVector forward) => GetDirectionalAngle(motionHit, forward);
@@ -205,7 +202,7 @@ namespace Mithril.Pawn
 				return motionUp;
 		}
 
-		protected override Hit GetMotionHit()
+		protected override Hit GetMotionHit(out Hit groundHit)
 		{
 			var upOffset = pawn.up * sensorLength;
 			var hits = Hit.CapsuleCastAll(
@@ -216,12 +213,20 @@ namespace Mithril.Pawn
 				sensorLength * 2f,
 				layers
 			).ToList();
+
+			/**	Sort by distance from top
+			*/
 			hits.Sort();
 
 			foreach (var iHit in hits)
-				if (GetAngle(iHit) > maxGroundAngle) continue;
+			{
+				if (iHit.point == Vector3.zero) continue;
+				groundHit = GetGroundHit(iHit);
+				if (GetAngle(groundHit) > maxGroundAngle) continue;
 				else return iHit;
+			}
 
+			groundHit = Hit.none;
 			return Hit.CapsuleCast(
 				pawn.collider.GetHeadPositionUncapped() + upOffset,
 				pawn.collider.GetTailPositionUncapped() + upOffset,
@@ -232,14 +237,16 @@ namespace Mithril.Pawn
 			);
 		}
 
-		protected override Hit GetGroundHit() =>
-			Hit.SphereCast(
+		private Hit GetGroundHit(Hit motionHit)
+		{
+			return Hit.SphereCast(
 				motionHit.point + pawn.up * sensorRadiusAirborne,
 				sensorRadiusAirborne * 0.5f,
 				-pawn.up,
 				sensorRadiusAirborne * 2f,
 				layers
 			);
+		}
 
 		protected override bool GetIsHanging() =>
 			!Hit.Linecast(
@@ -260,7 +267,8 @@ namespace Mithril.Pawn
 			if (!Application.isPlaying) return;
 			try
 			{
-				// motionHit.OnDrawGizmos();
+				// Debug.Log($"{motionHit.collider}");
+				motionHit.OnDrawGizmos();
 				// groundHit.OnDrawGizmos();
 			}
 			catch { }

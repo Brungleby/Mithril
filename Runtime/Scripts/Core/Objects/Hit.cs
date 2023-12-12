@@ -154,7 +154,7 @@ namespace Mithril
 
 		public abstract TVector direction { get; }
 
-		public int CompareTo(Hit<TVector> other) => (int)(distance - other.distance).Sign();
+		public int CompareTo(Hit<TVector> other) => distance.CompareTo(other.distance);
 
 		#endregion
 	}
