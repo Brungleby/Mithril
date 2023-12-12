@@ -303,7 +303,6 @@ GameObject:
   - component: {fileID: 427373227764705895}
   - component: {fileID: 4873686091823375176}
   - component: {fileID: 5048295420138828270}
-  - component: {fileID: 7586428947721951704}
   - component: {fileID: 5142356188735533584}
   - component: {fileID: 60350911580438730}
   - component: {fileID: 421775411020972696}
@@ -360,6 +359,8 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   maxGroundAngle: 50
+  sensorRadiusGrounded: 0.15
+  sensorRadiusAirborne: 0.05
 --- !u!114 &4873686091823375176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,18 +387,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: {fileID: 0}
---- !u!114 &7586428947721951704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6040155558531358173}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13cc24877e1db476aa4f7609d9a4363e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5142356188735533584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,7 +539,7 @@ PrefabInstance:
       objectReference: {fileID: 1060274819488854090}
     - target: {fileID: 5024830088495140236, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.5000002
+      value: 3.4999998
       objectReference: {fileID: 0}
     - target: {fileID: 6979945804257503084, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_RootOrder
