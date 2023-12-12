@@ -53,7 +53,7 @@ namespace Mithril.Pawn
 		{
 			base.Awake();
 
-			_lateFixedUpdater = new LateFixedUpdater(this);
+			_lateFixedUpdater = new(this);
 		}
 
 		protected virtual void OnEnable()
