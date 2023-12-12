@@ -30,7 +30,6 @@ namespace Mithril.Pawn
 
 		private void OnEnable()
 		{
-			Debug.Log($"{GetComponentInParent<Pawn>() == null}");
 			rigidbody.useGravity = true;
 		}
 

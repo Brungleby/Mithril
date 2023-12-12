@@ -68,7 +68,6 @@ namespace Mithril.Pawn
 
 				if (value)
 				{
-
 					onGrounded.Invoke();
 				}
 				else
@@ -95,6 +94,9 @@ namespace Mithril.Pawn
 
 		internal THit motionHit { get; private set; }
 		internal THit groundHit { get; private set; }
+
+		private bool _isHanging;
+		internal bool isHanging => isGrounded && _isHanging;
 
 		#endregion
 		#region Properties
@@ -145,6 +147,8 @@ namespace Mithril.Pawn
 
 				if (!motionHit.isBlocked || GetAngle(groundHit) > maxGroundAngle)
 					isGrounded = false;
+				else
+					_isHanging = GetIsHanging();
 			}
 			else
 			{
@@ -153,8 +157,11 @@ namespace Mithril.Pawn
 			}
 		}
 
+		public abstract TVector GetDirectionalMotionVector(TVector forward);
+
 		protected abstract THit GetMotionHit();
 		protected abstract THit GetGroundHit();
+		protected abstract bool GetIsHanging();
 
 		public float GetMotionDirectionalAngle(TVector forward) => GetDirectionalAngle(motionHit, forward);
 		public float GetGroundDirectionalAngle(TVector forward) => GetDirectionalAngle(groundHit, forward);
@@ -201,6 +208,15 @@ namespace Mithril.Pawn
 		#endregion
 		#region Methods
 
+		public override Vector3 GetDirectionalMotionVector(Vector3 forward)
+		{
+			if (isHanging)
+				try { return GetMotionDirectionalAngle(forward) < GetGroundDirectionalAngle(forward) ? motionUp : up; }
+				catch { return pawn.up; }
+			else
+				return motionUp;
+		}
+
 		protected override Hit GetMotionHit()
 		{
 			var upOffset = pawn.up * pawn.skinWidth;
@@ -225,6 +241,17 @@ namespace Mithril.Pawn
 			);
 		}
 
+		protected override bool GetIsHanging()
+		{
+			var hit = Hit.Linecast(
+				pawn.collider.GetTailPosition() + pawn.up * pawn.skinWidth,
+				-pawn.up,
+				pawn.collider.radius + pawn.skinWidth,
+				layers
+			);
+			return !hit.isBlocked;
+		}
+
 		protected override float GetAngle(Hit hit)
 		{
 			return Mathf.Acos(Vector3.Dot(pawn.up, hit.normal).Clamp()) * Mathf.Rad2Deg;
@@ -238,7 +265,6 @@ namespace Mithril.Pawn
 		private void OnDrawGizmos()
 		{
 			if (!Application.isPlaying) return;
-
 			try
 			{
 				motionHit.OnDrawGizmos();

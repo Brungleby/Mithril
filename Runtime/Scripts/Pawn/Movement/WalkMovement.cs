@@ -249,7 +249,7 @@ namespace Mithril.Pawn
 		{
 			#region Translate Input to Motion
 
-			Vector3 motionNormal = pawn.up;
+			Vector3 motionNormal;
 
 			if (inputVector.magnitude > 0f)
 			{
@@ -258,17 +258,14 @@ namespace Mithril.Pawn
 				Vector3 flatWalkDirection = forwardOnly ? pawn.forward : inputVector.normalized;
 				if (ground.isGrounded)
 				{
-					float motionAngle = -ground.GetMotionDirectionalAngle(flatWalkDirection);
-					float groundAngle = ground.GetGroundDirectionalAngle(flatWalkDirection);
-					motionNormal = motionAngle > groundAngle ? ground.motionUp : ground.up;
-					// motionNormal = ground.up;
-
-					Debug.Log($"Motion: {motionAngle:00}, Ground: {groundAngle:00}");
-
+					motionNormal = ground.GetDirectionalMotionVector(flatWalkDirection);
 					walkAccelVector = Vector3.Cross(Vector3.Cross(pawn.up, flatWalkDirection), motionNormal).normalized;
 				}
 				else
+				{
+					motionNormal = pawn.up;
 					walkAccelVector = flatWalkDirection;
+				}
 
 				#endregion
 				#region Determine and Constrain Walk Vector Magnitude
@@ -288,6 +285,7 @@ namespace Mithril.Pawn
 			}
 			else
 			{
+				motionNormal = pawn.up;
 				walkAccelVector = Vector3.zero;
 			}
 
@@ -302,8 +300,7 @@ namespace Mithril.Pawn
 				*/
 				rigidbody.MovePosition(ground.motionHit.adjustmentPoint);
 
-				if (ground.isGrounded)
-					// if (!ground.isHanging)
+				if (!ground.isHanging)
 					rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, motionNormal);
 			}
 
