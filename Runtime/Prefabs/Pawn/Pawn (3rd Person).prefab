@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewTransform: {fileID: 8137128552417718169}
-  _skinWidth: 0.08
+  _skinWidth: 0.15
   _collider: {fileID: 4448567594642361772}
   _rigidbody: {fileID: 2407763584986205095}
   _gravity: {fileID: 5048295420138828270}
@@ -303,6 +303,7 @@ GameObject:
   - component: {fileID: 427373227764705895}
   - component: {fileID: 4873686091823375176}
   - component: {fileID: 5048295420138828270}
+  - component: {fileID: 7586428947721951704}
   - component: {fileID: 5142356188735533584}
   - component: {fileID: 60350911580438730}
   - component: {fileID: 421775411020972696}
@@ -346,7 +347,7 @@ MonoBehaviour:
     m_Bits: 1
   colliderTemplate: {fileID: 0}
   DisableTemplateOnAwake: 0
-  _temporarilyDisabledTimer:
+  _temporarilyDisableTimer:
     isLooping: 0
     duration: 0.2
     _onStart:
@@ -385,6 +386,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: {fileID: 0}
+--- !u!114 &7586428947721951704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6040155558531358173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13cc24877e1db476aa4f7609d9a4363e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5142356188735533584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -537,7 +550,7 @@ PrefabInstance:
       objectReference: {fileID: 1060274819488854090}
     - target: {fileID: 5024830088495140236, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.4999998
+      value: 3.5000002
       objectReference: {fileID: 0}
     - target: {fileID: 6979945804257503084, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_RootOrder

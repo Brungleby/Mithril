@@ -9,6 +9,7 @@
 
 #region Includes
 
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -20,11 +21,11 @@ namespace Mithril.Pawn
 {
 	#region GroundSensorBase
 
-	public abstract class GroundSensorBase<TPawn, TGenericCollider, TCollider, TRigidbody, TVector, THit, TShapeInfo> :
-	CasterComponent<TCollider, THit, TShapeInfo>, IPawnUser<TPawn>
-	where TPawn : PawnBase<TGenericCollider, TRigidbody, TVector>
+	public abstract class GroundSensorBase<TPawn, TCollider, TColliderShape, TRigidbody, TVector, THit, TShapeInfo> :
+	CasterComponent<TColliderShape, THit, TShapeInfo>, IPawnUser<TPawn>
+	where TPawn : PawnBase<TCollider, TRigidbody, TVector>
 	where THit : HitBase, new()
-	where TCollider : Component
+	where TColliderShape : Component
 	where TVector : unmanaged
 	where TShapeInfo : ShapeInfoBase
 	{
@@ -45,6 +46,11 @@ namespace Mithril.Pawn
 		[Range(0f, 90f)]
 		[SerializeField]
 		public float maxGroundAngle = 70f;
+
+		[Header("Fine-Tuning")]
+
+		public float sensorRadiusGrounded = 0.15f;
+		public float sensorRadiusAirborne = 0.05f;
 
 		#endregion
 		#region Members
@@ -101,10 +107,16 @@ namespace Mithril.Pawn
 		#endregion
 		#region Properties
 
-		public abstract Rigidbody hitRigidbody { get; }
+		public bool isSliding => !isGrounded && motionHit.isBlocked;
+		protected float sensorLength => isGrounded ? sensorRadiusGrounded : sensorRadiusAirborne;
+
+		public abstract TCollider hitCollider { get; }
+		public abstract TRigidbody hitRigidbody { get; }
 		public abstract Surface surface { get; }
 
 		public abstract TVector up { get; }
+
+		// public abstract TVector motionRight { get; }
 		public abstract TVector motionUp { get; }
 
 		public float angle => GetAngle(groundHit);
@@ -140,22 +152,13 @@ namespace Mithril.Pawn
 			}
 
 			motionHit = GetMotionHit();
+			groundHit = GetGroundHit();
 
-			if (isGrounded)
-			{
-				groundHit = GetGroundHit();
-
-				if (!motionHit.isBlocked || GetAngle(groundHit) > maxGroundAngle)
-					isGrounded = false;
-				else
-					_isHanging = GetIsHanging();
-			}
-			else
-			{
-				if (motionHit.isBlocked)
-					isGrounded = true;
-			}
+			isGrounded = shouldBeGrounded;
+			_isHanging = GetIsHanging();
 		}
+
+		private bool shouldBeGrounded => motionHit.isBlocked && GetAngle(groundHit) <= maxGroundAngle;
 
 		public abstract TVector GetDirectionalMotionVector(TVector forward);
 
@@ -175,35 +178,20 @@ namespace Mithril.Pawn
 	#endregion
 	#region GroundSensor
 
-	/// <summary>
-	/// __TODO_ANNOTATE__
-	///</summary>
-
 	public sealed class GroundSensor : GroundSensorBase<CapsulePawn, Collider, CapsuleCollider, Rigidbody, Vector3, Hit, CapsuleInfo>
 	{
 		#region Properties
 
+		public override Collider hitCollider => motionHit.collider;
 		public override Rigidbody hitRigidbody => motionHit.rigidbody;
 		public override Surface surface => motionHit.surface;
 
 		public override Vector3 up => groundHit.IsValidAndBlocked() ? groundHit.normal : pawn.up;
+		public Vector3 forward => Vector3.Cross(up, pawn.up).normalized;
+
+		// public override Vector3 motionRight => Vector3.Cross(motionUp, motionForward);
 		public override Vector3 motionUp => motionHit.IsValidAndBlocked() ? motionHit.normal : pawn.up;
-
-		// public override Collider hitCollider => directHit.collider;
-		// public override Rigidbody hitRigidbody => directHit.rigidbody;
-		// public override Surface surface => directHit.surface;
-
-		// public override Vector3 right => Vector3.Cross(up, forward);
-		// public override Vector3 up => infoHit.IsValidAndBlocked() ? infoHit.normal : pawn.up;
-		// public Vector3 forward => Vector3.Cross(up, pawn.up).normalized;
-
-		// public override Vector3 rightPrecise => Vector3.Cross(upPrecise, forwardPrecise);
-		// public override Vector3 upPrecise => directHit.normal;
-		// public Vector3 forwardPrecise => Vector3.Cross(upPrecise, pawn.up).normalized;
-		// public override float anglePrecise => Mathf.Acos(Vector3.Dot(pawn.up, up).Clamp()) * Mathf.Rad2Deg;
-
-		// public override Vector3 adjustmentPoint => directHit.adjustmentPoint - collider.center;
-		// public override float stepHeight => Vector3.Dot(pawn.up, directHit.point - collider.GetTailPosition());
+		// public Vector3 motionForward => Vector3.Cross(motionUp, pawn.up).normalized;
 
 		#endregion
 		#region Methods
@@ -219,56 +207,61 @@ namespace Mithril.Pawn
 
 		protected override Hit GetMotionHit()
 		{
-			var upOffset = pawn.up * pawn.skinWidth;
+			var upOffset = pawn.up * sensorLength;
+			var hits = Hit.CapsuleCastAll(
+				pawn.collider.GetHeadPositionUncapped() + upOffset,
+				pawn.collider.GetTailPositionUncapped() + upOffset,
+				pawn.collider.radius,
+				-pawn.up,
+				sensorLength * 2f,
+				layers
+			).ToList();
+			hits.Sort();
+
+			foreach (var iHit in hits)
+				if (GetAngle(iHit) > maxGroundAngle) continue;
+				else return iHit;
+
 			return Hit.CapsuleCast(
 				pawn.collider.GetHeadPositionUncapped() + upOffset,
 				pawn.collider.GetTailPositionUncapped() + upOffset,
 				pawn.collider.radius,
 				-pawn.up,
-				pawn.skinWidth * 2f,
+				sensorLength * 2f,
 				layers
 			);
 		}
 
-		protected override Hit GetGroundHit()
-		{
-			return Hit.SphereCast(
-				motionHit.point + pawn.up * pawn.skinWidth,
-				pawn.skinWidth * 0.5f,
+		protected override Hit GetGroundHit() =>
+			Hit.SphereCast(
+				motionHit.point + pawn.up * sensorRadiusAirborne,
+				sensorRadiusAirborne * 0.5f,
 				-pawn.up,
-				pawn.skinWidth * 2f,
+				sensorRadiusAirborne * 2f,
 				layers
 			);
-		}
 
-		protected override bool GetIsHanging()
-		{
-			var hit = Hit.Linecast(
+		protected override bool GetIsHanging() =>
+			!Hit.Linecast(
 				pawn.collider.GetTailPosition() + pawn.up * pawn.skinWidth,
 				-pawn.up,
 				pawn.collider.radius + pawn.skinWidth,
 				layers
-			);
-			return !hit.isBlocked;
-		}
+			).isBlocked;
 
-		protected override float GetAngle(Hit hit)
-		{
-			return Mathf.Acos(Vector3.Dot(pawn.up, hit.normal).Clamp()) * Mathf.Rad2Deg;
-		}
+		protected override float GetAngle(Hit hit) =>
+			Mathf.Acos(Vector3.Dot(pawn.up, hit.normal).Clamp()) * Mathf.Rad2Deg;
 
-		protected override float GetDirectionalAngle(Hit hit, Vector3 forward)
-		{
-			return Mathf.Asin(Vector3.Dot(hit.normal, forward)) * Mathf.Rad2Deg;
-		}
+		protected override float GetDirectionalAngle(Hit hit, Vector3 forward) =>
+			Mathf.Asin(Vector3.Dot(hit.normal, forward)) * Mathf.Rad2Deg;
 
 		private void OnDrawGizmos()
 		{
 			if (!Application.isPlaying) return;
 			try
 			{
-				motionHit.OnDrawGizmos();
-				groundHit.OnDrawGizmos();
+				// motionHit.OnDrawGizmos();
+				// groundHit.OnDrawGizmos();
 			}
 			catch { }
 		}
