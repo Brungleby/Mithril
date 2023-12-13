@@ -77,10 +77,8 @@ namespace Mithril
 	/// The base class for a sensor that uses a collider component as the shape for its cast.
 	///</summary>
 
-	public abstract class CasterComponent<TCollider, THit, TShapeInfo> : CasterComponent, IColliderUser<TCollider>
+	public abstract class CasterComponent<TCollider, THit> : CasterComponent, IColliderUser<TCollider>
 	where TCollider : Component
-	where THit : HitBase, new()
-	where TShapeInfo : ShapeInfoBase
 	{
 		[SerializeField]
 		private TCollider colliderTemplate;
@@ -92,10 +90,6 @@ namespace Mithril
 		public new TCollider collider { get; protected set; }
 #pragma warning restore
 
-		public TShapeInfo shapeInfo { get; set; }
-#if UNITY_EDITOR
-		protected virtual THit hitToDraw => null;
-#endif
 		private Func<THit> m_Sense;
 
 		protected override void Awake()
@@ -110,33 +104,34 @@ namespace Mithril
 
 			collider = colliderTemplate;
 
-			shapeInfo = ShapeInfoBase.CreateFrom<TShapeInfo>(collider);
-			m_Sense = GetSenseMethod(shapeInfo);
+			// shapeInfo = ShapeInfoBase.CreateFrom<TShapeInfo>(collider);
+			// m_Sense = GetSenseMethod(shapeInfo);
 
 			if (DisableTemplateOnAwake && colliderTemplate)
 				colliderTemplate.SetEnabled(false);
 		}
 
-		protected THit Sense() => m_Sense.Invoke();
+		// protected THit Sense() => m_Sense.Invoke();
+		protected THit Sense() { return default; }
 
-		protected virtual THit Sense_Line() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Line sensor method.");
-		protected virtual THit Sense_Box() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Box sensor method.");
-		protected virtual THit Sense_Sphere() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Sphere sensor method.");
-		protected virtual THit Sense_Capsule() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Capsule sensor method.");
+		// protected virtual THit Sense_Line() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Line sensor method.");
+		// protected virtual THit Sense_Box() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Box sensor method.");
+		// protected virtual THit Sense_Sphere() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Sphere sensor method.");
+		// protected virtual THit Sense_Capsule() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Capsule sensor method.");
 
-		private Func<THit> GetSenseMethod(TShapeInfo info)
-		{
-			if (info == null)
-				return Sense_Line;
-			if (info is BoxInfo || info is BoxInfo2D)
-				return Sense_Box;
-			if (info is SphereInfo || info is CircleInfo2D)
-				return Sense_Sphere;
-			if (info is CapsuleInfo || info is CapsuleInfo2D)
-				return Sense_Capsule;
+		// private Func<THit> GetSenseMethod(TShapeInfo info)
+		// {
+		// 	if (info == null)
+		// 		return Sense_Line;
+		// 	if (info is BoxInfo || info is BoxInfo2D)
+		// 		return Sense_Box;
+		// 	if (info is SphereInfo || info is CircleInfo2D)
+		// 		return Sense_Sphere;
+		// 	if (info is CapsuleInfo || info is CapsuleInfo2D)
+		// 		return Sense_Capsule;
 
-			throw new NotImplementedException();
-		}
+		// 	throw new NotImplementedException();
+		// }
 
 		// 		protected override void OnDrawGizmosDynamic()
 		// 		{

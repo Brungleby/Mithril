@@ -22,8 +22,7 @@ namespace Mithril.Pawn
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class JumpActionBase<TPawn, TGround, TCollider, TRigidbody, TVector> : ActionComponent,
-	IGroundUser<TGround>, IRigidbodyUser<TRigidbody>
+	public abstract class JumpActionBase<TPawn, TGround, TCollider, TRigidbody, TVector> : ActionComponent, IRigidbodyUser<TRigidbody>
 	where TPawn : PawnBase<TCollider, TRigidbody, TVector>
 	where TGround : MithrilComponent
 	where TVector : unmanaged

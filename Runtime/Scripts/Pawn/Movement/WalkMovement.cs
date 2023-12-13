@@ -25,7 +25,6 @@ namespace Mithril.Pawn
 	public abstract class WalkMovementBase<TCollider, TRigidbody, TPawn, TPhysics, TFriction, TGround, TMoveVector, TInputVector> :
 	MovementComponent<TPawn, TCollider, TRigidbody, TMoveVector>,
 	IFrictionCustomUser<TMoveVector>,
-	IGroundUser<TGround>,
 	IGravityHost
 	where TPawn : PawnBase<TCollider, TRigidbody, TMoveVector>
 	where TMoveVector : unmanaged
@@ -298,7 +297,7 @@ namespace Mithril.Pawn
 				*	Other attempts to get a more precise result have been ineffective.
 				*	Sometimes this causes the pawn to get stuck in the ground when falling at high speeds.
 				*/
-				rigidbody.MovePosition(ground.motionHit.adjustmentPoint);
+				rigidbody.MovePosition(ground.adjustmentPoint);
 
 				rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, motionNormal);
 			}

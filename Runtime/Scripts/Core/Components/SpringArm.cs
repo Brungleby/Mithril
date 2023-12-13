@@ -22,7 +22,7 @@ namespace Mithril
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class SpringArm<TCollider, THit, TShapeInfo> : CasterComponent<TCollider, THit, TShapeInfo>
+	public abstract class SpringArm<TCollider, THit, TShapeInfo> : CasterComponent<TCollider, THit>
 	where TCollider : Component
 	where THit : HitBase, new()
 	where TShapeInfo : ShapeInfoBase
@@ -43,7 +43,6 @@ namespace Mithril
 		public float smoothTime { get => _smoothTime; set => _smoothTime = value.Max(); }
 
 		public THit hit { get; protected set; }
-		protected override THit hitToDraw => hit;
 
 		protected abstract void Update();
 	}
@@ -91,10 +90,10 @@ namespace Mithril
 
 		protected override void Update()
 		{
-			hit = Sense();
-			try { UpdatePosition(); }
-			catch (UnassignedReferenceException) { }
-			catch (MissingReferenceException) { }
+			// hit = Sense();
+			// try { UpdatePosition(); }
+			// catch (UnassignedReferenceException) { }
+			// catch (MissingReferenceException) { }
 		}
 
 		private void UpdatePosition()
@@ -120,23 +119,23 @@ namespace Mithril
 			child.localPosition = finalPosition;
 		}
 
-		protected override Hit Sense_Line()
-		{
-			return Hit.Linecast(transform.position, transform.forward, maxDistance, layers);
-		}
+		// private Hit Sense_Line()
+		// {
+		// 	return Hit.Linecast(transform.position, transform.forward, maxDistance, layers);
+		// }
 
-		protected override Hit Sense_Box()
-		{
-			var info = (BoxInfo)shapeInfo;
-			return Hit.BoxCast(
-				transform.position,
-				transform.rotation,
-				info.size / 2f,
-				transform.forward,
-				maxDistance,
-				layers
-			);
-		}
+		// private Hit Sense_Box()
+		// {
+		// 	var info = (BoxInfo)shapeInfo;
+		// 	return Hit.BoxCast(
+		// 		transform.position,
+		// 		transform.rotation,
+		// 		info.size / 2f,
+		// 		transform.forward,
+		// 		maxDistance,
+		// 		layers
+		// 	);
+		// }
 	}
 
 	#endregion
