@@ -268,8 +268,8 @@ namespace Mithril.Pawn
 			try
 			{
 				// Debug.Log($"{motionHit.collider}");
-				motionHit.OnDrawGizmos();
-				// groundHit.OnDrawGizmos();
+				// motionHit.OnDrawGizmos();
+				groundHit.OnDrawGizmos();
 			}
 			catch { }
 		}

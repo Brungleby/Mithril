@@ -300,8 +300,7 @@ namespace Mithril.Pawn
 				*/
 				rigidbody.MovePosition(ground.motionHit.adjustmentPoint);
 
-				if (!ground.isHanging)
-					rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, motionNormal);
+				rigidbody.velocity = pawn.ProjectVelocityOntoSurface(rigidbody.position, rigidbody.velocity, motionNormal);
 			}
 
 			#endregion
