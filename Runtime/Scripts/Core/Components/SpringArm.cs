@@ -22,10 +22,8 @@ namespace Mithril
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class SpringArm<TCollider, THit, TShapeInfo> : CasterComponent<TCollider, THit>
+	public abstract class SpringArm<TCollider, THit> : CasterComponent<TCollider, THit>
 	where TCollider : Component
-	where THit : HitBase, new()
-	where TShapeInfo : ShapeInfoBase
 	{
 		[Min(0f)]
 		[SerializeField]
@@ -51,10 +49,11 @@ namespace Mithril
 	#region SpringArm
 
 	[ExecuteAlways]
-	public sealed class SpringArm : SpringArm<Collider, Hit, ShapeInfo>
+	public sealed class SpringArm : SpringArm<Collider, RaycastHit>
 	{
 		private Transform child;
 		private float distanceVelocity;
+		private HitPool hitPool = new(1);
 
 		public float distanceFromOrigin =>
 			transform.localPosition.magnitude;
@@ -90,16 +89,14 @@ namespace Mithril
 
 		protected override void Update()
 		{
-			// hit = Sense();
-			// try { UpdatePosition(); }
-			// catch (UnassignedReferenceException) { }
-			// catch (MissingReferenceException) { }
+			Sense();
+			UpdatePosition();
 		}
 
 		private void UpdatePosition()
 		{
 			var currentDistance = child.localPosition.magnitude;
-			var targetDistance = hit.distance.Max(minDistance);
+			var targetDistance = hitPool.blocked ? hit.distance.Max(minDistance) : maxDistance;
 			var smoothDistance = Mathf.SmoothDamp(currentDistance, targetDistance, ref distanceVelocity, smoothTime);
 
 #if UNITY_EDITOR
@@ -119,23 +116,17 @@ namespace Mithril
 			child.localPosition = finalPosition;
 		}
 
-		// private Hit Sense_Line()
-		// {
-		// 	return Hit.Linecast(transform.position, transform.forward, maxDistance, layers);
-		// }
+		protected override void Sense_Line()
+		{
+			hitPool.LineCast(transform.position, transform.forward, maxDistance, layers);
+			hit = hitPool.nearest;
+		}
 
-		// private Hit Sense_Box()
-		// {
-		// 	var info = (BoxInfo)shapeInfo;
-		// 	return Hit.BoxCast(
-		// 		transform.position,
-		// 		transform.rotation,
-		// 		info.size / 2f,
-		// 		transform.forward,
-		// 		maxDistance,
-		// 		layers
-		// 	);
-		// }
+		protected override void Sense_Box()
+		{
+			hitPool.BoxCast((BoxCollider)collider, transform.forward, maxDistance, layers);
+			hit = hitPool.nearest;
+		}
 	}
 
 	#endregion

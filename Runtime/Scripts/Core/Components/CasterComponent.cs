@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 #endregion
 
@@ -20,21 +21,11 @@ namespace Mithril
 	#region CasterComponent
 
 	/// <summary>
-	/// This is the base class for any module that creates a sensation by firing a cast to produce a <see cref="Hit"/>.
+	/// This is the base class for any component that creates a sensation by firing a cast to produce a <see cref="Hit"/>.
 	///</summary>
-	[DefaultExecutionOrder(-10)]
 	public abstract class CasterComponent : MithrilComponent
 	{
 		#region Fields
-		// #if UNITY_EDITOR
-		// 		[Header("Draw Settings [Editor]")]
-
-		// 		[SerializeField]
-		// 		public bool drawEnabled = false;
-		// 		[SerializeField]
-		// 		public bool drawOnSelectedOnly = true;
-		// #endif
-		// [Header("Sensor")]
 
 		/// <summary>
 		/// Layers that this component can sense.
@@ -42,30 +33,6 @@ namespace Mithril
 		[Tooltip("Layers that this component can sense.")]
 		[SerializeField]
 		public LayerMask layers;
-
-		#endregion
-		#region Methods
-
-		// 		protected virtual void OnDrawGizmosSelected()
-		// 		{
-		// #if UNITY_EDITOR
-		// 			if (drawOnSelectedOnly) _OnDrawGizmosDynamic();
-		// #endif
-		// 		}
-
-		// 		protected virtual void OnDrawGizmos()
-		// 		{
-		// #if UNITY_EDITOR
-		// 			if (!drawOnSelectedOnly) _OnDrawGizmosDynamic();
-		// #endif
-		// 		}
-		// #if UNITY_EDITOR
-		// 		private void _OnDrawGizmosDynamic()
-		// 		{
-		// 			if (drawEnabled) OnDrawGizmosDynamic();
-		// 		}
-		// #endif
-		// protected virtual void OnDrawGizmosDynamic() { }
 
 		#endregion
 	}
@@ -76,7 +43,6 @@ namespace Mithril
 	/// <summary>
 	/// The base class for a sensor that uses a collider component as the shape for its cast.
 	///</summary>
-
 	public abstract class CasterComponent<TCollider, THit> : CasterComponent, IColliderUser<TCollider>
 	where TCollider : Component
 	{
@@ -90,7 +56,7 @@ namespace Mithril
 		public new TCollider collider { get; protected set; }
 #pragma warning restore
 
-		private Func<THit> m_Sense;
+		private Action m_Sense;
 
 		protected override void Awake()
 		{
@@ -103,44 +69,43 @@ namespace Mithril
 			}
 
 			collider = colliderTemplate;
-
-			// shapeInfo = ShapeInfoBase.CreateFrom<TShapeInfo>(collider);
-			// m_Sense = GetSenseMethod(shapeInfo);
+			m_Sense = GetSenseMethod(collider.GetType());
 
 			if (DisableTemplateOnAwake && colliderTemplate)
 				colliderTemplate.SetEnabled(false);
 		}
 
-		// protected THit Sense() => m_Sense.Invoke();
-		protected THit Sense() { return default; }
+		protected void Sense() => m_Sense.Invoke();
 
-		// protected virtual THit Sense_Line() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Line sensor method.");
-		// protected virtual THit Sense_Box() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Box sensor method.");
-		// protected virtual THit Sense_Sphere() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Sphere sensor method.");
-		// protected virtual THit Sense_Capsule() => throw new NotImplementedException($"{GetType().Name} ({name}) needs a Capsule sensor method.");
+		protected virtual void Sense_Line() =>
+#if DEBUG
+			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Line sensor method.");
+#endif
+		protected virtual void Sense_Box() =>
+#if DEBUG
+			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Box/Box2D sensor method.");
+#endif
+		protected virtual void Sense_Sphere() =>
+#if DEBUG
+			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Sphere/Circle sensor method.");
+#endif
+		protected virtual void Sense_Capsule() =>
+#if DEBUG
+			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Capsule/Capsule2D sensor method.");
+#endif
 
-		// private Func<THit> GetSenseMethod(TShapeInfo info)
-		// {
-		// 	if (info == null)
-		// 		return Sense_Line;
-		// 	if (info is BoxInfo || info is BoxInfo2D)
-		// 		return Sense_Box;
-		// 	if (info is SphereInfo || info is CircleInfo2D)
-		// 		return Sense_Sphere;
-		// 	if (info is CapsuleInfo || info is CapsuleInfo2D)
-		// 		return Sense_Capsule;
 
-		// 	throw new NotImplementedException();
-		// }
+		private Action GetSenseMethod(Type type)
+		{
+			if (type == typeof(BoxCollider) || type == typeof(BoxCollider2D))
+				return Sense_Box;
+			if (type == typeof(SphereCollider) || type == typeof(CircleCollider2D))
+				return Sense_Sphere;
+			if (type == typeof(CapsuleCollider) || type == typeof(CapsuleCollider2D))
+				return Sense_Capsule;
 
-		// 		protected override void OnDrawGizmosDynamic()
-		// 		{
-		// #if UNITY_EDITOR
-		// 			if (hitToDraw == null) return;
-		// 			var hit = (Hit)(HitBase)hitToDraw;
-		// 			hit.OnDrawGizmos();
-		// #endif
-		// 		}
+			return Sense_Line;
+		}
 	}
 
 	#endregion

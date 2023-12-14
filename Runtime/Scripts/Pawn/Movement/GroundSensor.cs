@@ -9,9 +9,6 @@
 
 #region Includes
 
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -22,11 +19,11 @@ namespace Mithril.Pawn
 	#region GroundSensorBase
 
 	public abstract class GroundSensorBase<TPawn, TCollider, TColliderShape, TRigidbody, TVector, TPool, THit> :
-	CasterComponent<TColliderShape, THit>, IPawnUser<TPawn>
+	CasterComponent<TColliderShape, THit>, IPawnUser<TPawn>, ILateFixedUpdaterComponent
 	where TPawn : PawnBase<TCollider, TRigidbody, TVector>
 	where TColliderShape : Component
 	where TVector : unmanaged
-	where TPool : HitPool<THit>
+	where TPool : HitPool<THit>, new()
 	{
 		#region Fields
 
@@ -96,14 +93,16 @@ namespace Mithril.Pawn
 		}
 
 		protected TPool motionPool;
-		internal THit motionHit { get; set; }
+		public THit motionHit { get; protected set; }
 
 		protected TPool groundPool;
-		internal THit groundHit { get; set; }
+		public THit groundHit { get; protected set; }
 
 		protected TPool hangingPool;
 		private bool _isHanging;
 		internal bool isHanging => isGrounded && _isHanging;
+
+		private LateFixedUpdater lateFixedUpdater;
 
 		#endregion
 		#region Properties
@@ -136,8 +135,15 @@ namespace Mithril.Pawn
 		{
 			base.Awake();
 
+			lateFixedUpdater = new(this);
+
 			_temporarilyDisableTimer.onStart.AddListener(() => temporarilyDisabled = true);
 			_temporarilyDisableTimer.onCease.AddListener(() => temporarilyDisabled = false);
+		}
+
+		protected virtual void OnEnable()
+		{
+			lateFixedUpdater.SetupCoroutine();
 		}
 
 		protected virtual void OnDisable()
@@ -146,7 +152,7 @@ namespace Mithril.Pawn
 			lastKnownRigidbody = default;
 		}
 
-		private void FixedUpdate()
+		public void LateFixedUpdate()
 		{
 			_temporarilyDisableTimer.Update();
 			if (temporarilyDisabled) return;
@@ -154,8 +160,6 @@ namespace Mithril.Pawn
 			SensorUpdate();
 
 			isGrounded = shouldBeGrounded;
-
-			Debug.Log($"isGrounded: {isGrounded}, motionHits: {motionPool.length}, groundHits: {groundPool.length}");
 		}
 
 		protected abstract void SensorUpdate();
@@ -170,6 +174,7 @@ namespace Mithril.Pawn
 		protected abstract float GetAngle(THit hit);
 		protected abstract float GetDirectionalAngle(THit hit, TVector forward);
 
+
 		#endregion
 	}
 
@@ -178,6 +183,11 @@ namespace Mithril.Pawn
 
 	public sealed class GroundSensor : GroundSensorBase<CapsulePawn, Collider, CapsuleCollider, Rigidbody, Vector3, HitPool, RaycastHit>
 	{
+		#region Members
+
+		private float _lastSensorLength;
+
+		#endregion
 		#region Properties
 
 		public override Collider hitCollider => motionHit.collider;
@@ -191,14 +201,8 @@ namespace Mithril.Pawn
 		public override Vector3 motionUp => motionPool.blocked ? motionHit.normal : pawn.up;
 		// public Vector3 motionForward => Vector3.Cross(motionUp, pawn.up).normalized;
 
-		public override Vector3 adjustmentPoint
-		{
-			get
-			{
-				var origin = pawn.collider.transform.position + pawn.up * sensorLength;
-				return origin + -pawn.up * motionHit.distance;
-			}
-		}
+		public override Vector3 adjustmentPoint =>
+			motionHit.GetAdjustmentPoint(pawn.collider.transform.position + pawn.up * _lastSensorLength, -pawn.up);
 
 		#endregion
 		#region Methods
@@ -223,10 +227,11 @@ namespace Mithril.Pawn
 
 		protected override void SensorUpdate()
 		{
-			var upOffset = pawn.up * sensorLength;
+			_lastSensorLength = sensorLength;
+			var upOffset = pawn.up * _lastSensorLength;
 			motionPool.CapsuleCast(
 				pawn.collider.transform.position + upOffset,
-				pawn.collider, -pawn.up, sensorLength * 2f, layers
+				pawn.collider, -pawn.up, _lastSensorLength * 2f, layers
 			);
 
 			groundPool.Clear();
@@ -246,7 +251,7 @@ namespace Mithril.Pawn
 				motionHit.point + pawn.up * sensorRadiusAirborne,
 				sensorRadiusAirborne * 0.5f, -pawn.up, sensorRadiusAirborne * 2f, layers
 			);
-			groundHit = groundPool.closest;
+			groundHit = groundPool.nearest;
 		}
 
 		protected override float GetAngle(RaycastHit hit) =>

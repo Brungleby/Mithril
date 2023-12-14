@@ -111,7 +111,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5024830088495140236}
-  - component: {fileID: 7256209050441560575}
   - component: {fileID: 2483605277375196528}
   - component: {fileID: 667435787952952913}
   m_Layer: 2
@@ -136,27 +135,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6157998998233485750}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!65 &7256209050441560575
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6884543004741929149}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 0.3, y: 0.3, z: 0.3}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!20 &2483605277375196528
 Camera:
   m_ObjectHideFlags: 0
@@ -225,6 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6157998998233485750}
+  - component: {fileID: 2106366834418184049}
   - component: {fileID: 1192585794539708099}
   - component: {fileID: 4115940373269937205}
   m_Layer: 2
@@ -250,6 +229,27 @@ Transform:
   - {fileID: 5024830088495140236}
   m_Father: {fileID: 6979945804257503084}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!65 &2106366834418184049
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8572250139360343818}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 0.3, y: 0.3, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1192585794539708099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,7 +265,7 @@ MonoBehaviour:
   layers:
     serializedVersion: 2
     m_Bits: 1
-  colliderTemplate: {fileID: 7256209050441560575}
+  colliderTemplate: {fileID: 2106366834418184049}
   DisableTemplateOnAwake: 1
   _minDistance: 1
   _maxDistance: 3.5

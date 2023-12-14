@@ -1,5 +1,5 @@
 
-/** HitNew.cs
+/** HitPool.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -23,11 +23,11 @@ namespace Mithril
 	public abstract class HitPoolBase : object
 	{
 		/// <summary>
-		/// The total number of hits detected; this can never be larger than <see cref="bufferSize"/>.
+		/// The total number of hits detected; this can never be larger than <see cref="size"/>.
 		///</summary>
 		private int _length = 0;
 		/// <inheritdoc cref="_length"/>
-		public int length { get => _length; protected set => _length = value.Min(bufferSize); }
+		public int length { get => _length; protected set => _length = value.Min(size); }
 
 		/// <summary>
 		/// Whether or not any hits were detected.
@@ -37,7 +37,7 @@ namespace Mithril
 		/// <summary>
 		/// Maximmum number of hits it's possible to detect.
 		///</summary>
-		public abstract int bufferSize { get; }
+		public abstract int size { get; }
 
 		public void Clear()
 		{
@@ -53,27 +53,20 @@ namespace Mithril
 		protected T[] hits { get; private set; }
 		private int _iterator = -1;
 
-		public sealed override int bufferSize => hits.Length;
+		public sealed override int size => hits.Length;
 
-		public T this[int i]
-		{
-			get
-			{
-				if (i >= length) throw new IndexOutOfRangeException();
-				return hits[i];
-			}
-		}
+		public T this[int i] => hits[i];
 
 		public HitPool()
 		{
 			hits = Array.Empty<T>();
 		}
-		public HitPool(int bufferSize)
+		public HitPool(int size)
 		{
-			hits = new T[bufferSize];
+			hits = new T[size];
 		}
 
-		public T closest => hits[0];
+		public T nearest => blocked ? hits[0] : default;
 
 		public abstract int Compare(T x, T y);
 		protected abstract void Refresh();
@@ -303,8 +296,14 @@ namespace Mithril
 
 	public static class RaycastUtils
 	{
+		public static PhysicMaterial GetPhysicMaterial(this RaycastHit hit) => hit.collider.material;
 		public static Surface GetSurface(this RaycastHit hit) => hit.collider.GetSurface();
 		public static Surface GetSurface(this RaycastHit2D hit) => hit.collider.GetSurface();
+
+		public static Vector3 GetAdjustmentPoint(this RaycastHit hit, Vector3 origin, Vector3 direction) =>
+			origin + direction * hit.distance;
+		public static Vector2 GetAdjustmentPoint(this RaycastHit2D hit, Vector2 origin, Vector2 direction) =>
+			origin + direction * hit.distance;
 	}
 
 	#endregion

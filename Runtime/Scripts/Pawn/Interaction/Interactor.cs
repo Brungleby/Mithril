@@ -49,6 +49,8 @@ namespace Mithril
 		[SerializeField]
 		public AudioClip SFXFailure;
 
+		private HitPool hitPool = new(1);
+
 		private Interactable _focus;
 		public Interactable focus
 		{
@@ -87,9 +89,8 @@ namespace Mithril
 
 		protected virtual Interactable Sense()
 		{
-			var hit = Hit.Linecast(transform.position, transform.forward, sensorLength, layers);
-			hit.Draw(DebugDrawEnvironment.DrawType.SingleUpdate);
-			return hit.collider?.GetComponent<Interactable>();
+			hitPool.LineCast(transform.position, transform.forward, sensorLength, layers);
+			return hitPool.blocked ? (hitPool.nearest.collider?.GetComponent<Interactable>()) : null;
 		}
 
 		protected virtual void OnFocusChanged() { }
