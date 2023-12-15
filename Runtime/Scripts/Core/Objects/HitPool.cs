@@ -296,6 +296,9 @@ namespace Mithril
 
 	public static class RaycastUtils
 	{
+		public static bool IsValid(this RaycastHit hit) => hit.collider != null && hit.point != Vector3.zero;
+		public static bool IsValid(this RaycastHit2D hit) => hit.collider != null && hit.point != Vector2.zero;
+
 		public static PhysicMaterial GetPhysicMaterial(this RaycastHit hit) => hit.collider.material;
 		public static Surface GetSurface(this RaycastHit hit) => hit.collider.GetSurface();
 		public static Surface GetSurface(this RaycastHit2D hit) => hit.collider.GetSurface();

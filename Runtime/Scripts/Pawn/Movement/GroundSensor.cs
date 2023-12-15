@@ -74,6 +74,8 @@ namespace Mithril.Pawn
 				}
 				else
 				{
+					motionHit = default;
+					groundHit = default;
 					onAirborne.Invoke();
 				}
 			}
@@ -99,8 +101,7 @@ namespace Mithril.Pawn
 		public THit groundHit { get; protected set; }
 
 		protected TPool hangingPool;
-		private bool _isHanging;
-		internal bool isHanging => isGrounded && _isHanging;
+		internal bool isHanging { get; private set; }
 
 		private LateFixedUpdater lateFixedUpdater;
 
@@ -118,7 +119,7 @@ namespace Mithril.Pawn
 
 		public abstract TVector up { get; }
 
-		// public abstract TVector motionRight { get; }
+		public abstract TVector motionRight { get; }
 		public abstract TVector motionUp { get; }
 
 		public float angle => GetAngle(groundHit);
@@ -160,11 +161,13 @@ namespace Mithril.Pawn
 			SensorUpdate();
 
 			isGrounded = shouldBeGrounded;
+			isHanging = shouldBeHanging;
 		}
 
 		protected abstract void SensorUpdate();
 
-		private bool shouldBeGrounded => motionPool.blocked && GetAngle(groundHit) <= maxGroundAngle;
+		private bool shouldBeGrounded => groundPool.blocked && GetAngle(groundHit) <= maxGroundAngle;
+		private bool shouldBeHanging => isGrounded && !hangingPool.blocked;
 
 		public abstract TVector GetDirectionalMotionVector(TVector forward);
 
@@ -173,7 +176,6 @@ namespace Mithril.Pawn
 
 		protected abstract float GetAngle(THit hit);
 		protected abstract float GetDirectionalAngle(THit hit, TVector forward);
-
 
 		#endregion
 	}
@@ -197,9 +199,9 @@ namespace Mithril.Pawn
 		public override Vector3 up => groundPool.blocked ? groundHit.normal : pawn.up;
 		public Vector3 forward => Vector3.Cross(up, pawn.up).normalized;
 
-		// public override Vector3 motionRight => Vector3.Cross(motionUp, motionForward);
+		public override Vector3 motionRight => Vector3.Cross(motionUp, motionForward);
 		public override Vector3 motionUp => motionPool.blocked ? motionHit.normal : pawn.up;
-		// public Vector3 motionForward => Vector3.Cross(motionUp, pawn.up).normalized;
+		public Vector3 motionForward => Vector3.Cross(motionUp, pawn.up).normalized;
 
 		public override Vector3 adjustmentPoint =>
 			motionHit.GetAdjustmentPoint(pawn.collider.transform.position + pawn.up * _lastSensorLength, -pawn.up);
@@ -212,7 +214,7 @@ namespace Mithril.Pawn
 			base.Awake();
 
 			motionPool = new(4);
-			groundPool = new(8);
+			groundPool = new(4);
 			hangingPool = new(1);
 		}
 
@@ -227,6 +229,8 @@ namespace Mithril.Pawn
 
 		protected override void SensorUpdate()
 		{
+			/**	Motion Hit
+			*/
 			_lastSensorLength = sensorLength;
 			var upOffset = pawn.up * _lastSensorLength;
 			motionPool.CapsuleCast(
@@ -234,24 +238,36 @@ namespace Mithril.Pawn
 				pawn.collider, -pawn.up, _lastSensorLength * 2f, layers
 			);
 
+			/**	Ground Hit
+			*/
 			groundPool.Clear();
 			foreach (var iHit in motionPool)
 			{
-				if (iHit.point == Vector3.zero) continue;
-				DoGroundHit(iHit);
+				/**	Check for walls
+				*/
+
+				var distance = Vector3.Scale(iHit.point - pawn.position, Vector3.one - pawn.up).sqrMagnitude;
+				var compare = (pawn.collider.radius * pawn.collider.radius) - (pawn.skinWidth * pawn.skinWidth);
+
+				if (distance > compare) continue;
+
+				/**	Check for ground
+				*/
+
+				groundPool.SphereCast(
+					iHit.point + pawn.up * pawn.collider.radius,
+					0.01f, -pawn.up, pawn.collider.radius * 2f, layers
+				);
+				groundHit = groundPool.nearest;
+
 				if (GetAngle(groundHit) > maxGroundAngle) continue;
 				motionHit = iHit;
 				break;
 			}
-		}
 
-		private void DoGroundHit(RaycastHit motionHit)
-		{
-			groundPool.SphereCast(
-				motionHit.point + pawn.up * sensorRadiusAirborne,
-				sensorRadiusAirborne * 0.5f, -pawn.up, sensorRadiusAirborne * 2f, layers
-			);
-			groundHit = groundPool.nearest;
+			/**	Hanging Hit
+			*/
+			hangingPool.LineCast(pawn.collider.GetTailPosition(), -pawn.up, pawn.collider.radius, layers);
 		}
 
 		protected override float GetAngle(RaycastHit hit) =>
@@ -263,6 +279,8 @@ namespace Mithril.Pawn
 		private void OnDrawGizmos()
 		{
 			if (!Application.isPlaying) return;
+
+			// if (motionPool.blocked) DebugDraw.DrawPoint(motionHit.point, Color.red);
 		}
 
 		#endregion
