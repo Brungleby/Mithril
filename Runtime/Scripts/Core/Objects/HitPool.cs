@@ -154,13 +154,13 @@ namespace Mithril
 		}
 		public void BoxCast(Bounds bounds, Vector3 direction, float maxDistance, LayerMask layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
-			length = Physics.BoxCastNonAlloc(bounds.center, bounds.extents, direction, hits, Quaternion.identity, maxDistance, layerMask, QueryTriggerInteraction.UseGlobal);
+			length = Physics.BoxCastNonAlloc(bounds.center, bounds.extents, direction, hits, Quaternion.identity, maxDistance, layerMask, queryTriggerInteraction);
 			Refresh();
 		}
 		public void BoxCast(Bounds bounds, Vector3 target, LayerMask layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
 		{
 			var delta = target - bounds.center;
-			length = Physics.BoxCastNonAlloc(bounds.center, bounds.extents, delta.normalized, hits, Quaternion.identity, delta.magnitude, layerMask, QueryTriggerInteraction.UseGlobal);
+			length = Physics.BoxCastNonAlloc(bounds.center, bounds.extents, delta.normalized, hits, Quaternion.identity, delta.magnitude, layerMask, queryTriggerInteraction);
 			Refresh();
 		}
 		public void BoxCast(BoxCollider box, Vector3 direction, float maxDistance, LayerMask layerMask, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
