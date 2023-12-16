@@ -269,9 +269,9 @@ namespace Mithril.Pawn
 				#endregion
 				#region Determine and Constrain Walk Vector Magnitude
 
-				var perceivedVelocity =
-					(ground.isGrounded ? pawn.velocity : pawn.lateralVelocity)
-					- physics.lastValidGroundVelocity;
+				var perceivedVelocity = ground.isGrounded ?
+					pawn.velocity :
+					pawn.lateralVelocity - physics.lastValidGroundVelocity;
 
 				walkAccelVector = CalculateAcceleration(walkAccelVector, perceivedVelocity);
 
