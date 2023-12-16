@@ -271,7 +271,7 @@ namespace Mithril.Pawn
 
 				var perceivedVelocity =
 					(ground.isGrounded ? pawn.velocity : pawn.lateralVelocity)
-					- physics.groundVelocity;
+					- physics.lastValidGroundVelocity;
 
 				walkAccelVector = CalculateAcceleration(walkAccelVector, perceivedVelocity);
 

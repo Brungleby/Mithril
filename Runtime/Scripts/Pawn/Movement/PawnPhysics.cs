@@ -33,21 +33,18 @@ namespace Mithril.Pawn
 		protected TransformData _earlyGroundTransform;
 		protected TRigidbody _earlyGroundRigidbody;
 		protected TRigidbody _lastFrameRigidbody;
-		protected TVector _lastFramePosition;
-		protected TVector _lastGroundVelocity;
 
 		private LateFixedUpdater _lateFixedUpdater;
 
 		#endregion
 		#region Properties
 
-		public TVector groundVelocity { get; private set; }
+		public TVector lastValidGroundVelocity { get; protected set; }
 
 		#endregion
 		#region Methods
 
 		public abstract void LateFixedUpdate();
-		protected abstract TVector CalculateGroundVelocity();
 
 		protected override void Awake()
 		{
@@ -59,11 +56,6 @@ namespace Mithril.Pawn
 		protected virtual void OnEnable()
 		{
 			_lateFixedUpdater.SetupCoroutine();
-		}
-
-		protected override void FixedUpdate()
-		{
-			groundVelocity = CalculateGroundVelocity();
 		}
 
 		#endregion
@@ -88,72 +80,48 @@ namespace Mithril.Pawn
 
 		protected override void FixedUpdate()
 		{
-			try
-			{
-				var groundRigidbody = ground.hitRigidbody;
+			_earlyGroundRigidbody = ground.hitRigidbody;
 
-				/** <<============================================================>> **/
-				/**	Account for changes in velocity of the ground
-				*	This method factors in both linear and angular velocity.
-				*/
+			if (_earlyGroundRigidbody != null)
+				lastValidGroundVelocity = _earlyGroundRigidbody.GetPointVelocity(rigidbody.position);
 
-				if (groundRigidbody != null && _lastFrameRigidbody == null)
-					rigidbody.velocity -= groundRigidbody.GetPointVelocity(rigidbody.position);
+			/** <<============================================================>> **/
+			/**	Add and remove velocity when touching and leaving moving platforms.
+			*/
 
-				else if (groundRigidbody == null && _lastFrameRigidbody != null)
-				{
-					_lastGroundVelocity = _lastFrameRigidbody.GetPointVelocity(rigidbody.position);
-					rigidbody.velocity += _lastGroundVelocity;
-				}
+			if (_earlyGroundRigidbody != null && _lastFrameRigidbody == null)
+				rigidbody.velocity -= lastValidGroundVelocity;
+			else if (_earlyGroundRigidbody == null && _lastFrameRigidbody != null)
+				rigidbody.velocity += lastValidGroundVelocity;
 
-				/** <<============================================================>> **/
+			/** <<============================================================>> **/
 
-				if (groundRigidbody != null)
-				{
-					_earlyGroundRigidbody = groundRigidbody;
-					_earlyGroundTransform = new TransformData(groundRigidbody.position, groundRigidbody.rotation, groundRigidbody.transform.lossyScale);
-					_lastFrameRigidbody = groundRigidbody;
-				}
-				else
-					_lastFrameRigidbody = null;
-			}
-			catch
-			{
-				_lastFrameRigidbody = null;
-				_earlyGroundRigidbody = null;
-			}
-
-			_lastFramePosition = rigidbody.position;
+			_lastFrameRigidbody = _earlyGroundRigidbody;
+			if (_earlyGroundRigidbody != null)
+				_earlyGroundTransform = new TransformData(_earlyGroundRigidbody.position, _earlyGroundRigidbody.rotation, _earlyGroundRigidbody.transform.lossyScale);
 		}
 
 		public override void LateFixedUpdate()
 		{
-			try
-			{
-				var groundRigidbody = ground.hitRigidbody;
+			var lateGroundRigidbody = ground.hitRigidbody;
 
-				if (groundRigidbody == null || groundRigidbody != _earlyGroundRigidbody) return;
+			if (lateGroundRigidbody == null || lateGroundRigidbody != _earlyGroundRigidbody) return;
 
-				var deltaRotation = groundRigidbody.rotation * Quaternion.Inverse(_earlyGroundTransform.rotation);
-				deltaRotation = deltaRotation.ProjectRotationOnAxis(pawn.up);
+			var deltaRotation = lateGroundRigidbody.rotation * Quaternion.Inverse(_earlyGroundTransform.rotation);
+			deltaRotation = deltaRotation.ProjectRotationOnAxis(pawn.up);
 
-				var pivotPosition = deltaRotation * (rigidbody.position - groundRigidbody.position) + groundRigidbody.position;
+			var pivotPosition = deltaRotation * (rigidbody.position - lateGroundRigidbody.position) + lateGroundRigidbody.position;
 
-				var deltaPosition = groundRigidbody.position - _earlyGroundTransform.position;
-				var newPosition = pivotPosition + deltaPosition;
+			var deltaPosition = lateGroundRigidbody.position - _earlyGroundTransform.position;
+			var newPosition = pivotPosition + deltaPosition;
 
-				rigidbody.MovePosition(newPosition);
+			rigidbody.MovePosition(newPosition);
 
-				/** <<============================================================>> **/
+			/** <<============================================================>> **/
 
-				if (enableRotateWithGround)
-					rigidbody.MoveRotation(rigidbody.rotation * deltaRotation);
-			}
-			catch { }
+			if (enableRotateWithGround)
+				rigidbody.MoveRotation(rigidbody.rotation * deltaRotation);
 		}
-
-		protected override Vector3 CalculateGroundVelocity() =>
-			ground.lastKnownRigidbody != null && !ground.isGrounded ? _lastGroundVelocity : default;
 
 		#endregion
 	}
