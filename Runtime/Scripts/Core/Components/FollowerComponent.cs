@@ -57,7 +57,6 @@ namespace Mithril
 		#region Properties
 #if UNITY_EDITOR
 		protected override bool callAwakeOnValidate => false;
-
 #endif
 		public bool enablePositionLag => _positionLagTime > 0f;
 		public bool enablePositionMax => _positionMaxDistance > 0f;

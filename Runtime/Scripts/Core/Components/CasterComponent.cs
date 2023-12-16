@@ -62,12 +62,13 @@ namespace Mithril
 		{
 			base.Awake();
 
+			colliderTemplate ??= GetComponent<TCollider>();
 			if (colliderTemplate == null)
-			{
-				colliderTemplate = GetComponent<TCollider>() ??
+#if DEBUG
 				throw new UnassignedReferenceException($"{GetType().Name}.colliderTemplate has not been assigned and no component in this gameObject ({name}) is available.");
-			}
-
+#else
+				return;
+#endif
 			collider = colliderTemplate;
 			m_Sense = GetSenseMethod(collider.GetType());
 
@@ -77,23 +78,30 @@ namespace Mithril
 
 		protected void Sense() => m_Sense.Invoke();
 
-		protected virtual void Sense_Line() =>
+		protected virtual void Sense_Line()
+		{
 #if DEBUG
 			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Line sensor method.");
 #endif
-		protected virtual void Sense_Box() =>
+		}
+		protected virtual void Sense_Box()
+		{
 #if DEBUG
 			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Box/Box2D sensor method.");
 #endif
-		protected virtual void Sense_Sphere() =>
+		}
+		protected virtual void Sense_Sphere()
+		{
 #if DEBUG
 			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Sphere/Circle sensor method.");
 #endif
-		protected virtual void Sense_Capsule() =>
+		}
+		protected virtual void Sense_Capsule()
+		{
 #if DEBUG
 			throw new NotImplementedException($"{GetType().Name} ({name}) needs a Capsule/Capsule2D sensor method.");
 #endif
-
+		}
 
 		private Action GetSenseMethod(Type type)
 		{

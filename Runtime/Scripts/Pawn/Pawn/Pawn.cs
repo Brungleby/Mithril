@@ -184,9 +184,7 @@ namespace Mithril.Pawn
 
 		protected virtual void OnDrawGizmosSelected()
 		{
-#if UNITY_EDITOR
 			UnityEditor.Handles.Label(transform.position - Vector3.up * ((height / 2f) + 0.25f), speed.ToString("0.0"));
-#endif
 		}
 
 		#endregion

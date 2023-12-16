@@ -85,8 +85,6 @@ namespace Mithril
 
 		public static float Max(this ICollection<float> collection)
 		{
-			if (collection.Count == 0) throw new System.Exception($"{collection} does not contain any values to compare.");
-
 			float? result = null;
 
 			foreach (var i in collection)
@@ -97,8 +95,6 @@ namespace Mithril
 
 		public static int Max(this ICollection<int> collection)
 		{
-			if (collection.Count == 0) throw new System.Exception($"{collection} does not contain any values to compare.");
-
 			int? result = null;
 
 			foreach (var i in collection)
@@ -605,9 +601,9 @@ namespace Mithril
 				minDistance = iDist;
 				result = iPosition;
 			}
-
+#if DEBUG
 			if (minDistance == float.MaxValue) throw new Exception($"Enumerable {positions} must contain at least one element to find the closest value.");
-
+#endif
 			return result;
 		}
 		/// <returns>
@@ -626,9 +622,9 @@ namespace Mithril
 				minDistance = iDist;
 				result = iPosition;
 			}
-
+#if DEBUG
 			if (minDistance == float.MaxValue) throw new Exception($"Enumerable {positions} must contain at least one element to find the closest value.");
-
+#endif
 			return result;
 		}
 

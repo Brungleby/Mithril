@@ -63,7 +63,9 @@ namespace Mithril
 				0 => capsule.transform.right,
 				1 => capsule.transform.up,
 				2 => capsule.transform.forward,
+#if DEBUG
 				_ => throw new UnityException($"Capsule direction is not valid. Check your index when querying the capsule on {capsule.gameObject.name}"),
+#endif
 			};
 		}
 

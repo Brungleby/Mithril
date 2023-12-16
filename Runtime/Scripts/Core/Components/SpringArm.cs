@@ -101,7 +101,7 @@ namespace Mithril
 
 #if UNITY_EDITOR
 			/**	This conditional prevents stuttering when modifying transform in-editor
-			*	and is ignored entirely in builds
+			*	and is ignored entirely in non-editor builds
 			*/
 
 			Vector3 finalPosition;

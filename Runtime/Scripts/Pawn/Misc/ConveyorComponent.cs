@@ -54,13 +54,10 @@ namespace Mithril.Pawn
 
 		public void SetVelocity(in Vector3 value) => _velocity = value;
 
-
-#if UNITY_EDITOR
 		private void OnDrawGizmos()
 		{
 			DebugDraw.DrawArrow(transform.position, (transform.rotation * velocity).normalized, Color.green);
 		}
-#endif
 	}
 
 	#endregion

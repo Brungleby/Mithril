@@ -33,7 +33,7 @@ namespace Mithril
 		#region Inners
 
 		#region PropertyDrawer
-#if UNITY_EDITOR
+
 		[CustomPropertyDrawer(typeof(Timer))]
 		protected internal class TimerPropertyDrawer : PropertyDrawer
 		{
@@ -75,7 +75,7 @@ namespace Mithril
 				EditorGUI.EndProperty();
 			}
 		}
-#endif
+
 		#endregion
 
 		#endregion

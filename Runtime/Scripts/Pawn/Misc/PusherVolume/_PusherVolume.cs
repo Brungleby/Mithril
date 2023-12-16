@@ -111,12 +111,11 @@ namespace Mithril.Pawn
 				return;
 			}
 		}
-#if UNITY_EDITOR
+
 		private void OnDrawGizmos()
 		{
 			DebugDraw.DrawArrow(transform.position, force, Color.green);
 		}
-#endif
 	}
 
 	#endregion

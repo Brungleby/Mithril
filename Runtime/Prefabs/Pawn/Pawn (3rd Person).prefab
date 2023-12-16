@@ -344,7 +344,7 @@ MonoBehaviour:
   layers:
     serializedVersion: 2
     m_Bits: 1
-  colliderTemplate: {fileID: 0}
+  colliderTemplate: {fileID: 4448567594642361772}
   DisableTemplateOnAwake: 0
   _temporarilyDisableTimer:
     isLooping: 0
@@ -539,7 +539,7 @@ PrefabInstance:
       objectReference: {fileID: 1060274819488854090}
     - target: {fileID: 5024830088495140236, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.4999998
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 6979945804257503084, guid: 551daf17bebee6b4d821203f77e8063a, type: 3}
       propertyPath: m_RootOrder

@@ -350,7 +350,7 @@ namespace Mithril.Pawn
 
 		#endregion
 		#region Debug
-#if UNITY_EDITOR
+
 		private void OnDrawGizmosSelected()
 		{
 			if (!Application.isPlaying) return;
@@ -362,7 +362,6 @@ namespace Mithril.Pawn
 
 			// UnityEditor.Handles.Label(pawn.collider.GetTailPosition(), pawn.lateralVelocity.magnitude.ToString("0.00"));
 		}
-#endif
 		#endregion
 	}
 
