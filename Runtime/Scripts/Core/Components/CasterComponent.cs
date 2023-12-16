@@ -38,7 +38,7 @@ namespace Mithril
 	}
 
 	#endregion
-	#region CasterComponent<TCollider, THit, TShapeInfo>
+	#region CasterComponent<TCollider, THit>
 
 	/// <summary>
 	/// The base class for a sensor that uses a collider component as the shape for its cast.
