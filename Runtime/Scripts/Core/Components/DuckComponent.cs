@@ -1,5 +1,5 @@
 
-/** FollowerComponent.cs
+/** DuckComponent.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -15,12 +15,12 @@ using UnityEngine;
 
 namespace Mithril
 {
-	#region FollowerComponent
+	#region DuckComponent
 
 	/// <summary>
 	/// This component detaches its gameObject from its parent and follows it gradually.
 	///</summary>
-	public sealed class FollowerComponent : MithrilComponent
+	public sealed class DuckComponent : MithrilComponent
 	{
 		#region Fields
 
