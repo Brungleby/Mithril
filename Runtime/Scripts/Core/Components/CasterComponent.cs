@@ -62,13 +62,8 @@ namespace Mithril
 		{
 			base.Awake();
 
-			colliderTemplate ??= GetComponent<TCollider>();
-			if (colliderTemplate == null)
-#if DEBUG
-				throw new UnassignedReferenceException($"{GetType().Name}.colliderTemplate has not been assigned and no component in this gameObject ({name}) is available.");
-#else
-				return;
-#endif
+			colliderTemplate ??= GetComponent<TCollider>() ?? throw new UnassignedReferenceException($"{GetType().Name}.colliderTemplate has not been assigned and no component in this gameObject ({name}) is available.");
+
 			collider = colliderTemplate;
 			m_Sense = GetSenseMethod(collider.GetType());
 
