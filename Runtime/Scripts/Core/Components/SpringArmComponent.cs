@@ -1,5 +1,5 @@
 
-/** SpringArm.cs
+/** SpringArmComponent.cs
 *
 *	Created by LIAM WOFFORD of CUBEROOT SOFTWARE, LLC.
 *
@@ -16,13 +16,13 @@ using UnityEngine;
 
 namespace Mithril
 {
-	#region SpringArm<THit>
+	#region SpringArmComponent<THit>
 
 	/// <summary>
 	/// __TODO_ANNOTATE__
 	///</summary>
 
-	public abstract class SpringArm<TCollider, THit> : CasterComponent<TCollider, THit>
+	public abstract class SpringArmComponent<TCollider, THit> : CasterComponent<TCollider, THit>
 	where TCollider : Component
 	{
 		[Min(0f)]
@@ -49,7 +49,7 @@ namespace Mithril
 	#region SpringArm
 
 	[ExecuteAlways]
-	public sealed class SpringArm : SpringArm<Collider, RaycastHit>
+	public sealed class SpringArmComponent : SpringArmComponent<Collider, RaycastHit>
 	{
 		private Transform child;
 		private float distanceVelocity;

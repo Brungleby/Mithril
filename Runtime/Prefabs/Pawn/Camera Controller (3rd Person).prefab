@@ -204,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6157998998233485750}
   - component: {fileID: 2106366834418184049}
-  - component: {fileID: 1192585794539708099}
+  - component: {fileID: 3230856751931009623}
   - component: {fileID: 4115940373269937205}
   m_Layer: 2
   m_Name: Camera Spring Arm
@@ -250,7 +250,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3, y: 0.3, z: 0.3}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1192585794539708099
+--- !u!114 &3230856751931009623
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -259,7 +259,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8572250139360343818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9340f505d50b30a4ab5c0aafdfe4a5bc, type: 3}
+  m_Script: {fileID: 11500000, guid: b375f2dcc9ac14440bf9c0971fdfe8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   layers:
@@ -267,9 +267,9 @@ MonoBehaviour:
     m_Bits: 1
   colliderTemplate: {fileID: 2106366834418184049}
   DisableTemplateOnAwake: 1
-  _minDistance: 1
+  _minDistance: 0.1
   _maxDistance: 3.5
-  _smoothTime: 0.125
+  _smoothTime: 0.075
 --- !u!114 &4115940373269937205
 MonoBehaviour:
   m_ObjectHideFlags: 0
