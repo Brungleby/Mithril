@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followPosition: 1
-  _positionLagTime: 0.025
+  _positionLagTime: 0.05
   _positionMaxDistance: 1
   followRotation: 0
   _rotationLagTime: 0
