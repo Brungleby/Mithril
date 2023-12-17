@@ -115,14 +115,18 @@ namespace Mithril
 			if (!verifyType.IsAssignableFrom(assignType))
 				throw new InvalidCastException($"AssignOnAwake Type ({assignType.Name}) must be of type ({verifyType.Name}).");
 
+			/**	Weird alternate coalesce expression - using this because a simplified expression does not actually work.
+			*/
 			Component result = GetComponent(assignType);
-			if (result == null)
-				result = GetComponentInParent(assignType);
-			if (result == null)
-				result = GetComponentInChildren(assignType);
-			if (result == null)
-				throw new NullReferenceException($"AssignOnAwake: Null reference found for type ({assignType.Name})");
-			return result;
+			if (result != null)
+				return result;
+			result = GetComponentInParent(assignType);
+			if (result != null)
+				return result;
+			result = GetComponentInChildren(assignType);
+			if (result != null)
+				return result;
+			throw new NullReferenceException($"AssignOnAwake: Null reference found for type ({assignType.Name})");
 		}
 
 		#endregion
